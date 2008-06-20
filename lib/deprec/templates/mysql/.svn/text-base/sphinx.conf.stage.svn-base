@@ -1,0 +1,542 @@
+#
+# Sphinx configuration file sample
+#
+
+#############################################################################
+## data source definition
+#############################################################################
+
+source src1
+{
+	# data source type
+	# for now, known types are 'mysql', 'pgsql' and 'xmlpipe'
+	# MUST be defined
+	type				= mysql
+
+	# whether to strip HTML
+	# values can be 0 (don't strip) or 1 (do strip)
+	# WARNING, only works with mysql source for now
+	# WARNING, should work ok for PERFECTLY formed XHTML for now
+	# WARNING, POSSIBLE TO BUG on malformed everday HTML
+	# optional, default is 0
+	strip_html			= 0
+
+	# what HTML attributes to index if stripping HTML
+	# format is as follows:
+	#
+	# index_html_attrs	= img=alt,title; a=title;
+	#
+	# optional, default is to not index anything
+	index_html_attrs	=
+
+	#####################################################################
+     
+	# some straightforward parameters for 'mysql' source type
+	sql_host			= <%= @mysql_host %>
+	sql_user			= <%= @username %>_db
+	sql_pass			= <%= @mysqlpass %>
+	sql_db				= <%= @username %>_stage
+	sql_port			= 3306	# optional, default is 3306
+
+	# sql_sock			= /tmp/mysql.sock
+	#
+	# optional
+	# usually '/var/lib/mysql/mysql.sock' on Linux
+	# usually '/tmp/mysql.sock' on FreeBSD
+
+	# pre-query, executed before the main fetch query
+	# useful eg. to setup encoding or mark records
+	# optional, default is empty
+	#
+	# sql_query_pre		= SET CHARACTER_SET_RESULTS=cp1251
+	sql_query_pre		=
+
+	# main document fetch query
+	#
+	# you can specify up to 32 (formally SPH_MAX_FIELDS in sphinx.h) fields;
+	# all of the fields which are not document_id or attributes (see below)
+	# will be full-text indexed
+	#
+	# document_id MUST be the very first field
+	# document_id MUST be positive (non-zero, non-negative)
+	# document_id MUST fit into 32 bits
+	# document_id MUST be unique
+	#
+	# mandatory
+	sql_query			= \
+		SELECT id, group_id, UNIX_TIMESTAMP(date_added) AS date_added, title, content \
+		FROM documents
+
+	# query range setup
+	#
+	# useful to avoid MyISAM table locks and big result sets
+	# when indexing lots of data
+	#
+	# to use query ranges, you should
+	# 1) provide a query to fetch min/max id (ie. id range) from data set;
+	# 2) configure step size in which this range will be walked;
+	# 3) use $start and $end macros somewhere in the main fetch query.
+	#
+	# 'sql_query_range' must return exactly two integer fields
+	# in exactly min_id, max_id order
+	#
+	# 'sql_range_step' must be a positive integer
+	# optional, default is 1024
+	#
+	# 'sql_query' must contain both '$start' and '$end' macros
+	# if you are using query ranges (because it obviously would be an
+	# error to index the whole table many times)
+	#
+	# note that the intervals specified by $start/$end do not
+	# overlap, so you should NOT remove document ids which are exactly
+	# equal to $start or $end in your query
+	#
+	# here's an example which will index 'documents' table
+	# fetching (at most) one thousand entries at a time:
+	#
+	# sql_query_range		= SELECT MIN(id),MAX(id) FROM documents
+	# sql_range_step		= 1000
+	# sql_query			= \
+	#	SELECT doc.id, doc.id AS group, doc.title, doc.data \
+	#	FROM documents doc \
+	#	WHERE id>=$start AND id<=$end
+
+
+	# attribute columns
+	#
+	# attribute values MUST be positive (non-zero, non-negative) integers
+	# attribute values MUST fit into 32 bits
+	#
+	# attributes are additional values associated with each document which
+	# may be used to perform additional filtering and sorting during search.
+	# attributes are NOT full-text indexed; they are stored in the full text
+	# index as is.
+	#
+	# a good example would be a forum posts table. one might need to search
+	# through 'title' and 'content' fields but to limit search to specific
+	# values of 'author_id', or 'forum_id', or to sort by 'post_date', or to
+	# group matches by 'thread_id', or to group posts by month of the
+	# 'post_date' and provide statistics.
+	#
+	# this all can be achieved by specifying all the mentioned columns
+	# (excluding 'title' and 'content' which are full-text fields) as
+	# attributes and then using API calls to setup filtering, sorting,
+	# and grouping.
+	#
+	# sql_group_column is used to declare integer attributes.
+	#
+	# sql_date_column is used to declare UNIX timestamp attributes.
+	#
+	# sql_str2ordinal_column is used to declare integer attributes which 
+	# values are computed as ordinal numbers of corresponding column value
+	# in sorted list of column values. WARNING, all such strings values
+	# are going to be stored in RAM while indexing, and "C" locale will
+	# be used when sorting!
+	#
+	# starting with 0.9.7, there may be multiple attribute columns specified.
+	# here's an example for that mentioned posts table:
+	#
+	# sql_group_column	= author_id
+	# sql_group_column	= forum_id
+	# sql_group_column	= thread_id
+	# sql_date_column		= post_unix_timestamp
+	# sql_date_column		= last_edit_unix_timestamp
+	#
+	# optional, default is empty
+	sql_group_column	= group_id
+	sql_date_column		= date_added
+	# sql_str2ordinal_column	= author_name
+
+	# post-query, executed on the end of main fetch query
+	#
+	# note that indexing is NOT completed at the point when post-query
+	# gets executed and might very well fail
+	#
+	# optional, default is empty
+	sql_query_post		=
+
+	# post-index-query, executed on succsefully completed indexing
+	#
+	# $maxid macro is the max document ID which was actually
+	# fetched from the database
+	#
+	# optional, default is empty
+	#
+	# sql_query_post_index = REPLACE INTO counters ( id, val ) \
+	#	VALUES ( 'max_indexed_id', $maxid )
+
+
+	# document info query
+	#
+	# ONLY used by search utility to display document information
+	# MUST be able to fetch document info by its id, therefore
+	# MUST contain '$id' macro 
+	#
+	# optional, default is empty
+	sql_query_info		= SELECT * FROM documents WHERE id=$id
+
+	#####################################################################
+
+	# demo config for 'xmlpipe' source type is a little below
+	#
+	# with xmlpipe, indexer opens a pipe to a given command,
+	# and then reads documents from stdin
+	#
+	# indexer expects one or more documents from xmlpipe stdin
+	# each document must be formatted exactly as follows:
+	#
+	# <document>
+	# <id>123</id>
+	# <group>45</group>
+	# <timestamp>1132223498</timestamp>
+	# <title>test title</title>
+	# <body>
+	# this is my document body
+	# </body>
+	# </document>
+	#
+	# timestamp element is optional, its default value is 1
+	# all the other elements are mandatory
+
+	# type				= xmlpipe
+	# xmlpipe_command	= cat /usr/local/var/test.xml
+}
+
+
+# inherited source example
+#
+# all the parameters are copied from the parent source,
+# and may then be overridden in this source definition
+source src1stripped : src1
+{
+	strip_html			= 1
+}
+
+#############################################################################
+## index definition
+#############################################################################
+
+# local index example
+#
+# this is an index which is stored locally in the filesystem
+#
+# all indexing-time options (such as morphology and charsets)
+# are configured per local index
+index test1
+{
+	# which document source to index
+	# at least one MUST be defined
+	#
+	# multiple sources MAY be specified; to do so, just add more
+	# "source = NAME" lines. in this case, ALL the document IDs
+	# in ALL the specified sources MUST be unique
+	source			= src1
+
+	# this is path and index file name without extension
+	#
+	# indexer will append different extensions to this path to
+	# generate names for both permanent and temporary index files
+	#
+	# .tmp* files are temporary and can be safely removed
+	# if indexer fails to remove them automatically
+	#
+	# .sp* files are fulltext index data files. specifically,
+	# .spa contains attribute values attached to each document id
+	# .spd contains doclists and hitlists
+	# .sph contains index header (schema and other settings)
+	# .spi contains wordlists
+	#
+	# MUST be defined
+	path			= /data/<%= @username %>/shared/log/indexes/test1
+
+	# docinfo (ie. per-document attribute values) storage strategy
+	# defines how docinfo will be stored
+	#
+	# available values are "none", "inline" and "extern"
+	#
+	# "none" means there'll be no docinfo at all (no groups/dates)
+	#
+	# "inline" means that the docinfo will be stored in the .spd
+	# file along with the document ID lists (doclists)
+	#
+	# "extern" means that the docinfo will be stored in the .spa
+	# file separately
+	#
+	# externally stored docinfo should (basically) be kept in RAM
+	# when querying; therefore, "inline" may be the only viable option
+	# for really huge (50-100+ million docs) datasets. however, for
+	# smaller datasets "extern" storage makes both indexing and
+	# searching MUCH more efficient.
+	#
+	# additional search-time memory requirements for extern storage are
+	#
+	#	( 1 + number_of_attrs )*number_of_docs*4 bytes
+	#
+	# so 10 million docs with 2 groups and 1 timestamp will take
+	# (1+2+1)*10M*4 = 160 MB of RAM. this is PER DAEMON, ie. searchd
+	# will alloc 160 MB on startup, read the data and keep it shared
+	# between queries; the children will NOT allocate additional
+	# copies of this data.
+	#
+	# default is "extern" (as most collections are smaller than 100M docs)
+	docinfo			= extern
+
+	# morphology
+	#
+	# currently supported morphology preprocessors are Porter stemmers
+	# for English and Russian, and Soundex. more stemmers could be added
+	# at users request.
+	#
+	# available values are "none", "stem_en", "stem_ru", "stem_enru",
+	# and "soundex"
+	#
+	# optional, default is "none"
+	#
+	# morphology		= none
+	# morphology		= stem_en
+	# morphology		= stem_ru
+	# morphology		= stem_enru
+	# morphology		= soundex
+	morphology			= none
+
+	# stopwords file
+	#
+	# format is plain text in whatever encoding you use
+	# optional, default is empty
+	#
+	# stopwords			= /usr/local/var/data/stopwords.txt
+	stopwords			=
+
+	# minimum word length
+	#
+	# only the words that are of this length and above will be indexed;
+	# for example, if min_word_len is 4, "the" won't be indexed,
+	# but "they" will be.
+	#
+	# default is 1, which (obviously) means to index everything
+	min_word_len		= 1
+
+	# charset encoding type
+	#
+	# known types are 'sbcs' (Single Byte CharSet) and 'utf-8'
+	#
+	# optional, default is sbcs
+	charset_type		= sbcs
+
+	# charset definition and case folding rules "table"
+	#
+	# optional, default value depends on charset_type
+	#
+	# for now, defaults are configured to support English and Russian
+	# this behavior MAY change in future versions
+	#
+	# 'sbcs' default value is
+	# charset_table		= 0..9, A..Z->a..z, _, a..z, U+A8->U+B8, U+B8, U+C0..U+DF->U+E0..U+FF, U+E0..U+FF
+	#
+	# 'utf-8' default value is
+	# charset_table		= 0..9, A..Z->a..z, _, a..z, U+410..U+42F->U+430..U+44F, U+430..U+44F
+
+	# minimum prefix length
+	#
+	# if prefix length is positive, indexer will not only index all words,
+	# but all the possible prefixes (ie. word beginnings) as well
+	#
+	# for instance, "exam" query against such index will match documents
+	# which contain "example" word, even if they do not contain "exam"
+	#
+	# indexing prefixes will make the index grow significantly
+	# and could degrade search times
+	#
+	# currently there's no way to rank perfect word matches higher
+	# than prefix matches using only one index; you could setup two
+	# indexes for that
+	#
+	# default is 0, which means NOT to index prefixes
+	min_prefix_len		= 0
+
+	# minimum infix length
+	#
+	# if infix length is positive, indexer will not only index all words,
+	# but all the possible infixes (ie. characters subsequences starting
+	# anywhere inside the word) as well
+	#
+	# for instance, "amp" query against such index will match documents
+	# which contain "example" word, even if they do not contain "amp"
+	#
+	# indexing prefixes will make the index grow significantly
+	# and could degrade search times
+	#
+	# currently there's no way to rank perfect word matches higher
+	# than infix matches using only one index; you could setup two
+	# indexes for that
+	#
+	# default is 0, which means NOT to index infixes
+	min_infix_len		= 0
+
+	# n-grams length
+	#
+	# n-grams provide basic CJK support for unsegmented texts. if using
+	# n-grams, streams of CJK characters are indexed as n-grams. for example,
+	# if incoming stream is ABCDEF and n is 2, this text would be indexed
+	# as if it was AB BC CD DE EF.
+	#
+	# this feature is in alpha version state and only n=1 is currently
+	# supported; this is going to be improved.
+	#
+	# note that if search query is segmented (ie. words are separated with
+	# whitespace), words are in quotes and extended matching mode is used,
+	# then all matching documents will be returned even if their text was
+	# *not* segmented. in the example above, ABCDEF text will be indexed as
+	# A B C D E F, and "BCD" query will be transformed to "B C D" (where
+	# quotes is phrase matching operator), so the document will match.
+	#
+	# optional, default is 0, which means NOT to use n-grams
+	#
+	# ngram_len = 1
+
+	# n-gram characters table
+	#
+	# specifies what specific characters are subject to n-gram
+	# extraction. format is similar to charset_table.
+	#
+	# optional, default is empty
+	#
+	# ngrams_chars = U+3000..U+2FA1F
+}
+
+
+# inherited index example
+#
+# all the parameters are copied from the parent index,
+# and may then be overridden in this index definition
+index test1stemmed : test1
+{
+	path			= /data/<%= @username %>/shared/log/indexes/test1stemmed
+	morphology		= stem_en
+}
+
+
+# distributed index example
+#
+# this is a virtual index which can NOT be directly indexed,
+# and only contains references to other local and/or remote indexes
+#
+# if searchd receives a query against this index,
+# it does the following:
+#
+# 1) connects to all the specified remote agents,
+# 2) issues the query,
+# 3) searches local indexes (while the remote agents are searching),
+# 4) collects remote search results,
+# 5) merges all the results together (removing the duplicates),
+# 6) sends the merged resuls to client.
+#
+# this index type is primarily intenteded to be able to split huge (100GB+)
+# datasets into chunks placed on different physical servers and them search
+# through those chunks in parallel, reducing response times and server load;
+# it seems, however, that it could also be used to take advantage of
+# multi-processor systems or to implement HA (high-availability) search.
+index dist1
+{
+	# 'distributed' index type MUST be specified
+	type				= distributed
+
+	# local index to be searched
+	# there can be many local indexes configured
+	local				= test1
+	local				= test1stemmed
+
+	# remote agent
+	# multiple remote agents may be specified
+	# syntax is 'hostname:port:index1,[index2[,...]]
+	agent				= localhost:3313:remote1
+	agent				= localhost:3314:remote2,remote3
+
+	# remote agent connection timeout, milliseconds
+	# optional, default is 1000 ms, ie. 1 sec
+	agent_connect_timeout	= 1000
+
+	# remote agent query timeout, milliseconds
+	# optional, default is 3000 ms, ie. 3 sec
+	agent_query_timeout		= 3000
+}
+
+#############################################################################
+## indexer settings
+#############################################################################
+
+indexer
+{
+	# memory limit
+	#
+	# may be specified in bytes (no postfix), kilobytes (mem_limit=1000K)
+	# or megabytes (mem_limit=10M)
+	#
+	# will grow if set unacceptably low
+	# will warn if set too low and potentially hurting the performance
+	#
+	# optional, default is 32M
+	mem_limit			= 32M
+}
+
+#############################################################################
+## searchd settings
+#############################################################################
+
+searchd
+{
+	# IP address on which search daemon will bind and accept
+	# incoming network requests
+	#
+	# optional, default is to listen on all addresses,
+	# ie. address = 0.0.0.0
+	#
+	# address				= 127.0.0.1
+	# address				= 192.168.0.1
+
+
+	# port on which search daemon will listen
+	port				= 3312
+
+
+	# log file
+	# searchd run info is logged here
+	log					= /var/log/engineyard/sphinx/<%= @username %>/searchd.log
+
+
+	# query log file
+	# all the search queries are logged here
+	query_log			= /var/log/engineyard/sphinx/<%= @username %>/searchd_query.log
+
+
+	# client read timeout, seconds
+	read_timeout		= 5
+
+
+	# maximum amount of children to fork
+	# useful to control server load
+	max_children		= 30
+
+
+	# a file which will contain searchd process ID
+	# used for different external automation scripts
+	# MUST be present
+	pid_file			= /data/<%= @username %>/shared/log/searchd.pid
+
+
+	# maximum amount of matches this daemon would ever retrieve
+	# from each index and serve to client
+	#
+	# this parameter affects per-client memory and CPU usage
+	# (16+ bytes per match) in match sorting phase; so blindly raising
+	# it to 1 million is definitely NOT recommended
+	#
+	# starting from 0.9.7, it can be decreased on the fly through
+	# the corresponding API call; increasing is prohibited to protect
+	# against malicious and/or malformed requests
+	#
+	# default is 1000 (just like with Google)
+	max_matches			= 1000
+}
+
+# --eof--

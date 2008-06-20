@@ -1,0 +1,18 @@
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+<% network_number_of_ports.to_i.times do |port| %>
+# The primary network interface
+auto <%= "eth#{port}" %>
+iface <%= "eth#{port}" %> inet static
+        address <%= network_interfaces[port][:address] %>
+        netmask <%= network_interfaces[port][:netmask] %>
+        broadcast <%= network_interfaces[port][:broadcast] %>
+        <%= "gateway #{network_gateway}" if port == 0 %>
+        <%= "dns-nameservers #{network_dns_nameservers}" if port == 0 %>
+
+<% end %>

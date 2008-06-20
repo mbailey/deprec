@@ -1,0 +1,43 @@
+#!/bin/bash
+#
+# Start tracd for AGR project
+#
+# Copy to /etc/init.d and enable with:
+#       sudo update-rc.d tracd-agr.sh defaults
+
+tracd_cmd=<%= tracd_cmd %>
+trac_port=<%= tracd_port %>
+trac_pidfile=<%= tracd_pidfile %>
+trac_parent_dir=<%= tracd_parent_dir %>
+
+function usage
+{
+        echo "
+Usage: $0 {start|stop}
+"
+        exit 1
+}
+
+case "$1" in
+  start)
+		echo "Starting tracd"
+        for dir in `ls $trac_parent_dir`; do 
+			project="`basename $dir`"
+			passwords="$trac_parent_dir/${dir}/conf/users.htdigest"
+			auth_string="$auth_string --auth=${project},${passwords},${project}"
+		done
+		cmd="$tracd_cmd $auth_string --env-parent-dir=$trac_parent_dir \
+			--port=$trac_port --pidfile=$trac_pidfile --daemonize"
+
+		$cmd
+		;;
+
+  stop)
+        echo "Stopping tracd" 
+        kill `cat $trac_pidfile` >/dev/null 2>&1
+        rm -f $trac_pidfile
+        ;;
+                
+  *)
+        usage
+esac

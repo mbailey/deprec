@@ -1,0 +1,24 @@
+<VirtualHost *:80>
+  ServerName <%= trac_home_url %>
+  
+  # Configure trac_cluster 
+  <Proxy balancer://trac_cluster>
+    BalancerMember http://127.0.0.1:<%= tracd_port %>
+  </Proxy>
+
+  RewriteEngine On
+  
+  # Redirect to the AGR track instance
+  RewriteRule   ^/$  /<%= application %>/  [R]
+  # Send all traffic to tracd
+  RewriteRule ^/(.*)$ balancer://trac_cluster%{REQUEST_URI} [P,QSA,L]
+  
+  # Deflate
+  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css application/x-javascript
+  BrowserMatch ^Mozilla/4 gzip-only-text/html
+  BrowserMatch ^Mozilla/4\.0[678] no-gzip
+  BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+
+  ErrorLog logs/trac.agoodride.tv-error_log
+  CustomLog logs/trac.agoodride.tv-access_log combined
+</VirtualHost>

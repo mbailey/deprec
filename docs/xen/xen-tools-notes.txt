@@ -1,0 +1,31 @@
+#
+# xen-tools : interesting bits
+#
+
+xt-install-image 		Install a new distribution.
+xt-customize-image 		Run a collection of hook scripts to customise the freshly installed system.
+xt-create-xen-config 	Create a Xen configuration file in so that xm can start the new domain.
+
+
+# PARTITIONING
+/etc/xen-tools/partitions.d/
+--partition partition_scheme_file
+
+# Automatic IP provisioning
+--ip=auto /etc/xen-tools/ips.txt
+
+# Config template
+/etc/xen-tools/xm.tmpl
+--template
+
+# tar up first image and use for installation
+xen-create-image --size=2Gb --swap=128Mb --dhcp \
+     --lvm=myvolumegroup --hostname=vm01.my.flat \
+     --install-method=tar --install-source=/path/to/tar.file.tar
+
+# Roles
+/etc/xen-tools/role.d
+--role=filename -role-args
+
+# skeleton dir
+/etc/xen-tools/skel

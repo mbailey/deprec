@@ -1,0 +1,69 @@
+#!/bin/bash
+### BEGIN INIT INFO
+# Provides:          xend
+# Required-Start:    $local_fs
+# Required-Stop:     $local_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      S 0 1 6
+# Short-Description: XEN control daemon
+# Description:       XEN control daemon
+### END INIT INFO
+
+if ! grep -q "control_d" /proc/xen/capabilities ; then
+	exit 0
+fi
+
+# Wait for Xend to be up
+function await_daemons_up
+{
+	i=1
+	rets=10
+	xend status
+	while [ $? -ne 0 -a $i -lt $rets ]; do
+	    sleep 1
+	    echo -n .
+	    i=$(($i + 1))
+	    xend status
+	done
+}
+
+# Rules for ip forwarding and NAT
+# echo 1 >/proc/sys/net/ipv4/ip_forward
+# echo 1 >/proc/sys/net/ipv4/conf/eth0/proxy_arp
+# echo 1 >/proc/sys/net/ipv4/conf/eth1/proxy_arp
+# IPTABLES=/sbin/iptables
+# EXTIF=eth0
+# INTIF=eth1
+# $IPTABLES -A FORWARD -i $EXTIF -o $INTIF -m state --state ESTABLISHED,RELATED -j ACCEPT
+# $IPTABLES -A FORWARD -i $INTIF -o $EXTIF -j ACCEPT
+# $IPTABLES -t nat -A POSTROUTING -o $EXTIF -s 192.168.1.0/24 -j MASQUERADE
+
+
+case "$1" in
+  start)
+	xend start
+	await_daemons_up
+	;;
+  stop)
+	/etc/init.d/xendomains stop # make sure domains are shut down
+	xend stop
+	;;
+  status)
+	xend status
+	;;
+  reload)
+        xend reload
+        ;;
+  restart|force-reload)
+	xend restart
+	await_daemons_up
+	;;
+  *)
+	# do not advertise unreasonable commands that there is no reason
+	# to use with this device
+	echo $"Usage: $0 {start|stop|status|restart|reload|force-reload}"
+	exit 1
+esac
+
+exit $?
+

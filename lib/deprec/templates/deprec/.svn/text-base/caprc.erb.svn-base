@@ -1,0 +1,14 @@
+ssh_options[:paranoid] = false
+ssh_options[:forward_agent] = true
+
+
+# Just import the general purpose tasks
+require '/deprec/general_purpose' if respond_to?(:namespace)
+
+# Enable all deprec tasks all the time. This will change the 
+# behviour of some standard cap tasks (like 'cap deploy') so
+# only enable it if you know what you're doing!
+#
+# require 'deprec/recipes' unless respond_to?(:namespace)
+
+

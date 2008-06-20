@@ -1,0 +1,45 @@
+<VirtualHost *:80>
+        ServerName <%= domain %>
+        DocumentRoot "/usr/local/nagios/share"
+        ScriptAlias /nagios/cgi-bin "/usr/local/nagios/sbin"
+        Alias /nagios "/usr/local/nagios/share"
+
+        <Directory "/usr/local/nagios/sbin">
+        #  SSLRequireSSL
+           Options ExecCGI
+           AllowOverride None
+           Order allow,deny
+           Allow from all
+        #  Order deny,allow
+        #  Deny from all
+        #  Allow from 127.0.0.1
+           AuthName "Nagios Access"
+           AuthType Basic
+           AuthUserFile /usr/local/nagios/etc/htpasswd.users
+           Require valid-user
+        </Directory>
+
+        <Directory "/usr/local/nagios/share">
+        #  SSLRequireSSL
+           Options None
+           AllowOverride None
+           Order allow,deny
+           Allow from all
+        #  Order deny,allow
+        #  Deny from all
+        #  Allow from 127.0.0.1
+           AuthName "Nagios Access"
+           AuthType Basic
+           AuthUserFile /usr/local/nagios/etc/htpasswd.users
+           Require valid-user
+        </Directory>
+
+        # Deflate
+        AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css application/x-javascript
+        BrowserMatch ^Mozilla/4 gzip-only-text/html
+        BrowserMatch ^Mozilla/4\.0[678] no-gzip
+        BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+
+        ErrorLog logs/nagios.sct-error_log
+        CustomLog logs/nagios.sct-access_log combined
+</VirtualHost>

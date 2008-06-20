@@ -1,0 +1,15 @@
+# http://linux-ha.org/ha.cf
+logfacility     daemon
+keepalive 1
+deadtime 10
+warntime 5
+initdead 120 # depend on your hardware
+udpport 694
+ping <%= heartbeat_ping %>
+bcast <%= heartbeat_bcast %>
+auto_failback <%= heartbeat_auto_failback %>
+<% heartbeat_nodes.each do |node| -%>
+node    <%= node %>
+<% end -%>
+respawn hacluster /usr/lib/heartbeat/ipfail
+use_logd yes

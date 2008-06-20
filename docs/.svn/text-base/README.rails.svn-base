@@ -1,0 +1,20 @@
+deprec: Install Ruby on Rails app on fresh Ubuntu 7.10 (gutsy)
+==============================================================
+												by Mike Bailey
+
+* Quickstart
+
+cd /rails/project/root
+depify .
+# edit config/deploy.rb
+cap deprec:rails:install_rails_stack HOSTS=target.host.name
+cap deploy:setup
+cap deploy
+cap deprec:db:create
+cap deprec:db:migrate
+cap deprec:nginx:restart
+
+
+* The detail
+
+TBC

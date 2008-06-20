@@ -1,0 +1,43 @@
+<VirtualHost *:80>
+  ServerName <%= @username %>.svn.engineyard.com
+  ServerAdmin admin@engineyard.com
+
+  <Location />
+    DAV svn
+
+    Satisfy Any
+    Require valid-user
+
+    AuthType Basic
+    AuthName "Engine Yard SVN Cluster: <%= @username %>"
+    AuthUserFile       /data/svn/<%= @username %>/users
+
+    AuthzSVNAccessFile /data/svn/<%= @username %>/access
+
+    SVNPath            /data/svn/<%= @username %>/repo
+  </Location>
+</VirtualHost>
+
+<VirtualHost *:443>
+  ServerName <%= @username %>.svn.engineyard.com
+  ServerAdmin admin@engineyard.com
+
+  <Location />
+    DAV svn
+
+    Satisfy Any
+    Require valid-user
+
+    AuthType Basic
+    AuthName "Engine Yard SVN Cluster: <%= @username %>"
+    AuthUserFile       /data/svn/<%= @username %>/users
+
+    AuthzSVNAccessFile /data/svn/<%= @username %>/access
+
+    SVNPath            /data/svn/<%= @username %>/repo
+  </Location>
+
+  SSLEngine on
+  SSLProtocol all
+  SSLCipherSuite HIGH:MEDIUM
+</VirtualHost>

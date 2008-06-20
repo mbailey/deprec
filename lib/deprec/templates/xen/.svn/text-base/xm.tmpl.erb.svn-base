@@ -1,0 +1,85 @@
+#
+# Configuration file for the Xen instance {$hostname}, created
+# by xen-tools {$xen_tools_version} on { scalar localtime }.
+#
+
+#
+#  Kernel + memory size
+#
+{ if ( $kernel )
+  {
+    $OUT.= "kernel      = '$kernel'";
+  }
+}
+{ if ( $initrd )
+  {
+    $OUT.= "ramdisk     = '$initrd'";
+  }
+}
+memory      = '{$memory}'
+
+#
+#  Disk device(s).
+#
+root        = '/dev/{$device}1 ro'
+{ if ( $noswap ) 
+  {
+        $OUT .= "disk        = [ '$image_vbd,$device" . "1,w' ]";
+  }
+  else
+  {
+        $OUT .= "disk        = [ '$image_vbd,$device" . "1,w', '$swap_vbd,$device" . "2,w' ]";
+  }
+}
+
+#
+#  Hostname
+#
+name        = '{$hostname}'
+
+#
+#  Networking
+#
+{ if ( $dhcp )
+  {
+    $OUT .= "dhcp        = 'dhcp'\n";
+
+    # Setup the mac address, if present.
+    my $m = '';
+    if ( $mac )
+    { 
+      $m = "mac=$mac"
+    }
+
+    $OUT .= "vif         = [ '$m' ]";
+  }    
+  else
+  {
+    #
+    # Setup the mac address, if present.
+    #
+    my $m = '';
+    if ( $mac )
+    { 
+      $m = ",mac=$mac"
+    }
+
+    $OUT .= "vif         = [ 'ip=$ip1"; 
+    $OUT .= "$m' ]";
+  }
+}
+
+#
+#  Behaviour
+#
+on_poweroff = 'destroy'
+on_reboot   = 'restart'
+on_crash    = 'restart'
+
+
+{ if ( $admins )
+  {
+    $OUT .= "xen_shell = '$admins'\n";
+  }
+}
+extra = ' TERM=xterm xencons=tty console=tty1'

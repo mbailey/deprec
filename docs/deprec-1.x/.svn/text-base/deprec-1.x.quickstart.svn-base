@@ -1,0 +1,50 @@
+#
+# Old notes - YMMV
+#
+
+== deprec quickstart (with svn, trac and deployment to apache/mongrel/mysql)
+
+Here are instructions that will take a fresh install of Ubuntu Dapper (6.06.1 server), create a working rails app, create an SVN repository and trac installation for it and deploy it using apache, mongrel and mysql.
+
+All commands below are run on your local host. You will *never* be requested 
+to log into the remote server manually. Capistrano does all the work.
+
+- Mike
+
+# Install deprec on workstation
+sudo gem install deprec --include-dependencies
+echo 'require "deprec/recipes"'               >> ~/.caprc
+echo "ssh_options[:keys] = %w(${HOME}/.ssh/id_dsa)" >> ~/.caprc
+echo 'ssh_options[:paranoid] = false'         >> ~/.caprc
+echo 'ssh_options[:forward_agent] = true'     >> ~/.caprc
+
+# Create rails project on workstation and configure for deprec
+# (alternatively use an existing project)
+rails example
+cd example
+./script/generate scaffold_resource person name:string age:integer
+deprec --apply-to . --name example --domain www.example.com
+
+# NOTE! Use following two commands if you only have 'root' account on server
+# Some VPS services provide you with this when you sign up
+cap change_root_password_as_root # '_as_root' means run this as 'root' user
+cap setup_admin_account_as_root 
+
+# Copy your ssh keys to remote server to avoid having to type passwords
+cap setup_ssh_keys
+
+# Install all required software on remote server
+cap install_rails_stack svn_install trac_install
+
+# Import application into subversion respository and setup trac
+cap svn_setup
+cap trac_setup
+cap trac_user_add # this command allows you to create other trac users
+cap trac_start # trac is now available on http://www.example.com:9000/
+cap trac_stop  # if you had the need
+
+# Deploy application
+cap setup
+cap deploy_with_migrations
+cap apache_restart 
+# application is now running on http://www.example.com/people

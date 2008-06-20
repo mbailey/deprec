@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<title>Apache2 installed by deprec</title>
+	<link rel="stylesheet" href="/master.css" type="text/css" media="screen" title="no title" charset="utf-8">
+
+</head>
+<body id="" onload="">
+	<div id="wrapper">
+		<h1>Apache2 installed by deprec</h1>
+		<h2>Commands</h2>
+		<dl>
+			<dt>cap deprec:apache:start</dt><dd>Start apache</dd>
+			<dt>cap deprec:apache:stop</dt><dd>Stop apache</dd>
+			<dt>cap deprec:apache:restart</dt><dd>Stop restart</dd>
+			<dt>cap deprec:apache:reload</dt><dd>Reload apache</dd>
+			
+			<dt>cap deprec:apache:install</dt><dd>Install apache</dd>
+			<dt>cap deprec:apache:config_gen</dt><dd>Generate apache configs</dd>
+			
+			<dt>cap deprec:apache:activate</dt><dd>Start Apache when server boots</dd>
+			<dt>cap deprec:apache:deactivate</dt><dd>Don't start Apache when server boots</dd>
+			
+		</dl>
+		
+		<dl>
+			<p>Installation options</p>
+			<% SRC_PACKAGES[:apache].each do |key, val| %>
+				<dt><%= key %></dt>
+				<dd><%= val %></dd>
+			<% end %>
+		</dl>
+	</div>
+</body>
+</html>

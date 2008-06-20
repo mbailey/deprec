@@ -1,0 +1,72 @@
+/*-----------------------------------------------------------------------------
+Basic Stylesheet
+
+version: 1
+author:	 Mike Bailey
+email:   mike@bailey.net.au
+website: http://mike.bailey.net.au/
+-----------------------------------------------------------------------------*/
+
+/* General stuff *************************************************************/
+
+* {
+	padding:0;
+	margin: 0;
+	font-family: sans-serif;
+}
+
+body {
+	text-align: center;
+	min-width: 760;
+}
+
+.clear {
+	clear: both;
+}
+
+h1 {
+	padding: 0.5em;
+}
+
+dl {
+	border: 1px solid red;
+	padding: 1em;
+}
+
+dl p {
+	font-size: 1.5em;
+	padding: .5em 0;
+}
+
+dt {
+	padding: 0 0 0 1em;
+}
+
+dd {
+	padding: 0 0 1em 2em;
+	color: darkblue;
+}
+
+
+/* Layout ********************************************************************/
+
+#wrapper {
+	width: 720px;
+	background: #d0d0d0;
+	margin: 0 auto;
+	text-align: left;
+}
+
+
+/* Navigation links **********************************************************/
+
+ul#navlinks {
+	width: 720px;
+	list-style: none;
+	background: #FAA819;
+	float: left;
+}
+
+ul li {
+	float:left;
+}

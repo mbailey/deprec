@@ -1,0 +1,52 @@
+8
+
+dir
+442
+svn+ssh://scm.deprecated.org/var/www/apps/deprec/repos/trunk/lib/deprec/templates/ssh
+svn+ssh://scm.deprecated.org/var/www/apps/deprec/repos
+
+
+
+2008-01-17T14:27:33.000427Z
+276
+mbailey
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+479ab18a-db23-0410-b897-fa3724b950b0
+
+ssh_config.erb
+file
+
+
+
+
+2008-01-16T09:03:45.000000Z
+5469af5ed16ba53c0637be708625d7b5
+2008-01-17T14:27:33.000427Z
+276
+mbailey
+
+sshd_config.erb
+file
+
+
+
+
+2007-12-25T04:15:31.000000Z
+bcf7c07f915514793a2542dd308af95b
+2007-12-04T12:36:20.496114Z
+214
+mbailey
+

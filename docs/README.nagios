@@ -1,0 +1,28 @@
+deprec: Install and configure Nagios on Ubuntu 7.10 (gutsy)
+===========================================================
+											 by Mike Bailey
+* Quickstart
+
+	# You need the following items defined (in config/deploy.rb)
+	set :application, 'nagios'
+	set :domain, 'nagios.host.name'
+	role :nagios, domain
+	role :app, 'nagios'
+	role :web, nil			# must be defined but content not important
+		
+	# Run the following on your workstation
+	export HOSTS=nagios.domain.name # replace with desired domain
+	cap deprec:apache:install
+	cap deprec:apache:activate
+	cap deprec:nagios:install
+	cap deprec:nagios:activate
+	cap deprec:nagios_plugins:install
+	cap deprec:nagios:config_gen
+	cap deprec:nagios:htpass          # create web logins
+	cap deprec:nagios:config
+	cap deprec:apache:restart
+
+
+* The detail
+
+TBC

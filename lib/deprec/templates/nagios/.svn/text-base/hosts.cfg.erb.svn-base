@@ -1,0 +1,70 @@
+define hostgroup{ 
+	hostgroup_name  microsoft
+	alias   Big like IBM
+	# members       hosts
+	# hostgroup_members     hostgroups
+	# notes note_string
+	# notes_url     url
+	# action_url    url
+}
+
+define host{  # example host with 
+	host_name www.microsoft.com
+	# alias Microsoft homepage
+	# display_name Some Fancy Name
+	address www.microsoft.com
+	hostgroups microsoft
+	check_command check-host-alive
+	# initial_state [o,d,u]
+	max_check_attempts 5
+	check_interval 5
+	retry_interval 1
+	# active_checks_enabled [0/1]
+	# passive_checks_enabled [0/1]
+	check_period 24x7
+	# obsess_over_host [0/1]
+	# check_freshness [0/1]
+	# freshness_threshold #
+	# event_handler command_name
+	# event_handler_enabled [0/1]
+	# low_flap_threshold #
+	# high_flap_threshold #
+	# flap_detection_enabled [0/1]
+	# flap_detection_options [o,d,u]
+	# process_perf_data [0/1]
+	# retain_status_information [0/1]
+	# retain_nonstatus_information [0/1]
+	# contacts steve
+	contact_groups admins
+	notification_interval 5
+	# first_notification_delay #
+	notification_period 24x7
+	# notification_options [d,u,r,f,s]
+	# notifications_enabled [0/1]
+	# stalking_options [o,d,u]
+	# notes note_string
+	# notes_url url
+	# action_url url
+	# icon_image image_file
+	# icon_image_alt alt_string
+	# vrml_image image_file
+	# statusmap_image image_file
+	# 2d_coords x_coord,y_coord
+	# 3d_coords x_coord,y_coord,z_coord
+}
+
+define host{
+	host_name www.hotmail.com
+	# alias hotmail
+	# display_name Fancy name for hotmail
+	address www.hotmail.com
+	hostgroups microsoft
+	check_command check-host-alive
+	max_check_attempts 5
+	check_interval 5
+	retry_interval 1
+	check_period 24x7
+	contact_groups admins
+	notification_interval 5
+	notification_period 24x7
+}

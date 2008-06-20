@@ -1,0 +1,74 @@
+deprec 2.0 roadmap
+
+# expectations/constraints
+
+- all tasks should be re-runnable
+- all install_ tasks should install required dependancies 
+- users should expect that standard cap commands will work
+
+
+# interactive tools
+
+deprec should make it easy to perform commonly use sysadmin tasks.
+While automation brings great power it's still often quicker to 
+run 'semi automated' tasks that require some interactive input.
+
+For example, adding a user account to a number of servers could be
+made easier with a general purpose interactive recipe:
+
+cap add_user
+> username for new user? : fred
+> password for new user? : ******
+> retype password        : ******
+> user type for new user?
+1. default
+2. admin
+?: 2
+creating...
+server01 - created user 'fred' of type 'admin'
+server02 - created user 'fred' of type 'admin'
+server03 - created user 'fred' of type 'admin'
+server04 - user 'fred' exists. Set type to 'admin'
+
+* Note that the servers above were all servers mentioned in deploy.rb
+  for a project however there are many ways to get this list.
+
+
+Plugin support for different distro's was too ambitious. I've tried other 
+distros and didn't like them much. I'm happy with Ubuntu at the moment and 
+# # plugin based support different distros, versions (and possibly OS's)
+# 
+# While deprec was built to work with Ubuntu 6.06, some people have shown interest
+# in using it with other distro's. I plan to move all of the Ubuntu specific code
+# into a separate gem 'deprec_ubuntu' which deprec will load by default. This will
+# mean anyone else can create and maintain plugins that allow the use of other linux
+# distros (and perhaps other OS's).
+# 
+# All platform dependent functions will be:
+# 
+# - cap extensions, not tasks
+# - plugins, not part of the deprec itself
+# - loaded using gemplugins http://mongrel.rubyforge.org/gem_plugin_rdoc/index.html
+# 
+# I'd like 'cap -T' to show the distros supported for each command when not arch independant.
+
+
+# add lots more useful tasks
+
+I'd like to extend deprec beyond just getting your rails app up and running.
+Anything I need that takes some time to do right will go in. If you've got 
+something you want added then write it and let me know. 
+
+install and configure the following package groups: 
+- source control (svn, trac)
+- mail (postfix, imap, mutt, mailx)
+
+
+# don't rely on third party servers to be available when installing software
+
+As I write, www.apache.org is serving at a crawling pace. I'd like to make it easy for 
+users to download and cache all required third party apps, gems, etc and have deprec
+use these.
+
+Currently you can drop the tarballs into /usr/local/src on the target server and
+they'll get picked up automatically. I haven't looked at a simple way to cache the gems yet.

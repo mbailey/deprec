@@ -1,0 +1,88 @@
+8
+
+dir
+442
+svn+ssh://scm.deprecated.org/var/www/apps/deprec/repos/trunk/lib/deprec/templates
+svn+ssh://scm.deprecated.org/var/www/apps/deprec/repos
+
+
+
+2008-02-29T07:03:45.210560Z
+437
+mbailey
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+479ab18a-db23-0410-b897-fa3724b950b0
+
+nagios
+dir
+
+apache
+dir
+
+nginx
+dir
+
+monit
+dir
+
+network
+dir
+
+trac
+dir
+
+xen
+dir
+
+postfix
+dir
+
+ssh
+dir
+
+subversion
+dir
+
+heartbeat
+dir
+
+logrotate
+dir
+
+ntp
+dir
+
+coraid
+dir
+
+deprec
+dir
+
+mongrel
+dir
+
+aoe
+dir
+
+mysql
+dir
+
+sphinx
+dir
+
+ar_sendmail
+dir
+

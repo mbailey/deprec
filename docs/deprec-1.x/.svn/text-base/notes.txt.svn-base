@@ -1,0 +1,12 @@
+# update timezone on gutsy
+# dpkg-reconfigure tzdata
+
+
+# Building Edge Capistrano
+You can build an edge gem by cd'ing to that directory and doing:
+
+1. svn info. Find the line that says "Revision:" and mark the revision number.
+2. rake PKG_BUILD=<rev> gem. Replace <rev> with the revision number.
+3. Look in the pkg subdirectory. Install that gem file via "gem install pkg/<gem file>"
+
+- Jamis

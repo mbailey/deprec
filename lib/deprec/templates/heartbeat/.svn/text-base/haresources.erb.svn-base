@@ -1,0 +1,1 @@
+<%= heartbeat_preferred_node %> <%= heartbeat_resources %>

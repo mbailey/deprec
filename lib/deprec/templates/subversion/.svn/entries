@@ -1,0 +1,40 @@
+8
+
+dir
+442
+svn+ssh://scm.deprecated.org/var/www/apps/deprec/repos/trunk/lib/deprec/templates/subversion
+svn+ssh://scm.deprecated.org/var/www/apps/deprec/repos
+
+
+
+2007-07-22T15:11:08.689288Z
+127
+mbailey
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+479ab18a-db23-0410-b897-fa3724b950b0
+
+svn.apache.vhost.erb
+file
+
+
+
+
+2007-12-25T04:15:31.000000Z
+f57f7fffccc742acadcfb074626f794c
+2007-07-22T15:11:08.689288Z
+127
+mbailey
+

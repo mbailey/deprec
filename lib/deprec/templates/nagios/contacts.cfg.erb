@@ -1,0 +1,75 @@
+###############################################################################
+# CONTACTS.CFG - SAMPLE CONTACT/CONTACTGROUP DEFINITIONS
+#
+# Last Modified: 05-31-2007
+#
+# NOTES: This config file provides you with some example contact and contact
+#        group definitions that you can reference in host and service
+#        definitions.
+#       
+#        You don't need to keep these definitions in a separate file from your
+#        other object definitions.  This has been done just to make things
+#        easier to understand.
+#
+###############################################################################
+
+
+
+###############################################################################
+###############################################################################
+#
+# CONTACTS
+#
+###############################################################################
+###############################################################################
+
+# Just one contact defined by default - the Nagios admin (that's you)
+# This contact definition inherits a lot of default values from the 'generic-contact' 
+# template which is defined elsewhere.
+
+define contact{
+        contact_name                    nagiosadmin		; Short name of user
+	use				generic-contact		; Inherit default values from generic-contact template (defined above)
+        alias                           Nagios Admin		; Full name of user
+
+        email                           root@localhost	; <<***** CHANGE THIS TO YOUR EMAIL ADDRESS ******
+        }
+
+
+
+###############################################################################
+###############################################################################
+#
+# CONTACT GROUPS
+#
+###############################################################################
+###############################################################################
+
+# We only have one contact in this simple configuration file, so there is
+# no need to create more than one contact group.
+
+define contactgroup{
+        contactgroup_name       admins
+        alias                   Nagios Administrators
+        members                 nagiosadmin
+        }
+
+# define contact{ # example contact
+# 	contact_name	linus
+# 	alias	Linux Torvalds
+# 	# contactgroups	contactgroup_names
+# 	host_notifications_enabled	1
+# 	service_notifications_enabled	1
+# 	host_notification_period	24x7
+# 	service_notification_period	24x7
+# 	host_notification_options	d,u,r,f,s,n
+# 	service_notification_options	w,u,c,r,f,s,n
+# 	host_notification_commands	notify-host-by-email
+# 	service_notification_commands	notify-service-by-email
+# 	email	linus@hotmail.com
+# 	# pager	pager_number or pager_email_gateway
+# 	# addressx	additional_contact_address
+# 	# can_submit_commands	[0/1]
+# 	# retain_status_information	[0/1]
+# 	# retain_nonstatus_information	[0/1]
+# }

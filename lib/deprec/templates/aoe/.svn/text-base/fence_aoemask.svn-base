@@ -1,0 +1,351 @@
+#!/usr/bin/perl
+
+#
+# Wrapper to aoemask for use in a cluster fence.
+# Copyright (C) 2007 Brian Weck (bweck@weck.net)
+#
+# This script utilizes the 'aoemask' utility from:
+#   http://www.coraid.com/support/sr/
+# which is written by Sam Hopkins.
+#
+# =======================================================================
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+# =======================================================================
+#
+# ~~~~~ REVISION HISTORY ~~~~~
+# 2007-08-17 - v1 - Brian Weck 
+#   Initial release.
+#
+# ~~~~~ OVERVIEW ~~~~~
+#  Initial mask settings on the AoE device should contain the set of all 
+#  MAC addresses using the AoE device from the cluster.
+#  
+#  When a fence operation occurs on a node, the fenced node's mac address is 
+#  removed from the mask list on the AoE device. This method is conceptually 
+#  the same as fencing via a fabric switch.
+#  
+#  Once a node is fenced, the MAC address is removed from the mask list on 
+#  the AoE device. When the fenced node is ready to rejoin the cluster,
+#  the MAC address must be added to the device's mask list using this 
+#  script or using aoemask.
+#
+#  Script returns 0 on SUCCESS and non-zero otherwise.
+#
+# ~~~~~ INSTALLATION ~~~~~
+#  Add this file as /sbin/fence_aoemask directory and ensure the file has 
+#  simliar permissions as the other fence_* agents. 
+#
+# ~~~~~ CONFIGURATION ~~~~~
+#  This software operates on a single shelf / slot at a time. In order to 
+#  fence multiple shelf and slots the user should create multiple fences. 
+#
+#  e.g. a cluster.conf snippet.
+#  <clusternode name="node1-name" nodeid="1" votes="1">
+#     <fence>
+#        <method name="1">
+#           <device name="fence-e0.0" mac="56:f7:0c:da:e2:2f" />
+#           <device name="fence-e0.1" mac="56:f7:0c:da:e2:2f" />
+#        </method>
+#     </fence>
+#  </clusternode>
+#  <clusternode name="node2-name" nodeid="2" votes="1">
+#     <fence>
+#        <method name="1">
+#           <device name="fence-e0.0" mac="ec:fc:96:3b:69:5a" />
+#           <device name="fence-e0.1" mac="ec:fc:96:3b:69:5a" />
+#        </method>
+#     </fence>
+#  </clusternode>
+#  <fencedevices>
+#     <fencedevice agent="fence_aoemask" name="fence-e0.0" shelf="0" slot="0" interface="eth1"/>
+#     <fencedevice agent="fence_aoemask" name="fence-e0.1" shelf="0" slot="1" interface="eth1"/>
+#  </fencedevices>
+#
+# 
+#  Command line options:
+#     see man aoemask.8
+# 
+#  stdin options (passed from fenced):
+#     shelf=<num>                 |
+#     slot=<num>                  |
+#     interface=<if-name>         |
+#     mac=<mac-addr>              |
+#   [ action=(disable|enable) ]   | default is defined in $opt_action
+#   [ debug=<ignored-value> ]     |
+#   [ exclusive=<ignored-value> ] |
+#   [ list=<ignored-value> ]      |
+#   [ spoof=<mac-addr> ]          | Spoof behavior is to assume success always.
+#   [ timeout=<wait-seconds> ]    |
+#   [ verbose=<ignored-value> ]   | Option is used to increase logging of fence agent.
+# 
+
+# Define where you aoemask binary lives if it is not in the path.
+my $aoemask_prog="/usr/local/sbin/aoemask";
+my $opt_action = 'disable';        # Default fence action
+
+# Get the script name from $0 and strip directory names
+$_=$0;
+s/.*\///;
+my $proggy = $_;
+
+#
+#
+#
+my $aoemask=$aoemask_prog;
+my $opt_list = 1;
+my $opt_debug = 1;
+my $opt_verbose = 0;
+
+#
+sub _log
+{
+  ($msg)=@_;
+  print STDOUT $msg;
+}
+
+#
+sub exit_success
+{
+  my $rc = 0;
+  _log "$proggy returning $rc\n" if $opt_verbose;
+  exit $rc;
+}
+
+#
+sub exit_fail
+{
+  my $rc = 1;
+  _log "$proggy returning $rc\n" if $opt_verbose;
+  exit $rc;
+}
+
+#
+sub fail_usage
+{
+  ($msg)=@_;
+  _log $msg."\n" if $msg;
+  _log "Please use see usage.\n";
+  exit_fail();
+}
+
+#
+# If running command line, pass args as specified directly to aoemask
+if (@ARGV > 0) 
+{
+   # Check for min number of args, 5
+   if( @ARGV < 5 )
+   {
+      $aoemask .= " -h";
+   }
+   else
+   {
+      # stub in the args
+      foreach $i (0 .. $#ARGV) 
+      {
+        $aoemask .= " $ARGV[$i]";
+      }
+   }
+}
+else # Running via fenced, read the args in from stdin
+{
+   read_stdin_as_options();
+
+   # validate required args are present
+   fail_usage "No shelf specified." unless defined $opt_shelf;
+   fail_usage "No slot specified." unless defined $opt_slot;
+   fail_usage "No interface specified." unless defined $opt_interface;
+   fail_usage "No mac specified." unless defined $opt_mac;
+
+   $aoemask .= " -d" if defined $opt_debug;
+   $aoemask .= " -e" if defined $opt_exclusive;
+   $aoemask .= " -l" if defined $opt_list;
+   $aoemask .= " -s $opt_spoof" if defined $opt_spoof;
+   $aoemask .= " -w $opt_timeout" if defined $opt_timeout;
+   $aoemask .= " $opt_shelf $opt_slot $opt_interface";
+
+   $_=$opt_action;
+   if (/enable/) { $aoemask .= " +$opt_mac"; }
+   elsif (/disable/) { $aoemask .= " -$opt_mac"; }
+   else
+   {
+      # This would only be reached if in the cluster.conf one specified action=
+      fail_usage "Unknown action: $_";
+   }
+}
+
+_log "$proggy executing '$aoemask'\n" if $opt_verbose;
+
+#
+# aoemask (release 1) always returns an exit code of 1
+# if aoemask returned success or failure based on the response; could as follows:
+#
+#    system($aoemask);
+#    $rc = ($? >> 8) & 0xff;
+#    exit $rc;
+#
+
+# therefore, we must ensure the listing function is performed and grep'd
+open(FH, "$aoemask 2>&1 |");
+@lines = <FH>;
+close FH;
+
+#
+if ($opt_verbose) 
+{ 
+   _log "-- begin read response --\n";
+   foreach $line (@lines) { chop $line; _log "$line\n"; } 
+   _log "--  end  read response --\n";
+}
+
+#
+if ($opt_user_says_list)
+{
+   @x = grep { /$opt_shelf\.$opt_slot/ } @lines;
+   _log foreach @x;
+}
+
+#
+# If spoofing, nothing is returned, we assume success.
+exit_success() if $opt_spoof;
+
+# check output of aoemask for proper values depending on action.
+if( ($opt_action =~ /enable/) && (grep { /$opt_mac/ } @lines) )
+{
+   _log "action is to enable and found mac $opt_mac in list"."\n" if $opt_verbose;
+   exit_success();
+}
+elsif( ($opt_action =~ /disable/) && !(grep { /$opt_mac/ } @lines) )
+{
+   # here's a caveat .. which requires the debug flag to be on.
+   # if one is performing a disable, and specify an invalid slot / shelf / interface
+   # a grep for the mac will not show and therfore a return success.
+   #
+   # Workaround: need to check for an additional string, of:
+   #   read -1 bytes
+   #
+   if( ! grep { /read -1 bytes/} @lines )
+   {
+      # did not read that string; all is ok.
+      _log "action is to disable and did not find mac $opt_mac in list"."\n" if $opt_verbose;
+      exit_success();
+   }
+   else
+   {
+      _log "No bytes were read from '$aoemask'.\n";
+      _log "Check the slot|shelf|interface configs.\n"
+   }
+}
+
+# If none of the above matched, we failed.
+exit_fail();
+
+
+#
+# Parse the stdin options
+#
+sub read_stdin_as_options()
+{
+    my $opt;
+    my $line = 0;
+    while( defined($in = <>) )
+    {
+        $_ = $in;
+        chomp;
+
+        # strip leading and trailing whitespace
+        s/^\s*//;
+        s/\s*$//;
+
+        # skip any comments
+        next if /^#/;
+
+        $line+=1;
+        $opt=$_;
+        next unless $opt;
+
+        ($name,$val)=split /\s*=\s*/, $opt;
+
+        if ( $name eq "" )
+        {  
+           _log "parse error: illegal name in option $line\n";
+           exit_fail();
+        }
+
+        # shelf=<num>
+        # slot=<num>
+        # interface=<if-name>
+        # mac=<mac-addr>
+        # action=(disable|enable)
+        elsif ($name eq "shelf" ) 
+        {
+            $opt_shelf = $val;
+        } 
+        elsif ($name eq "slot" ) 
+        {
+            $opt_slot = $val;
+        } 
+        elsif ($name eq "interface" )
+        {
+            $opt_interface = $val;
+        }
+        elsif ($name eq "mac" ) 
+        {
+            $opt_mac = $val;
+            # pull out any ':' if configured as such. 
+            # (even though aoemask can handle it)
+            $opt_mac =~ s/://g;
+            # uppercase the alphas
+            $opt_mac =~ tr/a-z/A-Z/;
+        } 
+        elsif ($name eq "action") 
+        {
+            $opt_action = $val;
+        }
+
+        # debug=<ignored-value>
+        # exclusive=<ignored-value>
+        # list=<ignored-value>
+        # spoof=<mac-addr>
+        # timeout=<wait-seconds>
+        elsif ($name eq "debug" ) 
+        {
+            $opt_debug = 1;
+        } 
+        elsif ($name eq "exclusive" ) 
+        {
+            $opt_exclusive = 1;
+        } 
+        elsif ($name eq "list" ) 
+        {
+            $opt_list = 1;
+            $opt_user_says_list = 1;
+        } 
+        elsif ($name eq "spoof" ) 
+        {
+            $opt_spoof = $val;
+        } 
+        elsif ($name eq "timeout" ) 
+        {
+            $opt_timeout = $val;
+        } 
+
+        # verbose=<ignored-value>
+        elsif ($name eq "verbose" ) 
+        {
+            $opt_verbose = 1;
+        } 
+    }
+}
+

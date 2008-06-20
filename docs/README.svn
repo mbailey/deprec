@@ -1,0 +1,31 @@
+== svn
+
+# Add the following to your deploy.rb (or ~/.caprc if always the same)
+	set :scm, 'your.svn.server'
+
+# The run the following from the root the project you wish to import	
+cap deprec:svn:install
+cap deprec:svn:setup
+
+
+# XXX Not tested on deprec2
+# 
+# 
+# Installs subversion and trac software on server.
+# Creates subversion repository on server and imports project.
+# Sets up trac installation for project.
+# 
+# role :scm, 'deptest.deprecated.org' 
+# 
+# # install packages
+# cap apache_install svn_install trac_install
+# 
+# # import project
+# cap svn_import_project
+# cap trac_init
+# cap trac_start
+# 
+# # your project will be viewable at http://yourdomain:8000/
+# # you can add other users with 'cap trac_user_add'
+
+

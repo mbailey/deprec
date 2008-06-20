@@ -1,0 +1,220 @@
+#
+# /etc/xen-tools/xen-tools.conf
+#
+#  Global configuration file for the scripts included with Xen-tools.
+#
+#  Values may be set here so they don't need to be specified upon the
+# command line.
+#
+# Steve
+# --
+#
+
+
+
+#
+##
+#  Output directory for storing loopback images.
+#
+#  If you choose to use loopback images, which are simple to manage but
+# slower than LVM partitions, then specify a directory here and uncomment
+# the line.
+#
+#  New instances will be stored in subdirectories named after their
+# hostnames.
+# 
+##
+# dir = /home/xen
+# dir = /var/vm
+#
+
+#
+##
+#
+# If you don't wish to use loopback images then you may specify an 
+# LVM volume group here instead
+#
+##
+# lvm = skx-vg
+lvm = vm_local
+
+
+#
+##
+#
+#  Installation method.
+#
+#  There are four distinct methods which you may to install a new copy
+# of Linux to use in your Xen guest domain:
+#
+#   - Installation via the debootstrap command.
+#   - Installation via the rpmstrap command.
+#   - Installation by copying a directory containing a previous installation.
+#   - Installation by untarring a previously archived image.
+#
+#  NOTE That if you use the "untar", or "copy" options you should ensure
+# that the image you're left with matches the 'dist' setting later in
+# this file.
+#
+#
+##
+#
+# 
+# install-method = [ debootstrap | rpmstrap | copy | tar ]
+#
+#
+install-method = debootstrap
+
+#
+# If you're using "copy", or "tar" you will need to specify the
+# source location to copy from, or the source .tar file to unpack.
+#
+# You may specify that with a line such as:
+#
+# install-source = /path/to/copy
+# install-source = /some/path/img.tar
+#
+#
+
+#
+##
+#  Command definitions.
+##
+#
+# The "debootstrap" and "rpmstrap" commands are hardwired into the
+# script, but if you wish to modify the commands which are executed
+# when installing new systems by a "copy" or "tar" method you can
+# do so here:
+#
+# install-method=copy:
+# copy-cmd = /bin/cp -a $src/* $dest
+#
+# install-method=tar:
+# tar-cmd  = /bin/tar --numeric-owner -xvf $src
+#
+#
+
+
+
+#
+##
+#  Disk and Sizing options.
+##
+#
+size   = 10Gb     # Disk image size.
+memory = 256Mb    # Memory size
+swap   = 512Mb    # Swap size
+# noswap = 1      # Don't use swap at all for the new system.
+fs     = ext3     # use the EXT3 filesystem for the disk image.
+dist   = gutsy    # Default distribution to install.
+image  = full     # Specify sparse vs. full disk images.
+
+#
+#  Currently supported and tested distributions include:
+#
+#   sid          - Debian
+#   sarge        - Debian
+#   etch         - Debian
+#   dapper       - Ubuntu
+#   centos4      - CentOS 4
+#   fedora-core4 - Fedora Core 4 (codname stentz)
+#
+
+
+
+##
+# Networking setup values.
+##
+
+#
+# Uncomment and adjust these network settings if you wish to give your
+# new instances static IP addresses.
+#
+gateway   = 192.168.1.1
+netmask   = 255.255.255.0
+broadcast = 192.168.1.255
+#
+# Uncomment this if you wish the images to use DHCP
+#
+# dhcp = 1
+
+
+##
+# Misc options
+##
+
+#
+# Uncomment the following line if you wish to disable the caching
+# of downloaded .deb files when using debootstrap to install images.
+#
+# cache = no
+#
+
+#
+# Uncomment the following line if you wish to interactively setup
+# a new root password for images.
+#
+passwd = 1
+
+#
+# If you'd like all accounts on your host system which are not present
+# on the guest system to be copied over then uncomment the following line.
+#
+# accounts = 1
+#
+
+#
+# Default kernel and ramdisk to use for the virtual servers
+#
+kernel      = /boot/vmlinuz-`uname -r`
+initrd      = /boot/initrd.img-`uname -r`
+
+#
+#  The architecture to use when using debootstrap or rpmstrap.
+#
+#  This is most useful on 64 bit host machines, for other systems it
+# doesn't need to be used.
+#
+# arch=i386
+#
+
+#
+# The default mirror for debootstrap to install Debian-derived distributions
+#
+# mirror = http://ftp.us.debian.org/debian/
+
+#
+# A mirror suitable for use when installing the Dapper release of Ubuntu.
+#
+# mirror = http://gb.archive.ubuntu.com/ubuntu/
+
+#
+#  If you like you could use per-distribution mirrors, which will
+# be more useful if you're working in an environment where you want
+# to regularly use multiple distributions:
+#
+# mirror_sid=http://ftp.us.debian.org/debian
+# mirror_sarge=http://ftp.us.debian.org/debian
+# mirror_etch=http://ftp.us.debian.org/debian
+# mirror_dapper=http://archive.ubuntu.com/ubuntu
+# mirror_edgy=http://archive.ubuntu.com/ubuntu
+# mirror_feisty=http://archive.ubuntu.com/ubuntu
+mirror_gutsy=http://archive.ubuntu.com/ubuntu
+
+
+#
+#  Uncomment if you wish newly created images to boot once they've been
+# created.
+#
+# boot = 1
+#
+
+#  If you're using a newer version of the Xen guest kernel you will
+# need to make sure that you use 'xvc0' for the guest serial device,
+# and 'xvdX' instead of 'sdX' for serial devices.
+#
+# serial_device = tty1 #default
+# serial_device = xvc0
+#
+# disk_device = sda  #default
+# disk_device = xvda

@@ -1,0 +1,10 @@
+--- 
+user: <%= mongrel_user %>
+group: <%= mongrel_group %>
+cwd: <%= current_path %>
+log_file: <%= mongrel_log_dir %>/mongrel.log
+port: "<%= mongrel_port.to_s %>"
+environment: <%= mongrel_environment %>
+address: <%= mongrel_address %>
+pid_file: <%= mongrel_pid_dir %>/mongrel.pid
+servers: <%= mongrel_servers.to_s %>

@@ -1,0 +1,144 @@
+<VirtualHost <%= apache_ssl_enabled ? apache_ssl_ip : "*" %>:80>
+  ServerName <%= apache_server_name %>
+  <% apache_server_aliases.each do |a| %>
+  ServerAlias <%= "#{a}" %>
+  <% end %>
+
+  DocumentRoot <%= "#{current_path}/public" %>
+
+  <Directory <%= "#{current_path}/public" %>>
+    Options FollowSymLinks
+    AllowOverride None
+    Order allow,deny
+    Allow from all
+  </Directory>
+
+  # Configure mongrel_cluster 
+  <Proxy balancer://<%= "#{application}_cluster" %>>
+    <% start_port = apache_proxy_port %>
+    <% end_port = apache_proxy_port + apache_proxy_servers - 1 %>
+    <% start_port.upto(end_port) do |port| %>
+    BalancerMember http://<%= "#{apache_proxy_address}:#{port.to_s}" %>
+    <% end %>
+  </Proxy>
+
+  RewriteEngine On
+  
+  <% if apache_ssl_enabled && apache_ssl_forward_all %>
+  RewriteRule ^(.*)$ https://<%= domain %>$1
+  <% end %>
+  
+  # Prevent access to .svn directories
+  RewriteRule ^(.*/)?\.svn/ - [F,L]
+  ErrorDocument 403 "Access Forbidden"
+
+  # Check for maintenance file and redirect all requests
+  RewriteCond %{REQUEST_URI} !\.(css|jpg|png|gif)$
+  RewriteCond %{DOCUMENT_ROOT}/system/maintenance.html -f
+  RewriteCond %{SCRIPT_FILENAME} !maintenance.html
+  RewriteRule ^.*$ /system/maintenance.html [L]
+
+  # Rewrite index to check for static
+  RewriteRule ^/$ /index.html [QSA] 
+
+  # Rewrite to check for Rails cached page
+  RewriteRule ^([^.]+)$ $1.html [QSA]
+
+  # Redirect all non-static requests to cluster
+  RewriteCond %{DOCUMENT_ROOT}/%{REQUEST_FILENAME} !-f
+  RewriteRule ^/(.*)$ balancer://<%= "#{application}_cluster" %>%{REQUEST_URI} [P,QSA,L]
+  
+  # Deflate
+  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css application/x-javascript
+  BrowserMatch ^Mozilla/4 gzip-only-text/html
+  BrowserMatch ^Mozilla/4\.0[678] no-gzip
+  BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+
+  ErrorLog logs/<%= domain %>-error_log
+  CustomLog logs/<%= domain %>-access_log combined
+</VirtualHost>
+
+
+<% if apache_ssl_enabled %>
+<VirtualHost <%= apache_ssl_ip %>:443>
+
+ServerName <%= apache_server_name %>
+<% apache_server_aliases.each do |a| %>
+ServerAlias <%= "#{a}" %>
+<% end %>
+DocumentRoot <%= "#{current_path}/public" %>
+
+<Directory <%= "#{current_path}/public" %>>
+  Options FollowSymLinks
+  AllowOverride None
+  Order allow,deny
+  Allow from all
+</Directory>
+
+# Configure mongrel_cluster 
+<Proxy balancer://<%= "#{application}_cluster" %>>
+  <% start_port = apache_proxy_port %>
+  <% end_port = apache_proxy_port + apache_proxy_servers - 1 %>
+  <% start_port.upto(end_port) do |port| %>
+  BalancerMember http://<%= "#{apache_proxy_address}:#{port.to_s}" %>
+  <% end %>
+</Proxy>
+
+RewriteEngine On
+
+# Prevent access to .svn directories
+RewriteRule ^(.*/)?\.svn/ - [F,L]
+ErrorDocument 403 "Access Forbidden"
+
+# Check for maintenance file and redirect all requests
+RewriteCond %{REQUEST_URI} !\.(css|jpg|png|gif)$
+RewriteCond %{DOCUMENT_ROOT}/system/maintenance.html -f
+RewriteCond %{SCRIPT_FILENAME} !maintenance.html
+RewriteRule ^.*$ /system/maintenance.html [L]
+
+# Rewrite index to check for static
+RewriteRule ^/$ /index.html [QSA] 
+
+# Rewrite to check for Rails cached page
+RewriteRule ^([^.]+)$ $1.html [QSA]
+
+# Redirect all non-static requests to cluster
+RewriteCond %{DOCUMENT_ROOT}/%{REQUEST_FILENAME} !-f
+# Add header for Mongrel to set HTTPS environment for Rails
+RequestHeader set X-Forwarded-Proto "https"
+RewriteRule ^/(.*)$ balancer://<%= "#{application}_cluster" %>%{REQUEST_URI} [P,QSA,L]
+
+# Deflate
+AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css application/x-javascript
+BrowserMatch ^Mozilla/4 gzip-only-text/html
+BrowserMatch ^Mozilla/4\.0[678] no-gzip
+BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+
+# SSL Engine Switch
+SSLEngine on
+
+# SSL Cipher Suite:
+SSLCipherSuite ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP:+eNULL
+
+# Server Certificate
+SSLCertificateFile /usr/local/apache2/conf/ssl.crt/<%= domain %>.crt
+
+# Server Private Key
+SSLCertificateKeyFile /usr/local/apache2/conf/ssl.key/<%= domain %>.key
+
+<% if apache_ssl_chainfile %>
+# Intermediate keys
+SSLCertificateChainFile /usr/local/apache2/conf/ssl.crt/<%= domain %>-chainfile.crt
+<% end %>
+
+
+BrowserMatch ".*MSIE.*" \
+         nokeepalive ssl-unclean-shutdown \
+         downgrade-1.0 force-response-1.0
+
+ErrorLog logs/<%= domain %>-error_log
+CustomLog logs/<%= domain %>-access_log combined         
+CustomLog logs/<%= domain %>-ssl_log \
+          "%t %h %{SSL_PROTOCOL}x %{SSL_CIPHER}x \"%r\" %b"
+</VirtualHost>
+<% end  %>

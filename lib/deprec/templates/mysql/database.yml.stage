@@ -1,0 +1,6 @@
+production:
+  adapter:   mysql
+  database:  <%= @username %>_stage
+  username:  <%= @username %>_db
+  password:  <%= @mysqlpass %>
+  host:      <%= @mysql_host %>

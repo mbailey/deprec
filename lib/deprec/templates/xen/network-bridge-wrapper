@@ -1,0 +1,3 @@
+#!/bin/sh
+/etc/xen/scripts/network-bridge $1 netdev=eth0 bridge=xenbr0 vifnum=0 antispoof=no
+/etc/xen/scripts/network-bridge $1 netdev=eth1 bridge=xenbr1 vifnum=1 antispoof=no
