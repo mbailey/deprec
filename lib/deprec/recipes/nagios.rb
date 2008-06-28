@@ -8,11 +8,8 @@ Capistrano::Configuration.instance(:must_exist).load do
       set :nagios_cmd_group, 'nagcmd' # Allow external commands to be submitted through the web interface
       
       SRC_PACKAGES[:nagios] = {
-        :filename => 'nagios-3.0rc1.tar.gz',   
-        :md5sum => "d8b4fbf1c2527ddcc18a39372a41dba3  nagios-3.0rc1.tar.gz", 
-        :dir => 'nagios-3.0rc1',  
-        :url => "http://osdn.dl.sourceforge.net/sourceforge/nagios/nagios-3.0rc1.tar.gz",
-        :unpack => "tar zxfv nagios-3.0rc1.tar.gz;",
+        :url => "http://internap.dl.sourceforge.net/sourceforge/nagios/nagios-3.0.2.tar.gz",
+        :md5sum => "008d71aac08660bc007f7130ea82ab80  nagios-3.0.2.tar.gz", 
         :configure => %w(
           ./configure 
           --with-command-group=nagcmd
@@ -147,7 +144,6 @@ Capistrano::Configuration.instance(:must_exist).load do
         sudo "test -h #{link} && sudo unlink #{link} || true"
       end
       
-      
       # Control
 
       desc "Start Nagios"
@@ -193,16 +189,10 @@ Capistrano::Configuration.instance(:must_exist).load do
     
     end
     
-    
     SRC_PACKAGES[:nagios_plugins] = {
-      :filename => 'nagios-plugins-1.4.11.tar.gz',   
-      :md5sum => "042783a2180a6987e0b403870b3d01f7  nagios-plugins-1.4.11.tar.gz", 
-      :dir => 'nagios-plugins-1.4.11',  
-      :url => "http://osdn.dl.sourceforge.net/sourceforge/nagiosplug/nagios-plugins-1.4.11.tar.gz",
-      :unpack => "tar zxfv nagios-plugins-1.4.11.tar.gz;",
+      :url => "http://downloads.sourceforge.net/nagiosplug/nagios-plugins-1.4.12.tar.gz",
+      :md5sum => "af68d00bbe2c39de02803d23e5eecca3  nagios-plugins-1.4.12.tar.gz", 
       :configure => "./configure --with-nagios-user=#{nagios_user} --with-nagios-group=#{nagios_group};",
-      :make => 'make;',
-      :install => 'make install;'
     }   
           
     namespace :nagios_plugins do
@@ -223,18 +213,14 @@ Capistrano::Configuration.instance(:must_exist).load do
     end
     
 
-    
     namespace :nrpe do
       
       default :nrpe_enable_command_args, false # set to true to compile nrpe to accept arguments
 	                                       # note that you'll need to set it before these recipes are loaded (e.g. in .caprc)
       
       SRC_PACKAGES[:nrpe] = {
-        :filename => 'nrpe-2.11.tar.gz',   
-        :md5sum => "dcf3b7c5b7c94c0ba6cbb4999c1161f0  nrpe-2.11.tar.gz", 
-        :dir => 'nrpe-2.11',  
-        :url => "http://easynews.dl.sourceforge.net/sourceforge/nagios/nrpe-2.11.tar.gz",
-        :unpack => "tar zxfv nrpe-2.11.tar.gz;",
+        :url => "http://downloads.sourceforge.net/nagios/nrpe-2.12.tar.gz",
+        :md5sum => "b2d75e2962f1e3151ef58794d60c9e97  nrpe-2.12.tar.gz", 
         :configure => "./configure --with-nagios-user=#{nagios_user} --with-nagios-group=#{nagios_group} #{ '--enable-command-args' if nrpe_enable_command_args};",
         :make => 'make all;',
         :install => 'make install-plugin; make install-daemon; make install-daemon-config;'
