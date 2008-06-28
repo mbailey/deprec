@@ -100,7 +100,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       end
       
       task :serve do
-        cmd = "git-daemon --verbose --export-all --port=#{git_port} --base-path=#{Dir.pwd} --base-path-relaxed"
+        cmd = "git-daemon --verbose --port=#{git_port} --base-path=#{Dir.pwd} --base-path-relaxed"
         puts cmd
         `#{cmd}`
       end
