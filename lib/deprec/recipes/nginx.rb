@@ -4,25 +4,15 @@ Capistrano::Configuration.instance(:must_exist).load do
     namespace :nginx do
 
       set :nginx_server_name, nil
-      set :nginx_user,  'nobody'
-      set :nginx_group, 'nogroup'
+      set :nginx_user,  'nginx'
+      set :nginx_group, 'nginx'
       set :nginx_vhost_dir, '/usr/local/nginx/conf/vhosts'
       set :nginx_client_max_body_size, '50M'
 
       SRC_PACKAGES[:nginx] = {
-        :filename => 'nginx-0.5.34.tar.gz',   
-        :md5sum => "8f7d3efcd7caaf1f06e4d95dfaeac238  nginx-0.5.34.tar.gz", 
-        :dir => 'nginx-0.5.34',  
-        :url => "http://sysoev.ru/nginx/nginx-0.5.34.tar.gz",
-        :unpack => "tar zxf nginx-0.5.34.tar.gz;",
-        :configure => %w(
-        ./configure
-        --sbin-path=/usr/local/sbin
-        --with-http_ssl_module
-        ;
-        ).reject{|arg| arg.match '#'}.join(' '),
-        :make => 'make;',
-        :install => 'make install;'
+        :url => "http://sysoev.ru/nginx/nginx-0.6.31.tar.gz",
+        :md5sum => "824bcc25bbd5b636f182237b69227bd2  nginx-0.6.31.tar.gz", 
+        :configure => './configure --sbin-path=/usr/local/sbin --with-http_ssl_module;'
       }
 
       desc "Install nginx"
