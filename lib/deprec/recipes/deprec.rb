@@ -149,6 +149,35 @@ Capistrano::Configuration.instance(:must_exist).load do
         end
       end
     end
+    
+    task :list_src do
+      # XXX ugly line - look away
+      max_key_size = SRC_PACKAGES.keys.max{|a,b| a.to_s.size <=> b.to_s.size}.to_s.size
+      SRC_PACKAGES.each{|key, src_package| 
+        puts "#{key}#{' '*(max_key_size+1-key.to_s.size)}: #{src_package[:url]}"
+      }
+    end
+    
+    task :find_src do
+      # XXX ugly line - look away
+      max_key_size = SRC_PACKAGES.keys.max{|a,b| a.to_s.size <=> b.to_s.size}.to_s.size
+      SRC_PACKAGES.each{|key, src_package| 
+        puts "#{key}#{' '*(max_key_size+1-key.to_s.size)}: #{src_package[:url]}"
+        puts `find . -name #{src_package[:filename]}`
+        puts
+      }
+    end
+    
+    task :recover_src do
+      # XXX ugly line - look away
+      max_key_size = SRC_PACKAGES.keys.max{|a,b| a.to_s.size <=> b.to_s.size}.to_s.size
+      SRC_PACKAGES.each{|key, src_package| 
+        puts "#{key}#{' '*(max_key_size+1-key.to_s.size)}: #{src_package[:url]}"
+        file = `find . -name #{src_package[:filename]}`.split[0]
+        `cp #{file} src/` if file
+        puts
+      }
+    end
      
   end
   
