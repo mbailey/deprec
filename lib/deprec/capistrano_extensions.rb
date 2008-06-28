@@ -171,7 +171,6 @@ module Deprec2
     end
   end
 
-
   def append_to_file_if_missing(filename, value, options={})
     # XXX sort out single quotes in 'value' - they'l break command!
     # XXX if options[:requires_sudo] and :use_sudo then use sudo
@@ -215,7 +214,7 @@ module Deprec2
     via = options.delete(:via) || :run
     # XXX need to make sudo commands wrap the whole command (sh -c ?)
     # XXX removed the extra 'sudo' from after the '||' - need something else
-    invoke_command "sh -c 'test -d #{path} || mkdir -p #{path}'", :via => via
+    invoke_command "test -d #{path} || #{sudo if via == :sudo} mkdir -p #{path}"
     invoke_command "chmod #{sprintf("%3o",options[:mode]||0755)} #{path}", :via => via if options[:mode]
     invoke_command "chown -R #{options[:owner]} #{path}", :via => via if options[:owner]
     groupadd(options[:group], :via => via) if options[:group]
@@ -228,6 +227,7 @@ module Deprec2
   
   # download source package if we don't already have it
   def download_src(src_package, src_dir)
+    set_package_defaults(src_package)
     create_src_dir
     # check if file exists and if we have an MD5 hash or bytecount to compare 
     # against if so, compare and decide if we need to download again
@@ -236,17 +236,16 @@ module Deprec2
     end
     apt.install( {:base => %w(wget)}, :stable )
     # XXX replace with invoke_command
-    sudo <<-SUDO
-    sh -c "cd #{src_dir} && test -f #{src_package[:filename]} #{md5_clause} || wget --quiet --timestamping #{src_package[:url]}"
-    SUDO
+    run "cd #{src_dir} && test -f #{src_package[:filename]} #{md5_clause} || #{sudo} wget --quiet --timestamping #{src_package[:url]}"
   end
 
   # unpack src and make it writable by the group
   def unpack_src(src_package, src_dir)
+    set_package_defaults(src_package)
     package_dir = File.join(src_dir, src_package[:dir])
     # XXX replace with invoke_command
-    sudo <<-SUDO
-    sh -c '
+    sudo <<-EOF
+    bash -c '
     cd #{src_dir};
     test -d #{package_dir}.old && rm -fr #{package_dir}.old;
     test -d #{package_dir} && mv #{package_dir} #{package_dir}.old;
@@ -254,7 +253,16 @@ module Deprec2
     chgrp -R #{group} #{package_dir};  
     chmod -R g+w #{package_dir};
     '
-    SUDO
+    EOF
+  end
+  
+  def set_package_defaults(pkg)
+      pkg[:filename] ||= File.basename(pkg[:url])  
+      pkg[:dir] ||= File.basename(pkg[:url], '.tar.gz')  
+      pkg[:unpack] ||= "tar zxf #{pkg[:filename]};"
+      pkg[:configure] ||= './configure ;'
+      pkg[:make] ||= 'make;'
+      pkg[:install] ||= 'make install;'
   end
 
   # install package from source
