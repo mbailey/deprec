@@ -1,18 +1,17 @@
 # Copyright 2006-2008 by Mike Bailey. All rights reserved.
 Capistrano::Configuration.instance(:must_exist).load do 
-  
+
+  SRC_PACKAGES[:aoe] = {
+    :filename => 'aoe6-56.tar.gz',   
+    :md5sum => "93689aaad32f647a788c15c82bd0158e  aoe6-56.tar.gz", 
+    :dir => 'aoe6-56',  
+    :url => "http://www.coraid.com/support/linux/aoe6-56.tar.gz",
+    :unpack => "tar zxf aoe6-56.tar.gz;",
+    :make => 'make;',
+    :install => 'make install;'
+  }
+    
   namespace :deprec do
-    
-    SRC_PACKAGES[:aoe] = {
-      :filename => 'aoe6-56.tar.gz',   
-      :md5sum => "93689aaad32f647a788c15c82bd0158e  aoe6-56.tar.gz", 
-      :dir => 'aoe6-56',  
-      :url => "http://www.coraid.com/support/linux/aoe6-56.tar.gz",
-      :unpack => "tar zxf aoe6-56.tar.gz;",
-      :make => 'make;',
-      :install => 'make install;'
-    }
-    
     namespace :aoe do
 
       desc "Install aoe drivers required to mount Coraid block devices"
