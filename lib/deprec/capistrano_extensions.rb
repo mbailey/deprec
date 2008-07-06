@@ -3,6 +3,15 @@ require 'capistrano'
 require 'fileutils'
 
 module Deprec2
+  
+  # Temporarly set ROLES to something different
+  def for_roles(roles)
+    old_roles = ENV['ROLES']
+    ENV['ROLES'] = roles
+    yield
+    ENV['ROLES'] = old_roles
+  end
+  
   DEPREC_TEMPLATES_BASE = File.join(File.dirname(__FILE__), 'templates')
 
   # Render template (usually a config file) 
@@ -177,7 +186,6 @@ module Deprec2
     sudo <<-END
     sh -c '
     grep -F "#{value}" #{filename} > /dev/null 2>&1 || 
-    test ! -f #{filename} ||
     echo "#{value}" >> #{filename}
     '
     END
@@ -354,8 +362,6 @@ module Deprec2
   #     yield tempuser
   #   end
   # end
-  
-
 
   private
 
@@ -379,7 +385,6 @@ module Deprec2
       end
     end
   end
-  
   
 end
 
