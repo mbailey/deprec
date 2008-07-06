@@ -6,6 +6,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       set :nagios_user, 'nagios'
       set :nagios_group, 'nagios'
       set :nagios_cmd_group, 'nagcmd' # Allow external commands to be submitted through the web interface
+      default :application, 'nagios' 
       
       SRC_PACKAGES[:nagios] = {
         :url => "http://internap.dl.sourceforge.net/sourceforge/nagios/nagios-3.0.2.tar.gz",
@@ -28,6 +29,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         deprec2.mkdir('/usr/local/nagios/objects', :owner => "#{nagios_user}.#{nagios_group}", :via => :sudo)
         deprec2.download_src(SRC_PACKAGES[:nagios], src_dir)
         deprec2.install_from_src(SRC_PACKAGES[:nagios], src_dir)
+        activate
       end
       
       task :create_nagios_user do
@@ -120,6 +122,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       
       desc "Push nagios config files to server"
       task :config, :roles => :nagios do
+        set :application, 'nagios'
         deprec2.push_configs(:nagios, SYSTEM_CONFIG_FILES[:nagios])
         sudo "ln -sf #{deploy_to}/nagios/conf/nagios_apache_vhost.conf /usr/local/apache2/conf/apps"
         config_check
@@ -134,7 +137,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       desc "Set Nagios to start on boot"
       task :activate, :roles => :nagios do
         send(run_method, "update-rc.d nagios defaults")
-        sudo "ln -sf #{deploy_to}/nagios/conf/nagios_apache_vhost.conf #{apache_vhost_dir}/nagios_#{application}.conf"
+        sudo "ln -sf #{apps_root}/nagios/conf/nagios_apache_vhost.conf #{apache_vhost_dir}/nagios.conf"
       end
       
       desc "Set Nagios to not start on boot"
@@ -197,6 +200,7 @@ Capistrano::Configuration.instance(:must_exist).load do
           
     namespace :nagios_plugins do
     
+      desc "Install nagios plugins"
       task :install do
         install_deps
         top.deprec.nagios.create_nagios_user
@@ -226,6 +230,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         :install => 'make install-plugin; make install-daemon; make install-daemon-config;'
       }
     
+      desc 'Install NRPE'
       task :install do
         install_deps
         top.deprec.nagios.create_nagios_user
@@ -251,9 +256,13 @@ Capistrano::Configuration.instance(:must_exist).load do
         {:template => 'nrpe.cfg.erb',
          :path => "/usr/local/nagios/etc/nrpe.cfg",
          :mode => 0644,
-         :owner => 'nagios:nagios'} # XXX hard coded file owner is bad...
+         :owner => 'nagios:nagios'}, # XXX hard coded file owner is bad...
                                     # It's done here because we aren't using 
                                     # lazy eval in hash constant.
+        {:template => "check_mongrel_cluster.rb",
+         :path => '/usr/local/nagios/libexec/check_mongrel_cluster.rb',
+         :mode => 0755,
+         :owner => 'root:root'}
       
       ]
       

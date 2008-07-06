@@ -10,8 +10,10 @@ Capistrano::Configuration.instance(:must_exist).load do
       set :nginx_client_max_body_size, '50M'
 
       SRC_PACKAGES[:nginx] = {
-        :url => "http://sysoev.ru/nginx/nginx-0.6.31.tar.gz",
-        :md5sum => "824bcc25bbd5b636f182237b69227bd2  nginx-0.6.31.tar.gz", 
+        # :url => "http://sysoev.ru/nginx/nginx-0.6.31.tar.gz",
+        # :md5sum => "824bcc25bbd5b636f182237b69227bd2  nginx-0.6.31.tar.gz", 
+        :url => "http://sysoev.ru/nginx/nginx-0.5.34.tar.gz",
+        :md5sum => "8f7d3efcd7caaf1f06e4d95dfaeac238  nginx-0.5.34.tar.gz",
         :configure => './configure --sbin-path=/usr/local/sbin --with-http_ssl_module;'
       }
 
@@ -21,8 +23,11 @@ Capistrano::Configuration.instance(:must_exist).load do
         deprec2.download_src(SRC_PACKAGES[:nginx], src_dir)
         deprec2.install_from_src(SRC_PACKAGES[:nginx], src_dir)
         create_nginx_user
-        # setup_vhost_dir     # XXX not done yet
         # install_index_page  # XXX not done yet
+        SYSTEM_CONFIG_FILES[:nginx].each do |file|
+          deprec2.render_template(:nginx, file.merge(:remote => true))
+        end
+        activate
       end
 
       # install dependencies for nginx
@@ -85,11 +90,11 @@ Capistrano::Configuration.instance(:must_exist).load do
       Activate nginx start scripts on server.
       Setup server to start nginx on boot.
       DESC
-      task :activate, :roles => :web do
+      task :activate do
         activate_system
       end
 
-      task :activate_system, :roles => :web do
+      task :activate_system do
         send(run_method, "update-rc.d nginx defaults")
       end
 
@@ -97,7 +102,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       Dectivate nginx start scripts on server.
       Setup server to start nginx on boot.
       DESC
-      task :deactivate, :roles => :web do
+      task :deactivate do
         send(run_method, "update-rc.d -f nginx remove")
       end
 

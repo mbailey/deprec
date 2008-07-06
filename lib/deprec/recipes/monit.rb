@@ -40,6 +40,11 @@ Capistrano::Configuration.instance(:must_exist).load do
     install_deps
     deprec2.download_src(SRC_PACKAGES[:monit], src_dir)
     deprec2.install_from_src(SRC_PACKAGES[:monit], src_dir)
+    # Initial push of system files - not kept locally
+    SYSTEM_CONFIG_FILES[:monit].each do |file|
+      deprec2.render_template(:monit, file.merge(:remote=>true))
+    end
+    activate
   end
   
   # install dependencies for monit

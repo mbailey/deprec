@@ -37,11 +37,8 @@ Capistrano::Configuration.instance(:must_exist).load do
       set :apache_config_file, '/usr/local/apache2/conf/httpd.conf'
       
       SRC_PACKAGES[:apache] = {
-        :filename => 'httpd-2.2.6.tar.gz',   
-        :md5sum => "d050a49bd7532ec21c6bb593b3473a5d  httpd-2.2.6.tar.gz", 
-        :dir => 'httpd-2.2.6',  
-        :url => "http://www.apache.org/dist/httpd/httpd-2.2.6.tar.gz",
-        :unpack => "tar zxf httpd-2.2.6.tar.gz;",
+        :md5sum => "80d3754fc278338033296f0d41ef2c04  httpd-2.2.9.tar.gz", 
+        :url => "http://www.apache.org/dist/httpd/httpd-2.2.9.tar.gz",
         :configure => %w(
           ./configure
           --enable-mods-shared=all
@@ -59,7 +56,6 @@ Capistrano::Configuration.instance(:must_exist).load do
           ;
           ).reject{|arg| arg.match '#'}.join(' '),
         :make => 'make;',
-        :install => 'make install;',
         :post_install => 'install -b support/apachectl /etc/init.d/httpd;'
       }
       
@@ -69,7 +65,11 @@ Capistrano::Configuration.instance(:must_exist).load do
         deprec2.download_src(SRC_PACKAGES[:apache], src_dir)
         deprec2.install_from_src(SRC_PACKAGES[:apache], src_dir)
         setup_vhost_dir
-        install_index_page
+        # install_index_page
+        activate
+        SYSTEM_CONFIG_FILES[:apache].each do |file|
+          deprec2.render_template(:apache, file.merge(:remote => true))
+        end
       end
       
       # install dependencies for apache
@@ -150,7 +150,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       end
 
       desc "Set apache to start on boot"
-      task :activate, :roles => :web do
+      task :activate do
         send(run_method, "update-rc.d httpd defaults")
       end
       
@@ -168,7 +168,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       end
 
       # Generate an index.html page  
-      task :install_index_page, :roles => :web do
+      task :install_index_page do
         deprec2.mkdir(apache_docroot, :owner => :root, :group => :deploy, :mode => 0775, :via => :sudo)
         std.su_put deprec2.render_template(:apache, :template => 'index.html.erb'), File.join(apache_docroot, 'index.html')
         std.su_put deprec2.render_template(:apache, :template => 'master.css'), File.join(apache_docroot, 'master.css')

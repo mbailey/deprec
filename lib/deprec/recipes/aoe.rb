@@ -50,13 +50,8 @@ Capistrano::Configuration.instance(:must_exist).load do
 
     
     SRC_PACKAGES[:cec] = {
-      :filename => 'cec-8.tgz',   
-      :md5sum => "7899dc549f9a368e532f9c39ed819f71  cec-8.tgz", 
-      :dir => 'cec-8',  
       :url => "http://easynews.dl.sourceforge.net/sourceforge/aoetools/cec-8.tgz",
-      :unpack => "tar zxf cec-8.tgz;",
-      :make => 'make;',
-      :install => 'make install;'
+      :md5sum => "7899dc549f9a368e532f9c39ed819f71  cec-8.tgz"
     }
     
     namespace :cec do
@@ -70,13 +65,8 @@ Capistrano::Configuration.instance(:must_exist).load do
     end
     
     SRC_PACKAGES[:ddt] = {
-      :filename => 'ddt-6.tgz',   
-      :md5sum => "5e1e8a58a8621b93440be605113f7bc0  ddt-6.tgz", 
-      :dir => 'ddt-6',  
-      :url => "http://www.coraid.com/support/sr/ddt-6.tgz",
-      :unpack => "tar zxf ddt-6.tgz;",
-      :make => 'make;',
-      :install => 'make install;'
+      :url => "http://support.coraid.com/support/sr/ddt-6.tgz",
+      :md5sum => "5e1e8a58a8621b93440be605113f7bc0  ddt-6.tgz"
     }
     
     namespace :ddt do
@@ -90,13 +80,8 @@ Capistrano::Configuration.instance(:must_exist).load do
     end
     
     SRC_PACKAGES[:aoemask] = {
-      :filename => 'aoemask-1.tgz',   
-      :md5sum => "379461a28d511e269f4593b846bd1288  aoemask-1.tgz", 
-      :dir => 'aoemask-1',  
-      :url => "http://www.coraid.com/support/sr/aoemask-1.tgz",
-      :unpack => "tar zxf aoemask-1.tgz;",
-      :make => 'make;',
-      :install => 'make install;'
+      :url => "http://support.coraid.com/support/sr/aoemask-1.tgz",
+      :md5sum => "379461a28d511e269f4593b846bd1288  aoemask-1.tgz"
     }
     
     namespace :aoemask do
