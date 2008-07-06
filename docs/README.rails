@@ -7,7 +7,7 @@ deprec: Install Ruby on Rails app on fresh Ubuntu 7.10 (gutsy)
 cd /rails/project/root
 depify .
 # edit config/deploy.rb
-cap deprec:rails:install_rails_stack HOSTS=target.host.name
+cap deprec:rails:install_stack
 cap deploy:setup
 cap deploy
 cap deprec:db:create
