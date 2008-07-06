@@ -57,7 +57,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       desc "Install Xen"
       task :install, :roles => :dom0 do
         install_deps
-        # it's all in deps baby
+        enable_hardy_domu
       end
       
       task :install_deps do
@@ -180,11 +180,25 @@ Capistrano::Configuration.instance(:must_exist).load do
         sudo "rmdir #{mnt_dir}", :hosts => xen_new_host
       end
       
+      desc "Enable hardy heron domU's on gutsy dom0"
+      task :enable_hardy_domu, :roles => :dom0 do
+        # create debootstrap symlink
+        sudo "ln -sf /usr/lib/debootstrap/scripts/gutsy /usr/lib/debootstrap/scripts/hardy"
+        # link xen-tools hooks
+        sudo "ln -sf /usr/lib/xen-tools/edgy.d /usr/lib/xen-tools/hardy.d"
+      end
       
+      task :touch_hwclock do
+        sudo "touch /etc/init.d/hwclock.sh"
+      end
       
     end
   end
 end
+
+# why is this missing on 
+
+
 
 # Stop the 'incrementing ethX problem'
 #
