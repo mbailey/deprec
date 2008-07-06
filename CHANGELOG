@@ -1,4 +1,21 @@
 == SVN
+ 
+== 1.99.24 (July  7, 2008)
+
+* I've rejigged things to make it easier to install a service without having
+  a local config directory. For example:
+
+  cap deprec:nginx:install HOSTS=192.168.0.10  
+
+  This will download and compile nginx, and push out a config file without 
+  generating a local copy. You don't need a config/ dir and you don't need 
+  to have defined a :web role.
+
+  Meta-tasks (like deprec:rails:install_stack) can now pass a block of commands 
+  to with_roles(roles).
+
+  config_gen and config are still available but it's now possible to install 
+  a rails stack without generating any local files. 
 
 == 1.99.21 (June 17, 2008)
 
