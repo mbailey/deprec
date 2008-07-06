@@ -28,6 +28,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       # This will also be the account you use for ssh access to git
       task :create_user do
         run "grep '^#{gitosis_user}:' /etc/passwd || #{sudo} adduser --system --shell /bin/sh --gecos 'git version control' --group --disabled-password --home /home/#{gitosis_user} #{gitosis_user}"
+        sudo "passwd --unlock #{gitosis_user}"
       end
       
       task :init do
