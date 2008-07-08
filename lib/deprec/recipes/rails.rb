@@ -34,7 +34,7 @@ Capistrano::Configuration.instance(:must_exist).load do
 
   namespace :deprec do
     namespace :rails do
-
+      
       task :install, :roles => :app do
         install_deps
         install_gems
@@ -43,14 +43,51 @@ Capistrano::Configuration.instance(:must_exist).load do
       task :install_deps do
         apt.install( {:base => %w(libmysqlclient15-dev sqlite3 libsqlite3-ruby libsqlite3-dev)}, :stable )
       end
-
+      
       # install some required ruby gems
       task :install_gems do
         gem2.install 'sqlite3-ruby'
         gem2.install 'mysql'
         gem2.install 'rails'
-        gem2.install 'rspec' # seems to be required to run rake db:migrate (???)
-        # gem2.install 'builder' # XXX ? needed ?
+        gem2.install 'rspec'
+      end
+      
+      desc <<-DESC
+      Install full rails stack on a stock standard ubuntu server (7.10, 8.04)
+      DESC
+      task :install_stack do   
+        
+        # Ruby everywhere!
+        top.deprec.ruby.install      
+        top.deprec.rubygems.install
+        
+        deprec2.for_roles('web') do
+          top.deprec.nginx.install        
+        end
+        
+        deprec2.for_roles('app') do
+          top.deprec.svn.install
+          top.deprec.git.install     
+          top.deprec.mongrel.install
+          top.deprec.monit.install
+          top.deprec.rails.install
+        end
+        
+        deprec2.for_roles('web,app') do
+          top.deprec.logrotate.install        
+        end
+        
+        # Install database separately 
+        # deprec2.for_roles('db') do
+        #   top.deprec.mysql.install
+        #   top.deprec.mysql.start      
+        # end
+
+      end
+      
+      task :install_rails_stack do
+        puts "deprecated: this task is now called install_stack"
+        install_stack
       end
       
       task :install_gems_for_project do
@@ -72,7 +109,7 @@ Capistrano::Configuration.instance(:must_exist).load do
          :owner => 'root:root'}  
       ]
       
-      
+      desc "Generate config files for rails app."
       task :config_gen do
         PROJECT_CONFIG_FILES[:nginx].each do |file|
           deprec2.render_template(:nginx, file)
@@ -81,6 +118,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         top.deprec.mongrel.config_project
       end
 
+      desc "Push out config files for rails app."
       task :config, :roles => [:app, :web] do
         deprec2.push_configs(:nginx, PROJECT_CONFIG_FILES[:nginx])
         top.deprec.mongrel.config_project
@@ -100,7 +138,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         deprec2.mkdir("#{shared_path}/config", :group => group, :mode => 0775, :via => :sudo)
       end
       
-      # create deployment group and add current user to it
+      desc "Create deployment group and add current user to it"
       task :setup_user_perms do
         deprec2.groupadd(group)
         deprec2.add_user_to_group(user, group)
@@ -209,42 +247,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         run "ln -nfs #{shared_path}/config/database.yml #{release_path}/config/database.yml" 
       end
 
-      desc <<-DESC
-      Install full rails stack on a stock standard ubuntu server (7.10, 8.04)
-      DESC
-      task :install_stack do   
-        
-        # Ruby everywhere!
-        top.deprec.ruby.install      
-        top.deprec.rubygems.install
-        
-        deprec2.for_roles('web') do
-          top.deprec.nginx.install        
-        end
-        
-        deprec2.for_roles('app') do
-          top.deprec.svn.install
-          top.deprec.git.install     
-          top.deprec.mongrel.install
-          top.deprec.monit.install
-          top.deprec.rails.install
-        end
-        
-        deprec2.for_roles('web,app') do
-          top.deprec.logrotate.install        
-        end
-        
-        deprec2.for_roles('db') do
-          top.deprec.mysql.install
-          top.deprec.mysql.start      
-        end
 
-      end
-      
-      task :install_rails_stack do
-        puts "deprecated: this task is now called install_stack"
-        install_stack
-      end
       
       desc "setup and configure servers"
       task :setup_servers do
