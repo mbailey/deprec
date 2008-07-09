@@ -194,6 +194,8 @@ command[check_load]=/usr/local/nagios/libexec/check_load -w 15,10,5 -c 30,25,20
 command[check_hda1]=/usr/local/nagios/libexec/check_disk -w 20% -c 10% -p /dev/hda1
 command[check_zombie_procs]=/usr/local/nagios/libexec/check_procs -w 5 -c 10 -s Z
 command[check_total_procs]=/usr/local/nagios/libexec/check_procs -w 150 -c 200 
+command[check_memory]=/usr/local/nagios/libexec/check_linux_free_memory.pl -w 10% -c 0% 
+
 
 
 # The following examples allow user-supplied arguments and can

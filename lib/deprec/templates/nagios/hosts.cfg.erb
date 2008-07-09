@@ -1,70 +1,143 @@
+###############################################################################
+###############################################################################
+#
+# HOST GROUPS
+#
+###############################################################################
+###############################################################################
+
 define hostgroup{ 
-	hostgroup_name  microsoft
-	alias   Big like IBM
-	# members       hosts
-	# hostgroup_members     hostgroups
-	# notes note_string
-	# notes_url     url
-	# action_url    url
+	hostgroup_name  servers
 }
 
-define host{  # example host with 
-	host_name www.microsoft.com
-	# alias Microsoft homepage
-	# display_name Some Fancy Name
-	address www.microsoft.com
-	hostgroups microsoft
-	check_command check-host-alive
-	# initial_state [o,d,u]
-	max_check_attempts 5
-	check_interval 5
-	retry_interval 1
-	# active_checks_enabled [0/1]
-	# passive_checks_enabled [0/1]
-	check_period 24x7
-	# obsess_over_host [0/1]
-	# check_freshness [0/1]
-	# freshness_threshold #
-	# event_handler command_name
-	# event_handler_enabled [0/1]
-	# low_flap_threshold #
-	# high_flap_threshold #
-	# flap_detection_enabled [0/1]
-	# flap_detection_options [o,d,u]
-	# process_perf_data [0/1]
-	# retain_status_information [0/1]
-	# retain_nonstatus_information [0/1]
-	# contacts steve
-	contact_groups admins
-	notification_interval 5
-	# first_notification_delay #
-	notification_period 24x7
-	# notification_options [d,u,r,f,s]
-	# notifications_enabled [0/1]
-	# stalking_options [o,d,u]
-	# notes note_string
-	# notes_url url
-	# action_url url
-	# icon_image image_file
-	# icon_image_alt alt_string
-	# vrml_image image_file
-	# statusmap_image image_file
-	# 2d_coords x_coord,y_coord
-	# 3d_coords x_coord,y_coord,z_coord
+define hostgroup{ 
+	hostgroup_name  app
 }
+
+define hostgroup{ 
+	hostgroup_name  web
+}
+
+define hostgroup{ 
+	hostgroup_name  routers
+}
+
+###############################################################################
+###############################################################################
+#
+# HOSTS
+#
+###############################################################################
+###############################################################################
+
+define host {
+	use server
+	host_name app01
+	hostgroups servers,app
+	address app01
+}
+
+define host {
+	use server
+	host_name app02
+	hostgroups servers.app
+	address app02
+}
+
+###############################################################################
+###############################################################################
+#
+# HOST TEMPLATES
+#
+###############################################################################
+###############################################################################
+
+# Generic host definition template - This is NOT a real host, just a template!
 
 define host{
-	host_name www.hotmail.com
-	# alias hotmail
-	# display_name Fancy name for hotmail
-	address www.hotmail.com
-	hostgroups microsoft
-	check_command check-host-alive
-	max_check_attempts 5
-	check_interval 5
-	retry_interval 1
-	check_period 24x7
-	contact_groups admins
-	notification_interval 5
-	notification_period 24x7
-}
+	name                            generic-host; The name of this host template
+	notifications_enabled           1       	; Host notifications are enabled
+	event_handler_enabled           1       	; Host event handler is enabled
+	flap_detection_enabled          1       	; Flap detection is enabled
+	failure_prediction_enabled      1       	; Failure prediction is enabled
+	process_perf_data               1       	; Process performance data
+	retain_status_information       1       	; Retain status information across program restarts
+	retain_nonstatus_information    1       	; Retain non-status information across program restarts
+	notification_period				24x7		; Send host notifications at any time
+	register                        0       	; DONT REGISTER THIS DEFINITION - ITS NOT A REAL HOST, JUST A TEMPLATE!
+	}
+
+
+# Linux host definition template - This is NOT a real host, just a template!
+
+define host{
+	name				linux-server	; The name of this host template
+	use				generic-host	; This template inherits other values from the generic-host template
+	check_period			24x7		; By default, Linux hosts are checked round the clock
+	check_interval			5		; Actively check the host every 5 minutes
+	retry_interval			1		; Schedule host check retries at 1 minute intervals
+	max_check_attempts		10		; Check each Linux host 10 times (max)
+    check_command           check-host-alive ; Default command to check Linux hosts
+	notification_period		workhours	; Linux admins hate to be woken up, so we only notify during the day
+							; Note that the notification_period variable is being overridden from
+							; the value that is inherited from the generic-host template!
+	notification_interval		120		; Resend notifications every 2 hours
+	notification_options		d,u,r		; Only send notifications for specific host states
+	contact_groups			admins		; Notifications get sent to the admins by default
+	register			0		; DONT REGISTER THIS DEFINITION - ITS NOT A REAL HOST, JUST A TEMPLATE!
+	}
+
+
+
+# Windows host definition template - This is NOT a real host, just a template!
+
+define host{
+	name			windows-server	; The name of this host template
+	use			generic-host	; Inherit default values from the generic-host template
+	check_period		24x7		; By default, Windows servers are monitored round the clock
+	check_interval		5		; Actively check the server every 5 minutes
+	retry_interval		1		; Schedule host check retries at 1 minute intervals
+	max_check_attempts	10		; Check each server 10 times (max)
+	check_command		check-host-alive	; Default command to check if servers are "alive"
+	notification_period	24x7		; Send notification out at any time - day or night
+	notification_interval	30		; Resend notifications every 30 minutes
+	notification_options	d,r		; Only send notifications for specific host states
+	contact_groups		admins		; Notifications get sent to the admins by default
+	hostgroups		windows-servers ; Host groups that Windows servers should be a member of
+	register		0		; DONT REGISTER THIS - ITS JUST A TEMPLATE
+	}
+
+
+# We define a generic printer template that can be used for most printers we monitor
+
+define host{
+	name			generic-printer	; The name of this host template
+	use			generic-host	; Inherit default values from the generic-host template
+	check_period		24x7		; By default, printers are monitored round the clock
+	check_interval		5		; Actively check the printer every 5 minutes
+	retry_interval		1		; Schedule host check retries at 1 minute intervals
+	max_check_attempts	10		; Check each printer 10 times (max)
+	check_command		check-host-alive	; Default command to check if printers are "alive"
+	notification_period	workhours		; Printers are only used during the workday
+	notification_interval	30		; Resend notifications every 30 minutes
+	notification_options	d,r		; Only send notifications for specific host states
+	contact_groups		admins		; Notifications get sent to the admins by default
+	register		0		; DONT REGISTER THIS - ITS JUST A TEMPLATE
+	}
+
+
+# Define a template for switches that we can reuse
+define host{
+	name			generic-switch	; The name of this host template
+	use			generic-host	; Inherit default values from the generic-host template
+	check_period		24x7		; By default, switches are monitored round the clock
+	check_interval		5		; Switches are checked every 5 minutes
+	retry_interval		1		; Schedule host check retries at 1 minute intervals
+	max_check_attempts	10		; Check each switch 10 times (max)
+	check_command		check-host-alive	; Default command to check if routers are "alive"
+	notification_period	24x7		; Send notifications at any time
+	notification_interval	30		; Resend notifications every 30 minutes
+	notification_options	d,r		; Only send notifications for specific host states
+	contact_groups		admins		; Notifications get sent to the admins by default
+	register		0		; DONT REGISTER THIS - ITS JUST A TEMPLATE
+	}
