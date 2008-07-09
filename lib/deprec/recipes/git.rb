@@ -77,12 +77,12 @@ Capistrano::Configuration.instance(:must_exist).load do
         puts "New remote Git repo: #{git_user}@#{hostname.chomp}:#{application}"
         puts    
         
-        File.open('.git/config', 'w') do |c|
-          c.write 'Add the following to .git/config'
-          c.write '[branch "master"]'
-          c.write ' remote = origin'
-          c.write ' merge = refs/heads/master'
-        end
+        # File.open('.git/config', 'w') do |c|
+        #   c.write 'Add the following to .git/config'
+        #   c.write '[branch "master"]'
+        #   c.write ' remote = origin'
+        #   c.write ' merge = refs/heads/master'
+        # end
           
       end
 
