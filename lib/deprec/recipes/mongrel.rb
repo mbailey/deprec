@@ -22,7 +22,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       
       desc "Install mongrel"
       task :install do
-        gem2.select 'mongrel'                # mongrel requires we select a version
+        gem2.install 'mongrel'
         gem2.install 'mongrel_cluster'
         gem2.install 'swiftiply'
         symlink_mongrel_rails
