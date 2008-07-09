@@ -3,7 +3,7 @@ deprec: Install and configure Nagios on Ubuntu 7.10 (gutsy)
 											 by Mike Bailey
 * Quickstart
 
-	# You need the following items defined (in config/deploy.rb)
+	# You need the following item defined in config/deploy.rb (or ~/.caprc)
 	role :nagios, 'monitor.blah.com'
 		
 	# Run the following on your workstation

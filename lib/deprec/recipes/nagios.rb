@@ -5,6 +5,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       
       set :nagios_user, 'nagios'
       set :nagios_group, 'nagios'
+      set(:nagios_host) { Capistrano::CLI.ui.ask "Enter hostname of nagios server" }
       set :nagios_cmd_group, 'nagcmd' # Allow external commands to be submitted through the web interface
       default :application, 'nagios' 
       
@@ -37,6 +38,8 @@ Capistrano::Configuration.instance(:must_exist).load do
         deprec2.useradd(nagios_user, :group => nagios_group, :homedir => false)
         deprec2.groupadd(nagios_cmd_group)
         deprec2.add_user_to_group(nagios_user, nagios_cmd_group)
+        # Add apache user to nagios group to permit commands via web interface
+        deprec2.add_user_to_group(apache_user, nagios_cmd_group)
       end
          
       # Install dependencies for nagios
@@ -137,7 +140,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       desc "Set Nagios to start on boot"
       task :activate, :roles => :nagios do
         send(run_method, "update-rc.d nagios defaults")
-        sudo "ln -sf #{apps_root}/nagios/conf/nagios_apache_vhost.conf #{apache_vhost_dir}/nagios.conf"
+        sudo "ln -sf #{deploy_to}/nagios/conf/nagios_apache_vhost.conf /usr/local/apache2/conf/apps"
       end
       
       desc "Set Nagios to not start on boot"
@@ -262,7 +265,12 @@ Capistrano::Configuration.instance(:must_exist).load do
         {:template => "check_mongrel_cluster.rb",
          :path => '/usr/local/nagios/libexec/check_mongrel_cluster.rb',
          :mode => 0755,
-         :owner => 'root:root'}
+         :owner => 'root:root'},
+         
+         {:template => "check_linux_free_memory.pl",
+          :path => '/usr/local/nagios/libexec/check_linux_free_memory.pl',
+          :mode => 0755,
+          :owner => 'root:root'}
       
       ]
       
