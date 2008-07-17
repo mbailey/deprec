@@ -1,6 +1,6 @@
 
 user  <%= nginx_user %>;
-worker_processes  1;
+worker_processes  <%= nginx_worker_processes %>;
 
 #error_log  logs/error.log;
 #error_log  logs/error.log  notice;
@@ -16,7 +16,7 @@ events {
 
 http {
 	include /usr/local/nginx/conf/vhosts/*.conf;
-    include       conf/mime.types;
+    include       conf/mime.types;	
     default_type  application/octet-stream;
 
     #log_format  main  '$remote_addr - $remote_user [$time_local] $request '
@@ -31,11 +31,15 @@ http {
     #keepalive_timeout  0;
     keepalive_timeout  65;
 
-    #gzip  on;
+	gzip            on;
+#	gzip_http_version 1.0;
+#	gzip_comp_level 2;
+#	gzip_proxied any;
+#	gzip_types      text/plain text/html text/css application/x-javascript text/xml application/xml application/xml+rss text/javascript;
 
     server {
         listen       80;
-        server_name  _ *;
+        server_name  _ *; 
 
         #charset koi8-r;
 
