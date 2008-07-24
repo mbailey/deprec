@@ -266,7 +266,7 @@ module Deprec2
   
   def set_package_defaults(pkg)
       pkg[:filename] ||= File.basename(pkg[:url])  
-      pkg[:dir] ||= File.basename(pkg[:url], '.tar.gz')  
+      pkg[:dir] ||= pkg[:filename].sub(/(\.tgz|\.tar\.gz)/,'')  
       pkg[:unpack] ||= "tar zxf #{pkg[:filename]};"
       pkg[:configure] ||= './configure ;'
       pkg[:make] ||= 'make;'
