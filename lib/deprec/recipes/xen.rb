@@ -132,7 +132,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       	lvm_disk = "/dev/vm_local/#{xen_slice}-disk"
 
         # Shutdown slice
-      	sudo "xm list | grep #{xen_slice} && xm shutdown #{xen_slice} && sleep 10; exit 0", :hosts => xen_old_host
+      	sudo "xm list | grep #{xen_slice} && #{sudo} xm shutdown #{xen_slice} && sleep 10; exit 0", :hosts => xen_old_host
 
       	# Tar up disk partition
       	sudo "test -d #{mnt_dir} || #{sudo} mkdir #{mnt_dir}; exit 0", :hosts => xen_old_host
