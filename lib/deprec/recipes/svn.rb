@@ -35,7 +35,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       set(:svn_backup_dir) { File.join(backup_dir, 'svn') }
   
       desc "Install Subversion"
-      task :install, :roles => :scm do
+      task :install do
         install_deps
         # XXX should really check if apache has already been installed
         # XXX can do that when we move to rake
