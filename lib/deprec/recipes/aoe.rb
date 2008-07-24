@@ -25,27 +25,6 @@ Capistrano::Configuration.instance(:must_exist).load do
         apt.install( {:base => %w(build-essential linux-headers-$(uname -r) vblade aoetools)}, :stable )
       end
 
-      SYSTEM_CONFIG_FILES[:aoe] = [
-
-        {:template => "aoetools.erb",
-          :path => '/etc/default/aoetools',
-          :mode => 0644,
-          :owner => 'root:root'}
-
-        ]
-
-      desc "Generate configuration file(s) for XXX from template(s)"
-      task :config_gen do
-        SYSTEM_CONFIG_FILES[:aoe].each do |file|
-          deprec2.render_template(:aoe, file)
-        end
-      end
-
-      desc 'Deploy configuration files(s) for XXX' 
-      task :config do
-        deprec2.push_configs(:aoe, SYSTEM_CONFIG_FILES[:aoe])
-      end
-
     end
 
     
