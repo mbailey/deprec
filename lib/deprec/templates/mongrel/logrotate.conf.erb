@@ -1,4 +1,4 @@
-/var/www/apps/<%= application %>/shared/log/production.log /var/www/apps/<%= application %>/shared/log/mongrel.*.log {
+<%= shared_path %>/log/production.log <%= shared_path %>/log/mongrel.*.log {
   daily
   rotate 14
   dateext
