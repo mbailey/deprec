@@ -78,10 +78,10 @@ Capistrano::Configuration.instance(:must_exist).load do
         end
         
         # Install database separately 
-        # deprec2.for_roles('db') do
-        #   top.deprec.mysql.install
-        #   top.deprec.mysql.start      
-        # end
+        deprec2.for_roles('db') do
+          top.deprec.mysql.install
+          top.deprec.mysql.start      
+        end
 
       end
       
