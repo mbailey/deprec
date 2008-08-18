@@ -5,11 +5,11 @@ Capistrano::Configuration.instance(:must_exist).load do
     namespace :ruby do
             
       SRC_PACKAGES[:ruby] = {
-        :filename => 'ruby-1.8.6-p110.tar.gz',   
-        :md5sum => "5d9f903eae163cda2374ef8fdba5c0a5  ruby-1.8.6-p110.tar.gz", 
-        :dir => 'ruby-1.8.6-p110',  
-        :url => "ftp://ftp.ruby-lang.org/pub/ruby/1.8/ruby-1.8.6-p110.tar.gz",
-        :unpack => "tar zxf ruby-1.8.6-p110.tar.gz;",
+        :filename => 'ruby-1.8.6-p287.tar.gz',   
+        :md5sum => "f6cd51001534ced5375339707a757556  ruby-1.8.6-p287.tar.gz", 
+        :dir => 'ruby-1.8.6-p287',  
+        :url => "ftp://ftp.ruby-lang.org/pub/ruby/1.8/ruby-1.8.6-p287.tar.gz",
+        :unpack => "tar zxf ruby-1.8.6-p287.tar.gz;",
         :configure => %w(
           ./configure
           --with-readline-dir=/usr/local
