@@ -1,4 +1,4 @@
-<%= shared_path %>/log/production.log <%= shared_path %>/log/mongrel.*.log {
+<%= shared_path %>/log/<%= rails_env %>.log <%= shared_path %>/log/mongrel.*.log {
   daily
   rotate 14
   dateext
