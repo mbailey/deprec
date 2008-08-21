@@ -254,35 +254,63 @@ module Deprec2
     if defined?(src_package[:md5sum])
       md5_clause = " && echo '#{src_package[:md5sum]}' | md5sum -c - "
     end
-    apt.install( {:base => %w(wget)}, :stable )
-    # XXX replace with invoke_command
-    run "cd #{src_dir} && test -f #{src_package[:filename]} #{md5_clause} || #{sudo} wget --quiet --timestamping #{src_package[:url]}"
+    case src_package[:download_method]
+      # when getting source with git
+      when :git
+        # ensure git is installed
+        apt.install( {:base => %w(git-core)}, :stable) #TODO fix this to test ubuntu version <hardy might need specific git version for full git submodules support
+        package_dir = File.join(src_dir, src_package[:dir])
+        run "if [ -d #{package_dir} ]; then cd #{package_dir} && #{sudo} git pull && #{sudo} git submodule init && #{sudo} git submodule update; else #{sudo} git clone #{src_package[:url]} #{package_dir} && cd #{package_dir} && #{sudo} git submodule init && #{sudo} git submodule update ; fi"
+	# Checkout the revision wanted if defined
+	invoke_command "cd #{package_dir} && git co #{src_package[:version]}", :via => :via if src_package[:version]
+      # when getting source with wget
+      when :http
+        # ensure wget is installed
+        apt.install( {:base => %w(wget)}, :stable )
+        # XXX replace with invoke_command
+        run "cd #{src_dir} && test -f #{src_package[:filename]} #{md5_clause} || #{sudo} wget --quiet --timestamping #{src_package[:url]}"
+      else
+        puts "DOWNLOAD SRC: Download method not recognised. src_package[:download_method]: #{src_package[:download_method]}"
+    end
   end
 
   # unpack src and make it writable by the group
   def unpack_src(src_package, src_dir)
     set_package_defaults(src_package)
     package_dir = File.join(src_dir, src_package[:dir])
-    # XXX replace with invoke_command
+    case src_package[:download_method]
+      # when unpacking git sources - nothing to do
+      when :git
+        puts "UNPACK SRC: nothing to do for git installs"
+      when :http
+        sudo <<-EOF
+        bash -c '
+        cd #{src_dir};
+        test -d #{package_dir}.old && rm -fr #{package_dir}.old;
+        test -d #{package_dir} && mv #{package_dir} #{package_dir}.old;
+        #{src_package[:unpack]}
+        '
+        EOF
+      else
+        puts "UNPACK SRC: Download method not recognised. src_package[:download_method]: #{src_package[:download_method]} "
+    end
     sudo <<-EOF
     bash -c '
     cd #{src_dir};
-    test -d #{package_dir}.old && rm -fr #{package_dir}.old;
-    test -d #{package_dir} && mv #{package_dir} #{package_dir}.old;
-    #{src_package[:unpack]}
     chgrp -R #{group} #{package_dir};  
     chmod -R g+w #{package_dir};
     '
     EOF
   end
-  
+
   def set_package_defaults(pkg)
-      pkg[:filename] ||= File.basename(pkg[:url])  
-      pkg[:dir] ||= pkg[:filename].sub(/(\.tgz|\.tar\.gz)/,'')  
-      pkg[:unpack] ||= "tar zxf #{pkg[:filename]};"
-      pkg[:configure] ||= './configure ;'
-      pkg[:make] ||= 'make;'
-      pkg[:install] ||= 'make install;'
+    pkg[:filename] ||= File.basename(pkg[:url])
+    pkg[:dir] ||= pkg[:filename].sub(/(\.tgz|\.tar\.gz)/,'')
+    pkg[:download_method] ||= :http
+    pkg[:unpack] ||= "tar zxf #{pkg[:filename]};"
+    pkg[:configure] ||= './configure ;'
+    pkg[:make] ||= 'make;'
+    pkg[:install] ||= 'make install;'
   end
 
   # install package from source
