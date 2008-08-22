@@ -39,11 +39,6 @@ Capistrano::Configuration.instance(:must_exist).load do
         deprec2.groupadd(nginx_group)
         deprec2.useradd(nginx_user, :group => nginx_group, :homedir => false)
       end
-      
-      task :rename_index_page, :roles => :web do
-        index_file = '/usr/local/nginx/html/index.html'
-        sudo "test -f #{index_file} && sudo mv #{index_file} #{index_file}.orig || exit 0"
-      end
 
       SYSTEM_CONFIG_FILES[:nginx] = [
 
@@ -105,7 +100,6 @@ Capistrano::Configuration.instance(:must_exist).load do
         send(run_method, "update-rc.d -f nginx remove")
       end
 
-
       # Control
 
       desc "Start Nginx"
@@ -137,6 +131,12 @@ Capistrano::Configuration.instance(:must_exist).load do
 
       task :restore, :roles => :web do
         # there's nothing to store for nginx
+      end
+      
+      # Helper task to get rid of pesky "it works" page - not called by deprec tasks
+      task :rename_index_page, :roles => :web do
+        index_file = '/usr/local/nginx/html/index.html'
+        sudo "test -f #{index_file} && sudo mv #{index_file} #{index_file}.orig || exit 0"
       end
 
     end 
