@@ -4,12 +4,13 @@ require 'fileutils'
 
 module Deprec2
   
-  # Temporarly set ROLES to something different
+  # Temporarly modify ROLES if HOSTS not set
+  # Capistrano's default behaviour is for HOSTS to override ROLES
   def for_roles(roles)
     old_roles = ENV['ROLES']
-    ENV['ROLES'] = roles
+    ENV['ROLES'] = roles.to_s unless ENV['HOSTS']
     yield
-    ENV['ROLES'] = old_roles
+    ENV['ROLES'] = old_roles.to_s unless ENV['HOSTS']
   end
   
   DEPREC_TEMPLATES_BASE = File.join(File.dirname(__FILE__), 'templates')
