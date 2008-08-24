@@ -1,0 +1,95 @@
+# vnstat
+
+# install vnstat
+http://humdi.net/vnstat/vnstat-1.6.tar.gz
+sudo apt-get install vnstat
+
+# initialize it for a virtual interface
+vnstat -u -i vif-apt
+
+# generate images
+http://humdi.net/vnstat/vnstati-beta3.tar.gz
+apt-get install libgd2-noxpm-dev libgd2-noxpm
+vnstati -s -i vif-apt -o /tmp/vnstat.png
+
+# php web frontend
+http://www.sqweek.com/sqweek/files/vnstat_php_frontend-1.3.tar.gz
+
+
+# Steps for setting up vnstat on a new Xen dom0
+
+1. Install vnstat on host
+
+# Steps for adding a new server to vnstat monitoring
+
+1. Add it to vnstat monitoring
+
+vnstat -u -i web2-eth0
+
+2. 
+
+
+#
+# Add all eth interfaces 
+#
+for x in `ls /proc/sys/net/ipv4/conf | grep eth | cut -f 1 -d' '`; do
+  vnstat -u -i $x
+done
+
+#!/bin/bash
+#
+# Dump vnstat data
+#
+dump_dir=/var/lib/vnstat_dumps
+
+test -d $dump_dir || mkdir -p $dump_dir
+
+for x in `ls /var/lib/vnstat/*-eth*`; do
+  vnstat --dumpdb -i `basename $x` > ${dump_dir}/vnstat_dump_`basename $x`
+done
+
+for x in eth0 eth1; do
+  vnstat --dumpdb -i $x > ${dump_dir}/vnstat_dump_`hostname`-$x
+done
+
+
+
+#!/bin/bash
+#
+# Pull vnstat metrics back from Xen dom0's
+#
+
+dump_dir=/var/lib/vnstat_dumps
+
+test -d $dump_dir || mkdir -p $dump_dir
+for x in sm03; do
+  rsync -avz ${x}:${dump_dir}/ /var/www/vnstat/dumps/
+done
+
+
+
+#
+# Separate internal and external traffic on NAT'ed slices
+#
+
+The following in /etc/network/interfaces will allow us to monitor
+internal and external traffic by reading separate interface counters
+on the domU.
+
+# First IP on internal network (for external traffic)
+auto eth0
+iface eth0 inet static
+ address 192.168.1.70
+ netmask 255.255.255.255
+
+# Second IP on internal network (for internal traffic only)
+auto eth1
+iface eth1 inet static
+ address 192.168.1.71
+ netmask 255.255.255.0
+
+# Route external traffic out eth0
+up route add -net 192.168.1.1 netmask 255.255.255.255 dev eth0
+up route add default gw 192.168.1.1
+
+

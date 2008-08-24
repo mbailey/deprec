@@ -6,13 +6,13 @@ Capistrano::Configuration.instance(:must_exist).load do
       # Installation
       
       desc "Install mysql"
-      task :install, :roles => :db do
+      task :install do
         install_deps
         symlink_mysql_sockfile # XXX still needed?
       end
       
       # Install dependencies for Mysql
-      task :install_deps, :roles => :db do
+      task :install_deps do
         apt.install( {:base => %w(mysql-server mysql-client)}, :stable )
       end
       
@@ -40,7 +40,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         end
       end
       
-      desc "Push trac config files to server"
+      desc "Push mysql config files to server"
       task :config, :roles => :db do
         deprec2.push_configs(:mysql, SYSTEM_CONFIG_FILES[:mysql])
       end

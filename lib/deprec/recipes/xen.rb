@@ -119,7 +119,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         # Get user input for these values
         xen_old_host && xen_new_host && xen_disk_size && xen_swap_size && xen_slice
 
-        copy_disk
+        # copy_disk
         copy_slice_config
         create_lvm_disks
         build_slice_from_tarball
@@ -196,9 +196,6 @@ Capistrano::Configuration.instance(:must_exist).load do
   end
 end
 
-# why is this missing on 
-
-
 
 # Stop the 'incrementing ethX problem'
 #
@@ -224,19 +221,11 @@ end
       # xend stop
       # ;;
       
-# virtsh
-#
-# enable by putting this into /etc/xen/xend-conf.sxp
-# (xend-unix-server yes)
-
-
-
 #
 # Install xen on ubuntu hardy
 #
 # ref: http://www.howtoforge.com/ubuntu-8.04-server-install-xen-from-ubuntu-repositories
 #
-
 
 # Install Xen packages 
 # apt-get install ubuntu-xen-server
