@@ -4,7 +4,7 @@ require 'fileutils'
 
 module Deprec2
   
-  # Temporarly modify ROLES if HOSTS not set
+  # Temporarily modify ROLES if HOSTS not set
   # Capistrano's default behaviour is for HOSTS to override ROLES
   def for_roles(roles)
     old_roles = ENV['ROLES']
