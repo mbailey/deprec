@@ -28,7 +28,7 @@ smtp_tls_session_cache_database = btree:${queue_directory}/smtp_scache
 # myhostname = 
 alias_maps = hash:/etc/aliases
 alias_database = hash:/etc/aliases
-mydestination = $myhostname localhost.$mydomain myorigin
+mydestination = $myhostname localhost.$mydomain $myorigin
 relayhost = <%= postfix_relayhost %>
 mynetworks = 127.0.0.0/8
 mailbox_size_limit = 0
