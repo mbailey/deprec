@@ -57,6 +57,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       task :config, :roles => :mail, :except => { :master => true } do
         deprec2.push_configs(:postfix, SYSTEM_CONFIG_FILES[:postfix])
         send(run_method, "/usr/bin/newaliases")
+        reload
       end
       
       desc "Start Postfix"
