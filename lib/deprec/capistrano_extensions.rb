@@ -13,6 +13,17 @@ module Deprec2
     ENV['ROLES'] = old_roles.to_s unless ENV['HOSTS']
   end
   
+  # Temporarily ignore ROLES and HOSTS
+  def ignoring_roles_and_hosts
+    old_roles = ENV['ROLES']
+    old_hosts = ENV['HOSTS']
+    ENV['ROLES'] = nil
+    ENV['HOSTS'] = nil
+    yield
+    ENV['ROLES'] = old_roles
+    ENV['HOSTS'] = old_hosts
+  end
+  
   DEPREC_TEMPLATES_BASE = File.join(File.dirname(__FILE__), 'templates')
 
   # Render template (usually a config file) 
