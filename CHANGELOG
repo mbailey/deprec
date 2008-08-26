@@ -1,11 +1,20 @@
 == SVN
  
 
+== 1.99.27 (August 27, 2008)
+
+* Bugfix: Add configure and make options to src_package for rubygems to 
+  override defaults. [jasherai]
+
+* Change: We now setup postfix as a satellite mail server. This is designed 
+  to listen only on the local network interface and non-local mail to a relay
+  host. [mbailey]
+
 == 1.99.26 (August 22, 2008)
 
 * added vnstat recipes - measure and report traffic on interface counters [mbailey]
 * upgrade ruby to 1.8.6-p287 [Isaac Kearse] 
-* upgrade to rubygems 1.2.0 - addresses memory utilization issues on 
+* upgrade to rubygems 1.2.0 - addresses memory utilization issues on
   low-memory boxes (half-gig or less) [thewoolleyman]
 * deprec:rails:install_stack now installs mysql  [mbailey]
 * turned tcp_nopush back on [mbailey]
