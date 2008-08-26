@@ -42,6 +42,8 @@ Capistrano::Configuration.instance(:must_exist).load do
         :dir => 'rubygems-1.2.0',  
         :url => "http://rubyforge.org/frs/download.php/38646/rubygems-1.2.0.tgz",
         :unpack => "tar zxf rubygems-1.2.0.tgz;",
+	:configure => "",
+	:make =>  "",
         :install => 'ruby setup.rb;'
       }
       
