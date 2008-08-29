@@ -60,7 +60,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         enable_hardy_domu
       end
       
-      task :install_deps do
+      task :install_deps, :roles => :dom0 do
         # for amd64 version of ubuntu 7.10
         apt.install( {:base => %w(linux-image-xen bridge-utils libxen3.1 python-xen-3.1 xen-docs-3.1 xen-hypervisor-3.1 xen-ioemu-3.1 xen-tools xen-utils-3.1 lvm2)}, :stable )
         # alternatively, for x86 version of ubuntu:
@@ -75,7 +75,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       end
       
       desc "Push Xen config files to server"
-      task :config do
+      task :config, :roles => :dom0 do
         deprec2.push_configs(:xen, SYSTEM_CONFIG_FILES[:xen])
       end
       
@@ -86,30 +86,30 @@ Capistrano::Configuration.instance(:must_exist).load do
       # xm create -c /etc/xen/x1.cfg
       
       desc "Start Xen"
-      task :start do
+      task :start, :roles => :dom0 do
         send(run_method, "/etc/init.d/xend start")
       end
 
       desc "Stop Xen"
-      task :stop do
+      task :stop, :roles => :dom0 do
         send(run_method, "/etc/init.d/xend stop")
       end
 
       desc "Restart Xen"
-      task :restart do
+      task :restart, :roles => :dom0 do
         send(run_method, "/etc/init.d/xend restart")
       end
 
       desc "Reload Xen"
-      task :reload do
+      task :reload, :roles => :dom0 do
         send(run_method, "/etc/init.d/xend reload")
       end
       
-      task :list do
+      task :list, :roles => :dom0 do
         sudo "xm list"
       end
       
-      task :info do
+      task :info, :roles => :dom0 do
         sudo "xm info"
       end
 
