@@ -4,12 +4,12 @@ Capistrano::Configuration.instance(:must_exist).load do
     namespace :ar_sendmail do
       
       desc "Install ar_mailer"
-      task :install do
+      task :install, :roles => :app do
         gem2.install 'ar_mailer'
       end
 
-      # install dependencies for nginx
-      task :install_deps do
+      # install dependencies for ar_sendmail
+      task :install_deps, :roles => :app do
         #pass
       end
       
