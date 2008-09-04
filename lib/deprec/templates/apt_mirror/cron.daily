@@ -1,0 +1,5 @@
+#!/bin/bash
+#
+# Update our apt mirror
+#
+/usr/bin/apt-mirror -c apt-mirror >> /var/log/apt/apt-mirror.log 2>&1
