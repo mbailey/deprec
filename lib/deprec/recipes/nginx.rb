@@ -17,7 +17,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       }
 
       desc "Install nginx"
-      task :install do
+      task :install, :roles => :web do
         install_deps
         deprec2.download_src(SRC_PACKAGES[:nginx], src_dir)
         deprec2.install_from_src(SRC_PACKAGES[:nginx], src_dir)
@@ -30,12 +30,12 @@ Capistrano::Configuration.instance(:must_exist).load do
       end
 
       # install dependencies for nginx
-      task :install_deps do
+      task :install_deps, :roles => :web do
         apt.install( {:base => %w(libpcre3 libpcre3-dev libpcrecpp0 libssl-dev zlib1g-dev)}, :stable )
         # do we need libgcrypt11-dev?
       end
 
-      task :create_nginx_user do
+      task :create_nginx_user, :roles => :web do
         deprec2.groupadd(nginx_group)
         deprec2.useradd(nginx_user, :group => nginx_group, :homedir => false)
       end
@@ -84,11 +84,11 @@ Capistrano::Configuration.instance(:must_exist).load do
       Activate nginx start scripts on server.
       Setup server to start nginx on boot.
       DESC
-      task :activate do
+      task :activate, :roles => :web do
         activate_system
       end
 
-      task :activate_system do
+      task :activate_system, :roles => :web do
         send(run_method, "update-rc.d nginx defaults")
       end
 
@@ -96,7 +96,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       Dectivate nginx start scripts on server.
       Setup server to start nginx on boot.
       DESC
-      task :deactivate do
+      task :deactivate, :roles => :web do
         send(run_method, "update-rc.d -f nginx remove")
       end
 

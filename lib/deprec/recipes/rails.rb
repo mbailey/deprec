@@ -90,7 +90,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         install_stack
       end
       
-      task :install_gems_for_project do
+      task :install_gems_for_project, :roles => :app do
           if gems_for_project
             gems_for_project.each { |gem| gem2.install(gem) }
           end
@@ -122,23 +122,23 @@ Capistrano::Configuration.instance(:must_exist).load do
         deprec2.push_configs(:nginx, PROJECT_CONFIG_FILES[:nginx])
         top.deprec.mongrel.config_project
         symlink_nginx_vhost
-        symlink_logrotate_config
+        symlink_nginx_logrotate_config
       end
 
       task :symlink_nginx_vhost, :roles => :web do
         sudo "ln -sf #{deploy_to}/nginx/rails_nginx_vhost.conf #{nginx_vhost_dir}/#{application}.conf"
       end
       
-      task :symlink_logrotate_config, :roles => :web do
+      task :symlink_nginx_logrotate_config, :roles => :web do
         sudo "ln -sf #{deploy_to}/nginx/logrotate.conf /etc/logrotate.d/nginx-#{application}"
       end
 
-      task :create_config_dir do
+      task :create_config_dir, :roles => :app do
         deprec2.mkdir("#{shared_path}/config", :group => group, :mode => 0775, :via => :sudo)
       end
       
       desc "Create deployment group and add current user to it"
-      task :setup_user_perms do
+      task :setup_user_perms, :roles => [:app, :web] do
         deprec2.groupadd(group)
         deprec2.add_user_to_group(user, group)
         deprec2.groupadd(mongrel_group)
@@ -160,7 +160,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       end
 
       # setup extra paths required for deployment
-      task :setup_paths, :roles => :app do
+      task :setup_paths, :roles => [:app, :web] do
         deprec2.mkdir(deploy_to, :mode => 0775, :group => group, :via => :sudo)
         deprec2.mkdir(shared_path, :mode => 0775, :group => group, :via => :sudo)
       end
