@@ -61,10 +61,9 @@ Capistrano::Configuration.instance(:must_exist).load do
         top.deprec.ruby.install      
         top.deprec.rubygems.install
         
-        deprec2.for_roles('web') do
-          top.deprec.nginx.install        
-        end
+        top.deprec.nginx.install        
         
+        # XXX check this out before removing - Mike
         deprec2.for_roles('app') do
           top.deprec.svn.install
           top.deprec.git.install     
@@ -73,15 +72,10 @@ Capistrano::Configuration.instance(:must_exist).load do
           top.deprec.rails.install
         end
         
-        deprec2.for_roles('web,app') do
-          top.deprec.logrotate.install        
-        end
+        top.deprec.logrotate.install        
         
-        # Install database separately 
-        deprec2.for_roles('db') do
-          top.deprec.mysql.install
-          top.deprec.mysql.start      
-        end
+        top.deprec.mysql.install
+        top.deprec.mysql.start      
 
       end
       
