@@ -1,11 +1,13 @@
 # Copyright 2006-2008 by Mike Bailey. All rights reserved.
 Capistrano::Configuration.instance(:must_exist).load do 
+  # ref: http://www.howtoforge.com/local_debian_ubuntu_mirror
   namespace :deprec do 
 
     set :apt_mirror_hostname, 'archive.ubuntu.com'
     set :apt_releases_to_mirror, %w(gutsy)
 
-    namespace :apt do
+    namespace :apt_normal do # XXX Find a better name
+                             # :apt was clashing with the vmbuilder plugin
 
       SYSTEM_CONFIG_FILES[:apt] = [
 
@@ -57,8 +59,8 @@ Capistrano::Configuration.instance(:must_exist).load do
           :mode => 0755,
           :owner => 'root:root'},
         
-        {:template => 'cron.daily',
-          :path => '/etc/cron.daily/apt-mirror',
+        {:template => 'apt-mirror-cron',
+          :path => '/etc/cron.d/apt-mirror',
           :mode => 0755,
           :owner => 'root:root'}
       ]
@@ -80,7 +82,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         deprec2.push_configs(:apt_mirror, SYSTEM_CONFIG_FILES[:apt_mirror])
       end
 
-      # Update mirror
+      # Create mirror for the first time
       # 
       # su - apt-mirror -c apt-mirror
       
