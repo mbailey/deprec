@@ -17,15 +17,15 @@ set _tilde 0
 <% Array(apt_releases_to_mirror).each do |release| %> 
 # <%= release %>
 deb http://archive.ubuntu.com/ubuntu <%= release %> main restricted universe multiverse
-deb http://archive.ubuntu.com/ubuntu <%= release %>-updates main restricted universe multiverse
+#deb http://archive.ubuntu.com/ubuntu <%= release %>-updates main restricted universe multiverse
 #deb http://archive.ubuntu.com/ubuntu <%= release %>-backports main restricted universe multiverse
-deb http://archive.ubuntu.com/ubuntu <%= release %>-security main restricted universe multiverse
+#deb http://archive.ubuntu.com/ubuntu <%= release %>-security main restricted universe multiverse
 #deb http://archive.ubuntu.com/ubuntu <%= release %>-proposed main restricted universe multiverse
 
 deb-src http://archive.ubuntu.com/ubuntu <%= release %> main restricted universe multiverse
-deb-src http://archive.ubuntu.com/ubuntu <%= release %>-updates main restricted universe multiverse
+#deb-src http://archive.ubuntu.com/ubuntu <%= release %>-updates main restricted universe multiverse
 #deb-src http://archive.ubuntu.com/ubuntu <%= release %>-backports main restricted universe multiverse
-deb-src http://archive.ubuntu.com/ubuntu <%= release %>-security main restricted universe multiverse
+#deb-src http://archive.ubuntu.com/ubuntu <%= release %>-security main restricted universe multiverse
 #deb-src http://archive.ubuntu.com/ubuntu <%= release %>-proposed main restricted universe multiverse
 <% end %>
 
