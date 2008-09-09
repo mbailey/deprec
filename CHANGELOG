@@ -3,6 +3,10 @@
 * Restricted tasks to roles. [mbailey]
   http://github.com/mbailey/deprec/commit/d103dda7ee3f7696007d230c76c7739dd57115ec
 
+* Extend capistrano_extensions.rb to allow install from git sources. [jasherai]
+
+* Updated git to 1.6.0.1 [thornysun]
+ 
 == 1.99.27 (August 27, 2008)
 
 * Bugfix: Add configure and make options to src_package for rubygems to 
