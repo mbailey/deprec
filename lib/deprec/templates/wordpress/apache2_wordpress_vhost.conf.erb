@@ -1,0 +1,31 @@
+<VirtualHost *:80>
+  ServerName <%= wordpress_domain %>
+  DocumentRoot <%= "#{wordpress_install_dir}" %>
+
+  <Directory <%= "#{wordpress_install_dir}" %>>
+	DirectoryIndex index.html index.htm index.php
+    Options FollowSymLinks
+    AllowOverride None
+    Order allow,deny
+    Allow from all
+  </Directory>
+
+  RewriteEngine On
+
+  # Prevent access to .svn directories
+  RewriteRule ^(.*/)?\.svn/ - [F,L]
+  ErrorDocument 403 "Access Forbidden"
+
+  # Prevent access to .git directories
+  RewriteRule ^(.*/)?\.git/ - [F,L]
+  ErrorDocument 403 "Access Forbidden"
+  
+  # Deflate
+  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css application/x-javascript
+  BrowserMatch ^Mozilla/4 gzip-only-text/html
+  BrowserMatch ^Mozilla/4\.0[678] no-gzip
+  BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+
+  ErrorLog logs/<%= wordpress_domain %>-error_log
+  CustomLog logs/<%= wordpress_domain %>-access_log combined
+</VirtualHost>
