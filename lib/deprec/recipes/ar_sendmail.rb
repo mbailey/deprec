@@ -4,12 +4,12 @@ Capistrano::Configuration.instance(:must_exist).load do
     namespace :ar_sendmail do
       
       desc "Install ar_mailer"
-      task :install do
+      task :install, :roles => :app do
         gem2.install 'ar_mailer'
       end
 
-      # install dependencies for nginx
-      task :install_deps do
+      # install dependencies for ar_sendmail
+      task :install_deps, :roles => :app do
         #pass
       end
       
@@ -30,12 +30,14 @@ Capistrano::Configuration.instance(:must_exist).load do
         config_gen_project
       end
       
+      desc "Generate configuration file(s) for ar_sendmail from template(s)"
       task :config_gen_project do
         PROJECT_CONFIG_FILES[:ar_sendmail].each do |file|
           deprec2.render_template(:ar_sendmail, file)
         end
       end
       
+      desc "Push ar_sendmail config files to server"
       task :config, :roles => :app do
         config_project
       end

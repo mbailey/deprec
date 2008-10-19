@@ -4,16 +4,24 @@ Capistrano::Configuration.instance(:must_exist).load do
   namespace :deprec do
     namespace :postfix do
       
+      set(:postfix_relayhost) { Capistrano::CLI.ui.ask "What host should we relay mail through?" } 
       desc "Install Postfix"
-      task :install, :roles => :web do
+      task :install, :roles => :mail do
         install_deps
       end
       
       # Install dependencies for Postfix
       task :install_deps do
-        apt.install( {:base => %w(postfix)}, :stable )
+        # mutt and mailx are useful tools for testing mail
+        # e.g. echo test | mail test@gmail.com
+        apt.install( {:base => %w(postfix mutt mailx)}, :stable )
       end
       
+      # This is my default Postfix setup on servers that 
+      # aren't my main outgoing mailserver.
+      # It accepts mail from localhost only and relays
+      # all mail to a master mailserver for delivery.
+      #
       SYSTEM_CONFIG_FILES[:postfix] = [
         
         {:template => "main.cf.erb",
@@ -38,17 +46,18 @@ Capistrano::Configuration.instance(:must_exist).load do
          
       ]
       
-      desc "Generate configuration file(s) for XXX from template(s)"
+      desc 'Generate configuration files(s) for postfix' 
       task :config_gen do
         SYSTEM_CONFIG_FILES[:postfix].each do |file|
           deprec2.render_template(:postfix, file)
         end
       end
       
-      desc 'Deploy configuration files(s) for XXX' 
-      task :config, :roles => :mail do
+      desc 'Deploy configuration files(s) for postfix' 
+      task :config, :roles => :mail, :except => { :master => true } do
         deprec2.push_configs(:postfix, SYSTEM_CONFIG_FILES[:postfix])
         send(run_method, "/usr/bin/newaliases")
+        reload
       end
       
       desc "Start Postfix"

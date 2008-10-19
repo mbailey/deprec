@@ -81,3 +81,6 @@ Capistrano::Configuration.instance(:must_exist).load do
     end 
   end
 end
+
+# ultrasphinx deployment notes
+# http://blog.evanweaver.com/files/doc/fauna/ultrasphinx/files/DEPLOYMENT_NOTES.html

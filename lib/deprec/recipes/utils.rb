@@ -28,8 +28,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         end
      
         task :net do
-          apps = %w(lynx nmap netcat
-                    vim-full)
+          apps = %w(lynx nmap netcat mailx mutt telnet vim-full dnsutils)
           apt.install( {:base => apps}, :stable )
         end
         

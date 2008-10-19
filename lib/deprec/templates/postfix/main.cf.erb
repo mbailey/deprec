@@ -1,9 +1,10 @@
 # See /usr/share/postfix/main.cf.dist for a commented, more complete version
 
+
 # Debian specific:  Specifying a file name will cause the first
 # line of that file to be used as the name.  The Debian default
 # is /etc/mailname.
-#myorigin = /etc/mailname
+myorigin = /etc/mailname
 
 smtpd_banner = $myhostname ESMTP $mail_name (Ubuntu)
 biff = no
@@ -24,18 +25,12 @@ smtp_tls_session_cache_database = btree:${queue_directory}/smtp_scache
 # See /usr/share/doc/postfix/TLS_README.gz in the postfix-doc package for
 # information on enabling SSL in the smtp client.
 
-myhostname = dn.blocksglobal.com
+# myhostname = 
 alias_maps = hash:/etc/aliases
 alias_database = hash:/etc/aliases
-myorigin = /etc/mailname
-
-# deprec - XXX add something like this to template file
-# 
-# mydestination = <%# postfix_destination_domains * ', ' %>, localhost.localdomain, localhost
-mydestination = dn.blocksglobal.com, localhost.blocksglobal.com, , localhost
-
-relayhost = 
+mydestination = $myhostname localhost.$mydomain $myorigin
+relayhost = <%= postfix_relayhost %>
 mynetworks = 127.0.0.0/8
 mailbox_size_limit = 0
 recipient_delimiter = +
-inet_interfaces = all
+inet_interfaces = loopback-only

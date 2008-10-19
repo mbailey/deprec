@@ -1,0 +1,18 @@
+#
+#  /etc/apt/sources.list
+#
+
+
+#
+# gutsy
+#
+deb		http://<%= apt_mirror_hostname %>/ubuntu gutsy main restricted universe multiverse
+deb     http://archive.ubuntu.com/ubuntu     gutsy-updates main restricted universe multiverse
+deb http://security.ubuntu.com/ubuntu gutsy-security main restricted universe
+
+deb-src http://archive.ubuntu.com/ubuntu     gutsy main restricted universe
+deb-src http://archive.ubuntu.com/ubuntu     gutsy-updates main restricted universe
+deb-src http://security.ubuntu.com/ubuntu gutsy-security main restricted universe
+
+
+
