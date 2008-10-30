@@ -1,0 +1,6 @@
+<% network_dns_nameservers.split(' ').each do |nameserver| -%>
+nameserver <%= nameserver %>
+<% end -%>
+<% if ! network_dns_search_path.nil? -%>
+search <%= network_dns_search_path %>
+<% end -%>
