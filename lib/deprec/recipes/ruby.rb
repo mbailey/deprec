@@ -37,13 +37,10 @@ Capistrano::Configuration.instance(:must_exist).load do
     namespace :rubygems do
   
       SRC_PACKAGES[:rubygems] = {
-        :filename => 'rubygems-1.3.0.tgz',   
-        :md5sum => "63d3dfc038710eaf532b6a133225115a  rubygems-1.3.0.tgz", 
-        :dir => 'rubygems-1.3.0',  
-        :url => "http://rubyforge.org/frs/download.php/43985/rubygems-1.3.0.tgz",
-        :unpack => "tar zxf rubygems-1.3.0.tgz;",
-	:configure => "",
-	:make =>  "",
+        :md5sum => "a04ee6f6897077c5b75f5fd1e134c5a9  rubygems-1.3.1.tgz", 
+        :url => "http://rubyforge.org/frs/download.php/45905/rubygems-1.3.1.tgz",
+	      :configure => "",
+	      :make =>  "",
         :install => 'ruby setup.rb;'
       }
       
