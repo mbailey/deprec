@@ -1,0 +1,16 @@
+Using deprec offline (on a plane!)
+==================================
+
+# Run local rubygems server
+- point gems.rubyforge.org at local gems server
+
+# Turn off network apt sources and enable cdrom
+- use apt-cdrom
+
+# Run local apt mirror (optional)
+
+# Push sources for compiled packages to target(s)
+cap deprec:find_src
+cap deprec:push_src
+
+
