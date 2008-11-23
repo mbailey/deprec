@@ -27,18 +27,6 @@ function await_daemons_up
 	done
 }
 
-# Rules for ip forwarding and NAT
-# echo 1 >/proc/sys/net/ipv4/ip_forward
-# echo 1 >/proc/sys/net/ipv4/conf/eth0/proxy_arp
-# echo 1 >/proc/sys/net/ipv4/conf/eth1/proxy_arp
-# IPTABLES=/sbin/iptables
-# EXTIF=eth0
-# INTIF=eth1
-# $IPTABLES -A FORWARD -i $EXTIF -o $INTIF -m state --state ESTABLISHED,RELATED -j ACCEPT
-# $IPTABLES -A FORWARD -i $INTIF -o $EXTIF -j ACCEPT
-# $IPTABLES -t nat -A POSTROUTING -o $EXTIF -s 192.168.1.0/24 -j MASQUERADE
-
-
 case "$1" in
   start)
 	xend start

@@ -23,7 +23,7 @@ Capistrano::Configuration.instance(:must_exist).load do
     namespace :wordpress do
           
       # We're using the lambda because we want wordpress_install_dir to
-      # pick up on the value for :application if it's over ridden in deploy.rb
+      # pick up on the value for :application if it's overridden in deploy.rb
       #
       SRC_PACKAGES[:wordpress] =
         {
@@ -74,13 +74,12 @@ Capistrano::Configuration.instance(:must_exist).load do
       task :config, :roles => :wordpress do
         config_project
       end
+      
       task :config_project, :roles => :wordpress do
         deprec2.push_configs(:wordpress, PROJECT_CONFIG_FILES[:wordpress])
         sudo "ln -sf #{deploy_to}/wordpress/wp-config.php #{wordpress_install_dir}/wp-config.php"
         sudo "ln -sf #{deploy_to}/wordpress/apache2_wordpress_vhost.conf #{apache_vhost_dir}/#{application}.conf"        
       end
-      
-
       
       desc <<-EOF
         Create a database for WordPress on your web server, as well as 
@@ -98,5 +97,3 @@ Capistrano::Configuration.instance(:must_exist).load do
   end
   
 end
-      
-
