@@ -40,6 +40,13 @@ Capistrano::Configuration.instance(:must_exist).load do
          :mode => 0755,
          :owner => 'root:root'},
          
+        # This one is a bugfix for gutsy: domU -> domU networking is screwy
+        # http://lists.xensource.com/archives/html/xen-users/2006-05/msg00818.html
+        {:template => "40-setup-networking",
+         :path => '/usr/lib/xen-tools/gutsy.d/40-setup-networking',
+         :mode => 0755,
+         :owner => 'root:root'},
+         
         # So is this - xendomains fails to shut down domains on system shutdown
         {:template => "xend-init.erb",
          :path => '/etc/init.d/xend',
