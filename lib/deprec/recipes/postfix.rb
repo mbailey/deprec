@@ -5,6 +5,7 @@ Capistrano::Configuration.instance(:must_exist).load do
     namespace :postfix do
       
       set(:postfix_relayhost) { Capistrano::CLI.ui.ask "What host should we relay mail through?" } 
+      
       desc "Install Postfix"
       task :install, :roles => :mail do
         install_deps
@@ -61,22 +62,22 @@ Capistrano::Configuration.instance(:must_exist).load do
       end
       
       desc "Start Postfix"
-      task :start, :roles => :mail do
+      task :start, :roles => :mail, :except => { :master => true } do
         send(run_method, "/etc/init.d/postfix start")
       end
 
       desc "Stop Postfix"
-      task :stop, :roles => :mail do
+      task :stop, :roles => :mail, :except => { :master => true } do
         send(run_method, "/etc/init.d/postfix stop")
       end
 
       desc "Restart Postfix"
-      task :restart, :roles => :mail do
+      task :restart, :roles => :mail, :except => { :master => true } do
         send(run_method, "/etc/init.d/postfix restart")
       end
 
       desc "Reload Postfix"
-      task :reload, :roles => :mail do
+      task :reload, :roles => :mail, :except => { :master => true } do
         send(run_method, "/etc/init.d/postfix reload")
       end
       
