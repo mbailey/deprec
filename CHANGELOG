@@ -1,5 +1,9 @@
 == git
  
+== 1.99.28 (November 26, 2008)
+
+* Added support for Phusion Passenger (http://www.modrails.com/) [mbailey]
+
 * Restricted tasks to roles. [mbailey]
   http://github.com/mbailey/deprec/commit/d103dda7ee3f7696007d230c76c7739dd57115ec
 

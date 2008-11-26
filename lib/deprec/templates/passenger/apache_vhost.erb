@@ -1,0 +1,10 @@
+<VirtualHost *:80>
+  ServerName <%= domain %>
+  DocumentRoot "<%= passenger_document_root %>"
+  RailsEnv <%= rails_env %>
+  RailsAllowModRewrite <%= passenger_rails_allow_mod_rewrite %>
+  <directory "<%= passenger_document_root %>">
+    Order allow,deny
+    Allow from all
+  </directory>
+</VirtualHost>
