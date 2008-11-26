@@ -260,10 +260,14 @@ module Deprec2
         # ensure git is installed
         apt.install( {:base => %w(git-core)}, :stable) #TODO fix this to test ubuntu version <hardy might need specific git version for full git submodules support
         package_dir = File.join(src_dir, src_package[:dir])
-        run "if [ -d #{package_dir} ]; then cd #{package_dir} && #{sudo} git pull && #{sudo} git submodule init && #{sudo} git submodule update; else #{sudo} git clone #{src_package[:url]} #{package_dir} && cd #{package_dir} && #{sudo} git submodule init && #{sudo} git submodule update ; fi"
-	# Checkout the revision wanted if defined
-	invoke_command "cd #{package_dir} && git co #{src_package[:version]}", :via => :via if src_package[:version]
-      # when getting source with wget
+        run "if [ -d #{package_dir} ]; then cd #{package_dir} && #{sudo} git checkout master && #{sudo} git pull && #{sudo} git submodule init && #{sudo} git submodule update; else #{sudo} git clone #{src_package[:url]} #{package_dir} && cd #{package_dir} && #{sudo} git submodule init && #{sudo} git submodule update ; fi"
+      	# Checkout the revision wanted if defined
+      	if src_package[:version]
+      	  run "cd #{package_dir} && git branch | grep '#{src_package[:version]}$' && #{sudo} git branch -D '#{src_package[:version]}'; exit 0"
+      	  run "cd #{package_dir} && #{sudo} git checkout -b #{src_package[:version]} #{src_package[:version]}" 
+        end
+	
+      # when getting source with wget    
       when :http
         # ensure wget is installed
         apt.install( {:base => %w(wget)}, :stable )
