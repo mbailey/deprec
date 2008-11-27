@@ -4,7 +4,7 @@ Capistrano::Configuration.instance(:must_exist).load do
     namespace :passenger do
       
       set :passenger_install_dir, '/opt/passenger'
-      set(:passenger_document_root) { "#{deploy_to}/public" }
+      set(:passenger_document_root) { "#{current_path}/public" }
       set :passenger_rails_allow_mod_rewrite, 'off'
       set :passenger_vhost_dir, '/etc/apache2/sites-enabled'
       # Default settings for Passenger config files
