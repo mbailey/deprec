@@ -46,7 +46,7 @@ Capistrano::Configuration.instance(:must_exist).load do
 
       desc "Install passenger"
       task :install, :roles => :passenger do
-        # install_deps
+        install_deps
         deprec2.download_src(SRC_PACKAGES[:passenger], src_dir)
 
         # Non standard - passenger requires input
