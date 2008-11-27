@@ -1,5 +1,10 @@
 == git
  
+
+== 1.99.29 (November 28, 2008)
+
+* Bugfix: deprec:passenger:install_deps was commented out for testing
+
 == 1.99.28 (November 26, 2008)
 
 * Added support for Phusion Passenger (http://www.modrails.com/) [mbailey]
