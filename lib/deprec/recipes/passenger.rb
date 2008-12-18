@@ -3,7 +3,9 @@ Capistrano::Configuration.instance(:must_exist).load do
   namespace :deprec do 
     namespace :passenger do
       
-      set :passenger_install_dir, '/opt/passenger'
+      set :passenger_version, "passenger-2.1.0"
+      set :passenger_filename, "#{passenger_version}.tar.gz"
+      set :passenger_install_dir, "/opt/#{passenger_version}"
       set(:passenger_document_root) { "#{current_path}/public" }
       set :passenger_rails_allow_mod_rewrite, 'off'
       set :passenger_vhost_dir, '/etc/apache2/sites-enabled'
@@ -18,12 +20,12 @@ Capistrano::Configuration.instance(:must_exist).load do
       set :passenger_rails_spawn_method, 'smart' # smart | conservative
 
       SRC_PACKAGES[:passenger] = {
-        :url => "git://github.com/FooBarWidget/passenger.git",
-        :download_method => :git,
-        :version => 'release-2.0.3', # Specify a tagged release to deploy
+        :md5 => "8e53ce6aee19afcf5cff88cf20fe4159  #{passenger_filename}"
+        :url => "http://github.com/isaac/passenger/raw/master/pkg/#{passenger_filename}",
+        :unpack => "tar xzvf #{passenger_filename};",
         :configure => '',
         :make => '',
-        :install => './bin/passenger-install-apache2-module'
+        :install => './bin/passenger-install-apache2-module --auto'
       }
       
       SYSTEM_CONFIG_FILES[:passenger] = [
@@ -47,18 +49,8 @@ Capistrano::Configuration.instance(:must_exist).load do
       desc "Install passenger"
       task :install, :roles => :passenger do
         install_deps
-        deprec2.download_src(SRC_PACKAGES[:passenger], src_dir)
-
-        # Non standard - passenger requires input
-        package_dir = File.join(src_dir, 'passenger.git')
-        dest_dir = passenger_install_dir + '-' + (SRC_PACKAGES[:passenger][:version] || 'trunk')
-        run "#{sudo} rsync -avz #{package_dir}/ #{dest_dir}"
-        run <<-EOF
-        cd #{dest_dir} &&
-        #{sudo} ruby -i -pe '$_ = $_.sub("STDIN.readline","# do nothing")' bin/passenger-install-apache2-module
-        EOF
-        run "cd #{dest_dir} && #{sudo} ./bin/passenger-install-apache2-module"
-        run "#{sudo} unlink #{passenger_install_dir} 2>/dev/null; #{sudo} ln -sf #{dest_dir} #{passenger_install_dir}"
+        deprec2.download_src(SRC_PACKAGES[:passenger], passenger_install_dir)
+        deprec2.install_from_src(SRC_PACKAGES[:passenger], passenger_install_dir)
       end
 
       # install dependencies for nginx
