@@ -22,9 +22,6 @@ Capistrano::Configuration.instance(:must_exist).load do
   namespace :deprec do 
     namespace :wordpress do
           
-      # We're using the lambda because we want wordpress_install_dir to
-      # pick up on the value for :application if it's overridden in deploy.rb
-      #
       SRC_PACKAGES[:wordpress] =
         {
         :url => "http://wordpress.org/latest.tar.gz",
