@@ -202,7 +202,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       task :enable_hardy_domu, :roles => :dom0 do
         # Note, hardy keeps debootrap in /usr/share/debootstrap/scripts/
         # create debootstrap symlink
-        sudo "test -f ln -sf /usr/lib/debootstrap/scripts/gutsy /usr/lib/debootstrap/scripts/hardy"
+        sudo "ln -sf /usr/lib/debootstrap/scripts/gutsy /usr/lib/debootstrap/scripts/hardy"
         # link xen-tools hooks
         sudo "ln -sf /usr/lib/xen-tools/edgy.d /usr/lib/xen-tools/hardy.d"
       end
