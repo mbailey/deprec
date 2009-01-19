@@ -29,7 +29,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         result
       }
       set(:network_hostname) { 
-        Capistrano::CLI.ui.ask "hostname" do |q|
+        Capistrano::CLI.ui.ask "Enter the hostname for the server" do |q|
           # q.validate = /add hostname validation here/
         end 
       } 
