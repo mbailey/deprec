@@ -12,6 +12,30 @@ Capistrano::Configuration.instance(:must_exist).load do
       
       # ref: http://www.eadz.co.nz/blog/article/xen-gutsy.html
       
+      desc "Install Xen"
+      task :install, :roles => :dom0 do
+        install_deps
+        disable_apparmour
+        disable_tls
+        enable_hardy_domu
+      end
+      
+      task :install_deps, :roles => :dom0 do
+        # for amd64 version of ubuntu 7.10
+        apt.install( {:base => %w(linux-image-xen bridge-utils libxen3.1 python-xen-3.1 xen-docs-3.1 xen-hypervisor-3.1 xen-ioemu-3.1 xen-tools xen-utils-3.1 lvm2)}, :stable )
+        # alternatively, for x86 version of ubuntu:
+        # apt-get install ubuntu-xen-server libc6-xen lvm2    
+      end
+      
+      task :disable_apparmour, :roles => :dom0 do
+        sudo '/etc/init.d/apparmor stop'
+        sudo 'update-rc.d -f apparmor remove'
+      end
+      
+      task :disable_tls, :roles => :dom0 do
+        sudo 'mv /lib/tls /lib/tls.disabled'
+      end
+      
       SYSTEM_CONFIG_FILES[:xen] = [
                 
         {:template => "xend-config.sxp.erb",
@@ -60,19 +84,6 @@ Capistrano::Configuration.instance(:must_exist).load do
          :owner => 'root:root'}
          
       ]
-      
-      desc "Install Xen"
-      task :install, :roles => :dom0 do
-        install_deps
-        enable_hardy_domu
-      end
-      
-      task :install_deps, :roles => :dom0 do
-        # for amd64 version of ubuntu 7.10
-        apt.install( {:base => %w(linux-image-xen bridge-utils libxen3.1 python-xen-3.1 xen-docs-3.1 xen-hypervisor-3.1 xen-ioemu-3.1 xen-tools xen-utils-3.1 lvm2)}, :stable )
-        # alternatively, for x86 version of ubuntu:
-        # apt-get install ubuntu-xen-server libc6-xen    
-      end
       
       desc "Generate configuration file(s) for Xen from template(s)"
       task :config_gen do
@@ -187,10 +198,11 @@ Capistrano::Configuration.instance(:must_exist).load do
         sudo "rmdir #{mnt_dir}", :hosts => xen_new_host
       end
       
-      desc "Enable hardy heron domU's on gutsy dom0"
+      desc "Enable hardy heron domU's on gutsy dom0. (Note required on hardy)"
       task :enable_hardy_domu, :roles => :dom0 do
+        # Note, hardy keeps debootrap in /usr/share/debootstrap/scripts/
         # create debootstrap symlink
-        sudo "ln -sf /usr/lib/debootstrap/scripts/gutsy /usr/lib/debootstrap/scripts/hardy"
+        sudo "test -f ln -sf /usr/lib/debootstrap/scripts/gutsy /usr/lib/debootstrap/scripts/hardy"
         # link xen-tools hooks
         sudo "ln -sf /usr/lib/xen-tools/edgy.d /usr/lib/xen-tools/hardy.d"
       end
