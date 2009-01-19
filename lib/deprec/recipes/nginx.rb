@@ -109,7 +109,9 @@ Capistrano::Configuration.instance(:must_exist).load do
 
       desc "Stop Nginx"
       task :stop, :roles => :web do
-        send(run_method, "/etc/init.d/nginx stop")
+        # Nginx returns error code if you try to stop when it's not running
+        # We don't want this to kill Capistrano. 
+        send(run_method, "/etc/init.d/nginx stop; exit 0") 
       end
 
       desc "Restart Nginx"
