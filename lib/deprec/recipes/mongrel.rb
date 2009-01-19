@@ -137,6 +137,11 @@ Capistrano::Configuration.instance(:must_exist).load do
         send(run_method, "mongrel_rails cluster::stop -C #{mongrel_conf}")
       end
       
+      desc "Stop all mongrel clusters."
+      task :stop_all, :roles => :app do
+        run "#{sudo} /etc/init.d/mongrel_cluster stop"
+      end
+      
       desc "Restart application server."
       task :restart, :roles => :app do
         send(run_method, "mongrel_rails cluster::restart --clean -C #{mongrel_conf}")
