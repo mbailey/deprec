@@ -88,7 +88,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       task :create_database, :roles => lambda { db_host } do
         run <<-EOF
           mysql -u root -e 'create database #{DB_NAME}'
-          mysql -u root -e 'grant all on sct_blog.* to '#{DB_USER}'@'%' identified by '#{DB_PASSWORD}'
+          mysql -u root -e 'grant all on #{DB_NAME}.* to '#{DB_USER}'@'%' identified by '#{DB_PASSWORD}'
           mysql -u root -e 'flush privileges'
         EOF
       end
