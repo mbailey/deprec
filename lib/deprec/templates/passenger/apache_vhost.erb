@@ -1,10 +1,14 @@
-<VirtualHost *:80>
-  ServerName <%= domain %>
-  DocumentRoot "<%= passenger_document_root %>"
-  RailsEnv <%= rails_env %>
-  RailsAllowModRewrite <%= passenger_rails_allow_mod_rewrite %>
-  <directory "<%= passenger_document_root %>">
-    Order allow,deny
-    Allow from all
-  </directory>
-</VirtualHost>
+# Don't cause the server to break if Passenger module not loaded
+<IfModule passenger_module>
+	<VirtualHost *:80>
+	  ServerName <%= domain %>
+	  DocumentRoot "<%= passenger_document_root %>"
+	  RailsEnv <%= rails_env %>
+	  RailsAllowModRewrite <%= passenger_rails_allow_mod_rewrite %>
+	  <Directory "<%= passenger_document_root %>">
+	    Order allow,deny
+	    Allow from all
+	  </Directory>
+	</VirtualHost>
+</IfModule>
+
