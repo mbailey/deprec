@@ -4,7 +4,14 @@
 	  ServerName <%= domain %>
 	  DocumentRoot "<%= passenger_document_root %>"
 	  RailsEnv <%= rails_env %>
-	  RailsAllowModRewrite <%= passenger_rails_allow_mod_rewrite %>
+	  # RailsAllowModRewrite <%= passenger_rails_allow_mod_rewrite %>
+	  #
+	  # Check for maintenance file and redirect all requests
+	  RewriteEngine On
+	  RewriteCond %{REQUEST_URI} !\.(css|jpg|png|gif)$
+	  RewriteCond %{DOCUMENT_ROOT}/system/maintenance.html -f
+	  RewriteCond %{SCRIPT_FILENAME} !maintenance.html
+      RewriteRule ^.*$ /system/maintenance.html [L]
 	  <Directory "<%= passenger_document_root %>">
 	    Order allow,deny
 	    Allow from all

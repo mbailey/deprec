@@ -6,6 +6,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       desc "Install apache"
       task :install do
         install_deps
+        enable_mod_rewrite
       end
       
       # install dependencies for apache
@@ -46,6 +47,10 @@ Capistrano::Configuration.instance(:must_exist).load do
       
       # Stub so generic tasks don't fail (e.g. deprec:web:config_project)
       task :config_project do
+      end
+      
+      task :enable_mod_rewrite, :roles => :web do
+        sudo "a2enmod rewrite"
       end
 
       desc "Start Apache"
