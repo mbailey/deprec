@@ -27,13 +27,12 @@ Capistrano::Configuration.instance(:must_exist).load do
   
   # Server options
   CHOICES_WEBSERVER = [:nginx, :apache, :none]
-  CHOICES_APPSERVER = [:mongrel, :webrick, :none]
+  CHOICES_APPSERVER = [:mongrel, :webrick, :passenger, :none]
   CHOICES_DATABASE  = [:mysql, :postgres, :none]
-  
   
   # Server defaults
   default :web_server_type, :apache
-  default :app_server_type, :mongrel
+  default :app_server_type, :passenger
   default :db_server_type,  :mysql
 
   default(:web_server_type) do
@@ -99,11 +98,11 @@ Capistrano::Configuration.instance(:must_exist).load do
   default(:web_server_aliases) { domain.match(/^www/) ? [] : ["www.#{domain}"] }    
 
   # XXX for some reason this is causing "before deprec:rails:install" to be executed twice
-  # on :load, 'deprec:connect_canonical_tasks' 
+  on :load, 'deprec:connect_canonical_tasks' 
 
   namespace :deprec do
 
-    task :connect_canonical_tasks, :hosts => 'localhost' do      
+    task :connect_canonical_tasks do      
       # link application specific recipes into canonical task names
       # e.g. deprec:web:restart => deprec:nginx:restart 
       metaclass = class << self; self; end
