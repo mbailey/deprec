@@ -74,7 +74,17 @@ files = {
   
     set :application, "set your application name here"
     set :domain, "set domain name project will be served on here"
-    set :repository,  "svn+ssh://\#{domain}/var/www/apps/\#{application}/repos/trunk"
+    set :repository,  "git://github.com/\#{user}/\#{application}.git"
+    
+    # If you aren't using Subversion to manage your source code, specify
+    # your SCM below:
+    set :scm, :git
+   
+    set :passenger_use_ree, true
+    set :web_server_type, 'apache'
+    set :app_server_type, 'passenger'
+    set :db_server_type, 'mysql'
+    
     # set :gems_for_project, %w(dr_nic_magic_models swiftiply) # list of gems to be installed
     
     # Update these if you're not running everything on one host.
@@ -87,10 +97,6 @@ files = {
     # servers (which is the deprec default), you can specify the actual location
     # via the :deploy_to variable:
     # set :deploy_to, "/var/www/\#{application}"
-
-    # If you aren't using Subversion to manage your source code, specify
-    # your SCM below:
-    # set :scm, :subversion
     
     namespace :deploy do
       task :restart, :roles => :app, :except => { :no_release => true } do
