@@ -62,6 +62,19 @@ Capistrano::Configuration.instance(:must_exist).load do
           :mode => 0644,
           :owner => 'root:root'}
       ]
+      
+      PROJECT_CONFIG_FILES[:nginx] = [
+      
+        {:template => 'rails_nginx_vhost.conf.erb',
+         :path => "rails_nginx_vhost.conf", 
+         :mode => 0644,
+         :owner => 'root:root'},
+           
+        {:template => 'logrotate.conf.erb',
+         :path => "logrotate.conf", 
+         :mode => 0644,
+         :owner => 'root:root'}  
+      ]
 
       desc <<-DESC
       Generate nginx config from template. Note that this does not
@@ -74,10 +87,32 @@ Capistrano::Configuration.instance(:must_exist).load do
           deprec2.render_template(:nginx, file)
         end
       end
+      
+      desc "Generate config files for rails app."
+      task :config_gen_project do
+        PROJECT_CONFIG_FILES[:nginx].each do |file|
+          deprec2.render_template(:nginx, file)
+        end
+      end
 
       desc "Push nginx config files to server"
       task :config, :roles => :web do
         deprec2.push_configs(:nginx, SYSTEM_CONFIG_FILES[:nginx])
+      end
+      
+      desc "Push out config files for rails app."
+      task :config_project, :roles => :web do
+        deprec2.push_configs(:nginx, PROJECT_CONFIG_FILES[:nginx])
+        symlink_nginx_vhost
+        symlink_nginx_logrotate_config
+      end
+      
+      task :symlink_nginx_vhost, :roles => :web do
+        sudo "ln -sf #{deploy_to}/nginx/rails_nginx_vhost.conf #{nginx_vhost_dir}/#{application}.conf"
+      end
+      
+      task :symlink_nginx_logrotate_config, :roles => :web do
+        sudo "ln -sf #{deploy_to}/nginx/logrotate.conf /etc/logrotate.d/nginx-#{application}"
       end
 
       desc <<-DESC
