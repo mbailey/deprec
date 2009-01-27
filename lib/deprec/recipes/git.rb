@@ -25,7 +25,7 @@ Capistrano::Configuration.instance(:must_exist).load do
 
       # install dependencies for nginx
       task :install_deps do
-        apt.install( {:base => %w(zlib1g-dev gettext)}, :stable )
+        apt.install( {:base => %w(zlib1g-dev gettext libcurl4-gnutls-dev)}, :stable )
       end
       
       # "Start git server in local directory"
