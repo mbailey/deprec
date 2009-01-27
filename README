@@ -11,7 +11,7 @@ Get your app running on a fresh Ubuntu (7.10, 8.04.1) server these commands:
 	# Edit config/deploy.rb
 	cap deprec:rails:install_stack deploy:setup deploy deploy:migrate
 
-Recorded times for complete install (YMMV)
+Recorded times for complete install on Ubuntu hardy server (7.10 amd64)
 
 	* Passenger+REE+Apache        : 14m29s
 	* Passenger+ruby-1.8.7+Apache : 17m51s
