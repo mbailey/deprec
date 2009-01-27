@@ -30,9 +30,13 @@ Capistrano::Configuration.instance(:must_exist).load do
   CHOICES_APPSERVER = [:mongrel, :webrick, :passenger, :none]
   CHOICES_DATABASE  = [:mysql, :postgres, :none]
   
-  # Server defaults
-  default :web_server_type, :apache
-  default :app_server_type, :passenger
+  # Service defaults
+  #
+  # The defaults below are legacy values to support older deployments.
+  # Newly generated deploy.rb files have use apache, passenger and ree 
+  default :passenger_use_ree, false
+  default :web_server_type, :nginx
+  default :app_server_type, :mongrel
   default :db_server_type,  :mysql
 
   default(:web_server_type) do
