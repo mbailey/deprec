@@ -5,18 +5,9 @@ Capistrano::Configuration.instance(:must_exist).load do
     namespace :ruby do
             
       SRC_PACKAGES[:ruby] = {
-        :filename => 'ruby-1.8.6-p287.tar.gz',   
-        :md5sum => "f6cd51001534ced5375339707a757556  ruby-1.8.6-p287.tar.gz", 
-        :dir => 'ruby-1.8.6-p287',  
-        :url => "ftp://ftp.ruby-lang.org/pub/ruby/1.8/ruby-1.8.6-p287.tar.gz",
-        :unpack => "tar zxf ruby-1.8.6-p287.tar.gz;",
-        :configure => %w(
-          ./configure
-          --with-readline-dir=/usr/local
-          ;
-          ).reject{|arg| arg.match '#'}.join(' '),
-        :make => 'make;',
-        :install => 'make install;'
+        :md5sum => "5e5b7189674b3a7f69401284f6a7a36d  ruby-1.8.7-p72.tar.gz", 
+        :url => "ftp://ftp.ruby-lang.org/pub/ruby/1.8/ruby-1.8.7-p72.tar.gz",
+        :configure => "./configure --with-readline-dir=/usr/local;"
       }
   
       task :install do
@@ -59,7 +50,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       task :install_deps do
       end
       
-    end 
+    end
+    
   end
-  
 end
