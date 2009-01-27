@@ -18,6 +18,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         disable_apparmour
         disable_tls
         enable_hardy_domu
+        initial_config
       end
       
       task :install_deps, :roles => :dom0 do
@@ -42,48 +43,33 @@ Capistrano::Configuration.instance(:must_exist).load do
         :path => '/etc/xen/xend-config.sxp',
         :mode => 0644,
         :owner => 'root:root'},
-        
-        {:template => "xen-tools.conf.erb",
-         :path => '/etc/xen-tools/xen-tools.conf',
-         :mode => 0644,
-         :owner => 'root:root'},
-         
-        {:template => "xm.tmpl.erb",
-         :path => '/etc/xen-tools/xm.tmpl',
-         :mode => 0644,
-         :owner => 'root:root'},
          
         {:template => "xendomains.erb",
          :path => '/etc/default/xendomains',
          :mode => 0755,
          :owner => 'root:root'},
          
-        # This one is a bugfix for gutsy 
-        {:template => "15-disable-hwclock",
-         :path => '/usr/lib/xen-tools/gutsy.d/15-disable-hwclock',
-         :mode => 0755,
-         :owner => 'root:root'},
-         
-        # This one is a bugfix for gutsy: domU -> domU networking is screwy
-        # http://lists.xensource.com/archives/html/xen-users/2006-05/msg00818.html
-        {:template => "40-setup-networking",
-         :path => '/usr/lib/xen-tools/gutsy.d/40-setup-networking',
-         :mode => 0755,
-         :owner => 'root:root'},
-         
-        # So is this - xendomains fails to shut down domains on system shutdown
-        {:template => "xend-init.erb",
-         :path => '/etc/init.d/xend',
-         :mode => 0755,
-         :owner => 'root:root'},
-          
         # This gives you a second network bridge on second ethernet device  
         {:template => "network-bridge-wrapper",
          :path => '/etc/xen/scripts/network-bridge-wrapper',
          :mode => 0755,
+         :owner => 'root:root'},
+         
+        # Bugfix for gutsy - xendomains fails to shut down domains on system shutdown
+        {:template => "xend-init.erb",
+         :path => '/etc/init.d/xend',
+         :mode => 0755,
          :owner => 'root:root'}
          
       ]
+      
+      desc "Push Xen config files to server"
+      task :initial_config, :roles => :dom0 do
+        # Non-standard! We're pushing these straight out
+        SYSTEM_CONFIG_FILES[:xen].each do |file|
+          deprec2.render_template(:xen, file.merge(:remote => true))
+        end      
+      end
       
       desc "Generate configuration file(s) for Xen from template(s)"
       task :config_gen do
@@ -142,7 +128,6 @@ Capistrano::Configuration.instance(:must_exist).load do
         create_lvm_disks
         build_slice_from_tarball
       end
-
 
       task :copy_disk do
         mnt_dir = "/mnt/#{xen_slice}-disk"
@@ -212,6 +197,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       end
       
     end
+    
   end
 end
 

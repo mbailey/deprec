@@ -1,0 +1,138 @@
+#
+# Configuration file for the Xen instance {$hostname}, created
+# by xen-tools {$xen_tools_version} on { scalar localtime }.
+#
+
+#
+#  Kernel + memory size
+#
+{ if ( ( $kernel ) && ( !defined($pygrub)) )
+  {
+    $OUT.= "kernel      = '$kernel'";
+  }
+}
+{ if ( ( $initrd ) && ( !defined($pygrub)) )
+  {
+    $OUT.= "ramdisk     = '$initrd'";
+  }
+}
+{
+  if ( $pygrub )
+  {
+    $OUT .= "bootloader = '/usr/bin/pygrub'\n";
+  }
+}
+memory      = '{$memory}'
+
+#
+#  Disk device(s).
+#
+{
+  if ( !defined($image_vbd ) )
+  {
+    for ( my $i = $#PARTITIONS; $i >= 0 ; $i-- )
+    {
+      if ( $PARTITIONS[$i]{'mountpoint'} eq '/' )
+      {
+          $OUT .= "root        = '/dev/$device" . ($i + 1) . " ro'\n";
+      }
+    }
+    $OUT .= "disk        = [\n";
+    for ( my $i = $#PARTITIONS; $i >= 0 ; $i-- )
+    {
+      $OUT .= "                  '$PARTITIONS[$i]{'imagetype'}$PARTITIONS[$i]{'image'},$device" . ( $i + 1 ) .",w',\n";
+    }
+    $OUT .= "              ]\n";
+  }
+}
+
+#
+#  Physical volumes
+#
+{
+    if ( ( $swap_vbd ) && ( $image_vbd ) )
+    {
+    $OUT .= "root  = '/dev/$device" . "2 ro'\n";
+
+    $OUT .= "disk  = [ ";
+
+    if ( $image_vbd )
+    {
+         $OUT .= "'$image_vbd," . $device . "2,w'";
+
+    }
+
+    if ( $swap_vbd )
+    {
+         if ( $image_vbd )
+         {
+            $OUT .= ",";
+         }
+
+         $OUT .= "'$swap_vbd," . $device . "1,w'";
+    }
+    $OUT .= " ]\n";
+    }
+}
+
+
+#
+#  Hostname
+#
+name        = '{$hostname}'
+
+#
+#  Networking
+#
+{ if ( $dhcp )
+  {
+    $OUT .= "dhcp        = 'dhcp'\n";
+
+    # Setup the mac address, if present.
+    my $m = '';
+    if ( $mac )
+    {
+      $m = "mac=$mac"
+    }
+
+    $OUT .= "vif         = [ '$m' ]";
+  }
+  else
+  {
+    #
+    # Setup the mac address, if present.
+    #
+    my $m = '';
+    if ( $mac )
+    {
+      $m = ",mac=$mac"
+    }
+
+    my $vn = '';
+    if ( $vifname )
+    {
+      $vn = ",vifname=$vifname";
+    }
+
+    $OUT .= "vif         = [ 'ip=$ip1";
+    $OUT .= "$m";
+    $OUT .= "$vn";
+    $OUT .= "' ]";
+  }
+}
+
+#
+#  Behaviour
+#
+on_poweroff = 'destroy'
+on_reboot   = 'restart'
+on_crash    = 'restart'
+
+
+{ if ( $admins )
+  {
+    $OUT .= "xen_shell = '$admins'\n";
+  }
+}
+
+extra = ' TERM=xterm xencons=tty console=tty1'

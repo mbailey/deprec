@@ -1,14 +1,32 @@
+##
+#  /etc/xen-tools/xen-tools.conf
+##
 #
-# /etc/xen-tools/xen-tools.conf
+#  This is the global configuration file for the scripts included
+# within the xen-tools package.
 #
-#  Global configuration file for the scripts included with Xen-tools.
+#  For more details please see:
 #
-#  Values may be set here so they don't need to be specified upon the
-# command line.
+#        http://xen-tools.org/
 #
-# Steve
-# --
+##
+
+
+##
 #
+# File Format
+# -----------
+#
+#  Anything following a '#' character is ignored as a comment.
+#
+#  Otherwise the format of this file "key = value".  The value of
+# any keys in this file may be constructed via the output of a command.
+#
+#  For example:
+#
+#         kernel = /boot/vmlinuz-`uname -r`
+#
+##
 
 
 
@@ -25,7 +43,6 @@
 # 
 ##
 # dir = /home/xen
-# dir = /var/vm
 #
 
 #
@@ -35,8 +52,7 @@
 # LVM volume group here instead
 #
 ##
-# lvm = skx-vg
-lvm = vm_local
+lvm = xendisks
 
 
 #
@@ -49,6 +65,7 @@ lvm = vm_local
 #
 #   - Installation via the debootstrap command.
 #   - Installation via the rpmstrap command.
+#   - Installation via the rinse command.
 #   - Installation by copying a directory containing a previous installation.
 #   - Installation by untarring a previously archived image.
 #
@@ -60,14 +77,15 @@ lvm = vm_local
 ##
 #
 # 
-# install-method = [ debootstrap | rpmstrap | copy | tar ]
+# install-method = [ debootstrap | rinse | rpmstrap | copy | tar ]
 #
 #
 install-method = debootstrap
 
 #
-# If you're using "copy", or "tar" you will need to specify the
-# source location to copy from, or the source .tar file to unpack.
+# If you're using the "copy", or "tar" installation methods you must
+# need to specify the source location to copy from, or the source
+# .tar file to unpack.
 #
 # You may specify that with a line such as:
 #
@@ -81,13 +99,19 @@ install-method = debootstrap
 #  Command definitions.
 ##
 #
-# The "debootstrap" and "rpmstrap" commands are hardwired into the
-# script, but if you wish to modify the commands which are executed
-# when installing new systems by a "copy" or "tar" method you can
-# do so here:
+# The "rinse", and "rpmstrap" commands are hardwired into 
+# the script, but if you wish to modify the commands which are executed
+# when installing new systems by a "copy", "debootstrap", or "tar" method
+# you can do so here:
+#
+# (This allows you to install from a .tar.bz file, rather than a plain
+# tar file, use cdebootstrap, etc.)
 #
 # install-method=copy:
 # copy-cmd = /bin/cp -a $src/* $dest
+#
+# install-method=debootstrap:
+# debootstrap-cmd=/usr/sbin/debootstrap
 #
 # install-method=tar:
 # tar-cmd  = /bin/tar --numeric-owner -xvf $src
@@ -101,23 +125,29 @@ install-method = debootstrap
 #  Disk and Sizing options.
 ##
 #
-size   = 10Gb     # Disk image size.
+size   = 4Gb      # Disk image size.
 memory = 256Mb    # Memory size
 swap   = 512Mb    # Swap size
 # noswap = 1      # Don't use swap at all for the new system.
 fs     = ext3     # use the EXT3 filesystem for the disk image.
-dist   = gutsy    # Default distribution to install.
-image  = full     # Specify sparse vs. full disk images.
+dist   = hardy    # Default distribution to install.
+image  = sparse   # Specify sparse vs. full disk images.
 
 #
 #  Currently supported and tested distributions include:
 #
-#   sid          - Debian
-#   sarge        - Debian
-#   etch         - Debian
-#   dapper       - Ubuntu
-#   centos4      - CentOS 4
-#   fedora-core4 - Fedora Core 4 (codname stentz)
+# via Debootstrap:
+#
+#  Debian:
+#   sid, sarge, etch, lenny.
+#
+#  Ubuntu:
+#   edgy, feisty, dapper, gutsy, hardy.
+#
+# via Rinse:
+#   centos-4, centos-5.
+#   fedora-core-4, fedora-core-5, fedora-core-6, fedora-core-7
+#
 #
 
 
@@ -154,7 +184,7 @@ broadcast = 192.168.1.255
 # Uncomment the following line if you wish to interactively setup
 # a new root password for images.
 #
-passwd = 1
+# passwd = 1
 
 #
 # If you'd like all accounts on your host system which are not present
@@ -170,23 +200,23 @@ kernel      = /boot/vmlinuz-`uname -r`
 initrd      = /boot/initrd.img-`uname -r`
 
 #
-#  The architecture to use when using debootstrap or rpmstrap.
+#  The architecture to use when using debootstrap, rinse, or rpmstrap.
 #
 #  This is most useful on 64 bit host machines, for other systems it
 # doesn't need to be used.
 #
-# arch=i386
+# arch=[i386|amd64]
 #
 
 #
 # The default mirror for debootstrap to install Debian-derived distributions
 #
-# mirror = http://ftp.us.debian.org/debian/
+mirror = http://ftp.us.debian.org/debian/
 
 #
 # A mirror suitable for use when installing the Dapper release of Ubuntu.
 #
-# mirror = http://gb.archive.ubuntu.com/ubuntu/
+mirror = http://archive.ubuntu.com/ubuntu/
 
 #
 #  If you like you could use per-distribution mirrors, which will
@@ -199,22 +229,48 @@ initrd      = /boot/initrd.img-`uname -r`
 # mirror_dapper=http://archive.ubuntu.com/ubuntu
 # mirror_edgy=http://archive.ubuntu.com/ubuntu
 # mirror_feisty=http://archive.ubuntu.com/ubuntu
-mirror_gutsy=http://archive.ubuntu.com/ubuntu
+# mirror_gutsy=http://archive.ubuntu.com/ubuntu
 
+
+#
+#  Filesystem options for the different filesystems we support.
+#
+ext3_options   = noatime,nodiratime,errors=remount-ro
+ext2_options   = noatime,nodiratime,errors=remount-ro
+xfs_options    = defaults
+reiser_options = defaults
 
 #
 #  Uncomment if you wish newly created images to boot once they've been
 # created.
 #
 # boot = 1
-#
 
-#  If you're using a newer version of the Xen guest kernel you will
-# need to make sure that you use 'xvc0' for the guest serial device,
+
+#
+#  If you're using the lenny or later version of the Xen guest kernel you will
+# need to make sure that you use 'hvc0' for the guest serial device,
 # and 'xvdX' instead of 'sdX' for serial devices.
 #
-# serial_device = tty1 #default
-# serial_device = xvc0
+#  You may specify the things to use here:
 #
-# disk_device = sda  #default
-# disk_device = xvda
+# serial_device = hvc0 #default
+# serial_device = tty1
+#
+# disk_device = xvda #default
+# disk_device = sda
+#
+
+
+#
+#  Here we specify the output directory which the Xen configuration
+# files will be written to, and the suffix to give them.
+#
+#  Historically xen-tools have created configuration files in /etc/xen,
+# and given each file the name $hostname.cfg.  If you want to change
+# that behaviour you may do so here.
+#
+#
+# output    = /etc/xen
+# extension = .cfg
+#
