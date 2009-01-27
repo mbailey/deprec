@@ -22,11 +22,9 @@ Capistrano::Configuration.instance(:must_exist).load do
         deprec2.download_src(SRC_PACKAGES[:nginx], src_dir)
         deprec2.install_from_src(SRC_PACKAGES[:nginx], src_dir)
         create_nginx_user
-        # install_index_page  # XXX not done yet
-        SYSTEM_CONFIG_FILES[:nginx].each do |file|
-          deprec2.render_template(:nginx, file.merge(:remote => true))
-        end
+        initial_config
         activate
+        start
       end
 
       # install dependencies for nginx
@@ -76,6 +74,12 @@ Capistrano::Configuration.instance(:must_exist).load do
          :owner => 'root:root'}  
       ]
 
+      task :initial_config do
+        SYSTEM_CONFIG_FILES[:nginx].each do |file|
+          deprec2.render_template(:nginx, file.merge(:remote => true))
+        end
+      end
+      
       desc <<-DESC
       Generate nginx config from template. Note that this does not
       push the config to the server, it merely generates required
@@ -139,7 +143,9 @@ Capistrano::Configuration.instance(:must_exist).load do
 
       desc "Start Nginx"
       task :start, :roles => :web do
-        send(run_method, "/etc/init.d/nginx start")
+        # Nginx returns error code if you try to start it when it's already running
+        # We don't want this to kill Capistrano.
+        send(run_method, "/etc/init.d/nginx start; exit 0")
       end
 
       desc "Stop Nginx"
@@ -151,10 +157,8 @@ Capistrano::Configuration.instance(:must_exist).load do
 
       desc "Restart Nginx"
       task :restart, :roles => :web do
-        # So that restart will work even if nginx is not running
-        # we call stop and ignore the return code. We then start it.
-        send(run_method, "/etc/init.d/nginx stop; exit 0")
-        send(run_method, "/etc/init.d/nginx start")
+        stop
+        start
       end
 
       desc "Reload Nginx"
