@@ -223,6 +223,11 @@ Capistrano::Configuration.instance(:must_exist).load do
       
       task :symlink_ree do
         sudo "ln -sf /opt/#{ree_version} #{ree_short_path}"
+        sudo "ln -fs #{ree_short_path}/bin/gem /usr/local/bin/gem"
+        sudo "ln -fs #{ree_short_path}/bin/irb /usr/local/bin/irb"
+        sudo "ln -fs #{ree_short_path}/bin/rake /usr/local/bin/rake"
+        sudo "ln -fs #{ree_short_path}/bin/rails /usr/local/bin/rails"
+        sudo "ln -fs #{ree_short_path}/bin/ruby /usr/local/bin/ruby"
       end
       
     end
