@@ -11,14 +11,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       set(:mongrel_log_dir) { "#{deploy_to}/shared/log" }
       set(:mongrel_pid_dir) { "#{deploy_to}/shared/pids" }
       set :mongrel_conf_dir, '/etc/mongrel_cluster'
-      set(:mongrel_conf) { "/etc/mongrel_cluster/#{application}.yml" }  
-      set :mongrel_user_prefix,  'mongrel_'
-      set(:mongrel_user) { mongrel_user_prefix + application }
-      set :mongrel_group_prefix,  'app_'
-      set(:mongrel_group) { mongrel_group_prefix + application }
-
-      
-      # Install 
+      set(:mongrel_conf) { "/etc/mongrel_cluster/#{application}.yml" }
       
       desc "Install mongrel"
       task :install, :roles => :app do
@@ -99,7 +92,6 @@ Capistrano::Configuration.instance(:must_exist).load do
       end
       
       task :config_project, :roles => :app do
-        create_mongrel_user_and_group
         deprec2.push_configs(:mongrel, PROJECT_CONFIG_FILES[:mongrel])
         symlink_mongrel_cluster
         symlink_monit_config
@@ -191,32 +183,6 @@ Capistrano::Configuration.instance(:must_exist).load do
       end
       
       task :restore, :roles => :app do
-      end
-      
-      desc "create user and group for mongel to run as"
-      task :create_mongrel_user_and_group, :roles => :app do
-        deprec2.groupadd(mongrel_group) 
-        deprec2.useradd(mongrel_user, :group => mongrel_group, :homedir => false)
-        # Set the primary group for the mongrel user (in case user already existed
-        # when previous command was run)
-        sudo "usermod --gid #{mongrel_group} #{mongrel_user}"
-      end
-      
-      desc "set group ownership and permissions on dirs mongrel needs to write to"
-      task :set_perms_for_mongrel_dirs, :roles => :app do
-        tmp_dir = "#{deploy_to}/current/tmp"
-        shared_dir = "#{deploy_to}/shared"
-        files = ["#{mongrel_log_dir}/mongrel.log", "#{mongrel_log_dir}/#{rails_env}.log"]
-
-        sudo "chgrp -R #{mongrel_group} #{tmp_dir} #{shared_dir}"
-        sudo "chmod -R g+w #{tmp_dir} #{shared_dir}" 
-        # set owner and group of log files 
-        files.each { |file|
-          sudo "touch #{file}"
-          sudo "chown #{mongrel_user} #{file}"   
-          sudo "chgrp #{mongrel_group} #{file}" 
-          sudo "chmod g+w #{file}"   
-        } 
       end
       
     end
