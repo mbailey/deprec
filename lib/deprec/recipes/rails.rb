@@ -103,11 +103,13 @@ Capistrano::Configuration.instance(:must_exist).load do
         top.deprec.rails.install
         top.deprec.logrotate.install  
         
-        # Not sure we want to install db as part of this recipe
-        # What if we're using db on another server? Don't reinstall!
-        #              
-        # top.deprec.db.install       # Uses value of db_server_type
-
+        # We not longer install database server as part of this task.
+        # There is too much danger that someone will wreck an existing
+        # shared database.
+        #
+        # Install database server with:
+        #
+        #   cap deprec:db:install
       end
       
       task :install_rails_stack do
