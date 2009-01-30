@@ -74,7 +74,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       end
 
       desc "Set apache to start on boot"
-      task :activate do
+      task :activate, :roles => :web do
         send(run_method, "update-rc.d apache2 defaults")
       end
       
