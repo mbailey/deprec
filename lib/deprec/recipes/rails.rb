@@ -34,25 +34,7 @@ Capistrano::Configuration.instance(:must_exist).load do
     top.deprec.rails.symlink_shared_dirs
     top.deprec.rails.symlink_database_yml unless database_yml_in_scm
     top.deprec.rails.make_writable_by_app
-  end
-  
-  # XXX This should be restricted a bit to limit what app can write to. - Mike
-  desc "set group ownership and permissions on dirs app server needs to write to"
-  task :make_writable_by_app, :roles => :app do
-    tmp_dir = "#{deploy_to}/current/tmp"
-    shared_dir = "#{deploy_to}/shared"
-    # XXX Factor this out
-    files = ["#{mongrel_log_dir}/mongrel.log", "#{mongrel_log_dir}/#{rails_env}.log"]
-
-    sudo "chgrp -R #{app_group} #{tmp_dir} #{shared_dir}"
-    sudo "chmod -R g+w #{tmp_dir} #{shared_dir}" 
-    # set owner and group of log files 
-    files.each { |file|
-      sudo "touch #{file}"
-      sudo "chown #{app_user} #{file}"   
-      sudo "chgrp #{app_group} #{file}" 
-      sudo "chmod g+w #{file}"   
-    } 
+    set_owner_of_environment_rb if web_server_type == :passenger
   end
 
   after :deploy, :roles => :app do
@@ -89,8 +71,6 @@ Capistrano::Configuration.instance(:must_exist).load do
 
         if app_server_type == :passenger and passenger_use_ree 
           top.deprec.ree.install
-          # XXX symlink ruby binaries into /usr/local/bin?
-          # or put /opt/ruby-enterprise into path?
         else
           top.deprec.ruby.install      
           top.deprec.rubygems.install
@@ -133,6 +113,25 @@ Capistrano::Configuration.instance(:must_exist).load do
         deprec2.mkdir("#{shared_path}/config", :group => group, :mode => 0775, :via => :sudo)
       end
       
+      # XXX This should be restricted a bit to limit what app can write to. - Mike
+      desc "set group ownership and permissions on dirs app server needs to write to"
+      task :make_writable_by_app, :roles => :app do
+        tmp_dir = "#{deploy_to}/current/tmp"
+        shared_dir = "#{deploy_to}/shared"
+        # XXX Factor this out
+        files = ["#{mongrel_log_dir}/mongrel.log", "#{mongrel_log_dir}/#{rails_env}.log"]
+
+        sudo "chgrp -R #{app_group} #{tmp_dir} #{shared_dir}"
+        sudo "chmod -R g+w #{tmp_dir} #{shared_dir}" 
+        # set owner and group of log files 
+        files.each { |file|
+          sudo "touch #{file}"
+          sudo "chown #{app_user} #{file}"   
+          sudo "chgrp #{app_group} #{file}" 
+          sudo "chmod g+w #{file}"   
+        } 
+      end
+      
       desc "Create deployment group and add current user to it"
       task :setup_user_perms, :roles => [:app, :web] do
         deprec2.groupadd(group)
@@ -157,6 +156,11 @@ Capistrano::Configuration.instance(:must_exist).load do
         releases = File.join(deploy_to, 'releases')
         sudo "chgrp -R #{group} #{shared_path} #{releases}"
         sudo "chmod -R g+w #{shared_path} #{releases}"
+      end
+      
+      # Passenger runs Rails as the owner of this file.
+      task :set_owner_of_environment_rb, :roles => :app do
+        sudo "chown  #{app_user} #{current_path}/config/environment.rb"
       end
 
       # Setup database server.
