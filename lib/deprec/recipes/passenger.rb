@@ -141,17 +141,17 @@ Capistrano::Configuration.instance(:must_exist).load do
         sudo "ln -sf #{deploy_to}/passenger/apache_vhost #{passenger_vhost_dir}/#{application}"
       end
       
-      task :activate do
+      task :activate, :roles => :app do
         activate_system
         activate_project
       end
       
-      task :activate_system do
+      task :activate_system, :roles => :app do
         sudo "a2enmod passenger"
         top.deprec.web.reload
       end
       
-      task :activate_project do
+      task :activate_project, :roles => :app do
         sudo "a2ensite #{application}"
         top.deprec.web.reload
       end
@@ -172,12 +172,12 @@ Capistrano::Configuration.instance(:must_exist).load do
         puts
       end
       
-      task :deactivate_system do
+      task :deactivate_system, :roles => :app do
         sudo "a2dismod passenger"
         top.deprec.web.reload
       end
       
-      task :deactivate_project do
+      task :deactivate_project, :roles => :app do
         sudo "a2dissite #{application}"
         top.deprec.web.reload
       end
