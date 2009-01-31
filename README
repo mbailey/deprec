@@ -2,7 +2,7 @@
 deprec - Deployment Recipes for Capistrano
 ------------------------------------------
 
-== Update 28 Jan 2008
+== Update 28 Jan 2009
 
 Get your app running on a fresh Ubuntu (7.10, 8.04.1) server these commands:
 
