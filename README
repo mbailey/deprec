@@ -12,7 +12,6 @@ Get your app running on a fresh Ubuntu (7.10, 8.04.1) server these commands:
     cap deprec:rails:install_stack 
     cap deploy:setup 
     cap deploy 
-    cap deprec:rails:setup_database
     cap deploy:migrate
 
 Recorded times for complete install on Ubuntu hardy server (7.10 amd64)
