@@ -28,7 +28,7 @@ Capistrano::Configuration.instance(:must_exist).load do
   # Server options
   CHOICES_WEBSERVER = [:nginx, :apache, :none]
   CHOICES_APPSERVER = [:mongrel, :webrick, :passenger, :none]
-  CHOICES_DATABASE  = [:mysql, :postgres, :none]
+  CHOICES_DATABASE  = [:mysql, :postgresql, :none]
   
   # Service defaults
   #
@@ -38,27 +38,27 @@ Capistrano::Configuration.instance(:must_exist).load do
   default :web_server_type, :nginx
   default :app_server_type, :mongrel
   default :db_server_type,  :mysql
-
-  default(:web_server_type) do
-    Capistrano::CLI.ui.choose do |menu| 
-      CHOICES_WEBSERVER.each {|c| menu.choice(c)}
-      menu.header = "select webserver type"
-    end
-  end
-
-  default(:app_server_type) do
-    Capistrano::CLI.ui.choose do |menu| 
-      CHOICES_APPSERVER.each {|c| menu.choice(c)}
-      menu.header = "select application server type"
-    end
-  end
-
-  default(:db_server_type) do
-    Capistrano::CLI.ui.choose do |menu| 
-      CHOICES_DATABASE.each {|c| menu.choice(c)}
-      menu.header = "select database server type"
-    end
-  end
+  #
+  # default(:web_server_type) do
+  #   Capistrano::CLI.ui.choose do |menu| 
+  #     CHOICES_WEBSERVER.each {|c| menu.choice(c)}
+  #     menu.header = "select webserver type"
+  #   end
+  # end
+  # 
+  # default(:app_server_type) do
+  #   Capistrano::CLI.ui.choose do |menu| 
+  #     CHOICES_APPSERVER.each {|c| menu.choice(c)}
+  #     menu.header = "select application server type"
+  #   end
+  # end
+  # 
+  # default(:db_server_type) do
+  #   Capistrano::CLI.ui.choose do |menu| 
+  #     CHOICES_DATABASE.each {|c| menu.choice(c)}
+  #     menu.header = "select database server type"
+  #   end
+  # end
 
   default(:application) do
     Capistrano::CLI.ui.ask "enter name of project(no spaces)" do |q|
@@ -111,7 +111,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       # e.g. deprec:web:restart => deprec:nginx:restart 
       metaclass = class << self; self; end
       [:web, :app, :db].each do |server|
-        server_type = send("#{server}_server_type")
+        server_type = send("#{server}_server_type").to_sym
         if server_type != :none
           metaclass.send(:define_method, server) { namespaces[server] }
           self.namespaces[server] = deprec.send(server_type)

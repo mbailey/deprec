@@ -81,9 +81,9 @@ files = {
     set :scm, :git
    
     set :passenger_use_ree, true
-    set :web_server_type, 'apache'
-    set :app_server_type, 'passenger'
-    set :db_server_type, 'mysql'
+    set :web_server_type, :apache
+    set :app_server_type, :passenger
+    set :db_server_type, :mysql
     
     # set :gems_for_project, %w(dr_nic_magic_models swiftiply) # list of gems to be installed
     

@@ -3,6 +3,9 @@ Capistrano::Configuration.instance(:must_exist).load do
   namespace :deprec do
     namespace :mysql do
       
+      set :mysql_admin_user, 'root'
+      set(:mysql_admin_pass) { Capistrano::CLI.password_prompt "Enter database password for '#{mysql_admin_user}':"}
+      
       # Installation
       
       desc "Install mysql"
@@ -81,6 +84,35 @@ Capistrano::Configuration.instance(:must_exist).load do
       end
       
       task :restore, :roles => :db do
+      end
+      
+      desc "Create a mysql user"
+      task :create_user, :roles => :db do
+        # TBA
+      end
+      
+      desc "Create a database" 
+      task :create_database, :roles => :db do
+        cmd = "CREATE DATABASE IF NOT EXISTS #{db_name}"
+        run "mysql -u #{mysql_admin_user} -p -e '#{cmd}'" do |channel, stream, data|
+          if data =~ /^Enter password:/
+             channel.send_data "#{mysql_admin_pass}\n"
+           end
+        end       
+      end
+      
+      desc "Grant user access to database" 
+      task :grant_user_access_to_database, :roles => :db do
+        set :db_user, 'mbailey'
+        set :db_name, 'testy'
+        set :db_password, 'as'
+        
+        cmd = "GRANT ALL PRIVILEGES ON #{db_name}.* TO '#{db_user}'@localhost IDENTIFIED BY '#{db_password}';"
+        run "mysql -u #{mysql_admin_user} -p #{db_name} -e \"#{cmd}\"" do |channel, stream, data|
+          if data =~ /^Enter password:/
+             channel.send_data "#{mysql_admin_pass}\n"
+           end
+        end
       end
             
     end
