@@ -102,11 +102,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       end
       
       desc "Grant user access to database" 
-      task :grant_user_access_to_database, :roles => :db do
-        set :db_user, 'mbailey'
-        set :db_name, 'testy'
-        set :db_password, 'as'
-        
+      task :grant_user_access_to_database, :roles => :db do        
         cmd = "GRANT ALL PRIVILEGES ON #{db_name}.* TO '#{db_user}'@localhost IDENTIFIED BY '#{db_password}';"
         run "mysql -u #{mysql_admin_user} -p #{db_name} -e \"#{cmd}\"" do |channel, stream, data|
           if data =~ /^Enter password:/
