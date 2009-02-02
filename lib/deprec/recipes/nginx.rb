@@ -163,7 +163,9 @@ Capistrano::Configuration.instance(:must_exist).load do
 
       desc "Reload Nginx"
       task :reload, :roles => :web do
-        send(run_method, "/etc/init.d/nginx reload")
+        # Nginx returns error code if you try to reload when it's not running
+        # We don't want this to kill Capistrano.
+        send(run_method, "/etc/init.d/nginx reload; exit 0")
       end
 
       task :backup, :roles => :web do

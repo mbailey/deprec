@@ -46,10 +46,12 @@ Capistrano::Configuration.instance(:must_exist).load do
     namespace :rails do
       
       task :setup_database, :roles => :db do
-        deprec2.read_database_yml
-        top.deprec.db.create_user
-        top.deprec.db.create_database
-        top.deprec.db.grant_user_access_to_database
+        if ! roles[:db].servers.empty? # Some apps don't use database!
+          deprec2.read_database_yml
+          top.deprec.db.create_user
+          top.deprec.db.create_database
+          top.deprec.db.grant_user_access_to_database
+        end
       end
       
       task :install, :roles => :app do
