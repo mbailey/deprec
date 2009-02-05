@@ -78,12 +78,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       DESC
       task :install_stack do   
 
-        if app_server_type.to_s == 'passenger' and passenger_use_ree 
-          top.deprec.ree.install
-        else
-          top.deprec.ruby.install      
-          top.deprec.rubygems.install
-        end
+        top.deprec.ruby.install    
         top.deprec.web.install        # Uses value of web_server_type 
         top.deprec.svn.install
         top.deprec.git.install
