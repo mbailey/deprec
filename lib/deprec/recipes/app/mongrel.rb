@@ -59,6 +59,16 @@ Capistrano::Configuration.instance(:must_exist).load do
         {:template => 'logrotate.conf.erb',
          :path => "logrotate.conf", 
          :mode => 0644,
+         :owner => 'root:root'},
+         
+        {:template => 'nginx_vhost.erb',
+         :path => "nginx_vhost.conf", 
+         :mode => 0644,
+         :owner => 'root:root'},
+         
+        {:template => 'apache_vhost.erb',
+         :path => "apache_vhost", 
+         :mode => 0644,
          :owner => 'root:root'}
       
       ]
@@ -94,8 +104,18 @@ Capistrano::Configuration.instance(:must_exist).load do
       task :config_project, :roles => :app do
         deprec2.push_configs(:mongrel, PROJECT_CONFIG_FILES[:mongrel])
         symlink_mongrel_cluster
+        send("symlink_#{web_server_type}_vhost")
         symlink_monit_config
         symlink_logrotate_config
+        activate_project
+      end
+      
+      task :symlink_apache_vhost, :roles => :app do
+        sudo "ln -sf #{deploy_to}/mongrel/apache_vhost #{apache_vhost_dir}/#{application}"
+      end
+      
+      task :symlink_nginx_vhost, :roles => :app do
+        sudo "ln -sf #{deploy_to}/mongrel/nginx_vhost #{nginx_vhost_dir}/#{application}"
       end
       
       task :symlink_monit_config, :roles => :app do
@@ -151,6 +171,15 @@ Capistrano::Configuration.instance(:must_exist).load do
       task :activate_project do
         symlink_mongrel_cluster
         symlink_monit_config
+        if web_server_type == :application
+          sudo "a2ensite #{application}" 
+        end
+      end
+      
+      # Apache specific
+      task :activate_project, :roles => :app do
+        sudo "a2ensite #{application}"
+        top.deprec.web.reload
       end
       
       task :deactivate, :roles => :app do
