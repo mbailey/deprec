@@ -1,0 +1,138 @@
+#!/bin/bash -e
+# This is a mockup of a script to produce a snakeoil cert
+# The aim is to have a debconfisable ssl-certificate script
+
+. /usr/share/debconf/confmodule
+db_version 2.0
+db_capb backup
+
+ask_via_debconf() {
+    db_settitle make-ssl-cert/title
+
+    templates="countryname statename localityname organisationname ouname hostname email"
+
+    for i in $templates; do
+	RET=""
+	while [ "x$RET" = "x" ]; do
+	    db_fset make-ssl-cert/$i seen false
+	    db_input high make-ssl-cert/$i || true
+	    db_go
+	    db_get make-ssl-cert/$i
+	done
+     done
+
+     db_get make-ssl-cert/countryname
+     CountryName="$RET"
+     db_fset make-ssl-cert/countryname seen false
+
+     db_get make-ssl-cert/statename
+     StateName="$RET"
+     db_fset make-ssl-cert/statename seen false
+
+     db_get make-ssl-cert/localityname
+     LocalityName="$RET"
+     db_fset make-ssl-cert/localityname seen false
+
+     db_get make-ssl-cert/organisationname
+     OrganisationName="$RET"
+     db_fset make-ssl-cert/organisationname seen false
+
+     db_get make-ssl-cert/ouname
+     OUName="$RET"
+     db_fset make-ssl-cert/ouname seen false
+
+     db_get make-ssl-cert/hostname
+     HostName="$RET"
+     db_fset make-ssl-cert/hostname seen false
+
+     db_get make-ssl-cert/email
+     Email="$RET"
+     db_fset make-ssl-cert/email seen false
+}
+
+make_snakeoil() {
+     CountryName="XX"
+     StateName="There is no such thing outside US"
+     LocalityName="Everywhere"
+     OrganisationName="OCOSA"
+     OUName="Office for Complication of Otherwise Simple Affairs"
+     HostName="$(hostname -f || hostname)"
+     Email="root@$HostName"
+}
+
+create_temporary_cnf() {
+    sed -e s#@CountryName@#"$CountryName"# \
+	-e s#@StateName@#"$StateName"# \
+	-e s#@LocalityName@#"$LocalityName"# \
+	-e s#@OrganisationName@#"$OrganisationName"# \
+	-e s#@OUName@#"$OUName"# \
+	-e s#@HostName@#"$HostName"# \
+	-e s#@Email@#"$Email"# \
+	$template > $TMPFILE
+}
+
+# Takes two arguments, the base layout and the output cert.
+
+if [ $# -lt 2 ] && [ "$1" != "generate-default-snakeoil" ]; then
+    printf "Usage: $0 template output [--force-overwrite]\n";
+    printf "Usage: $0 generate-default-snakeoil [--force-overwrite]\n";
+    exit 1;
+fi
+
+if [ "$1" != "generate-default-snakeoil" ]; then
+    template="$1"
+    output="$2"
+    # be anal in manual mode.
+    if [ ! -f $template ]; then
+	printf "Could not open template file: $template!\n";
+	exit 1;
+    fi
+    if [ -f $output ] && [ "$3" != "--force-overwrite" ]; then
+        printf "$output file already exists!\n";
+        exit 1;
+    fi
+    ask_via_debconf
+else
+    template="/usr/share/ssl-cert/ssleay.cnf"
+    if [ -f "/etc/ssl/certs/ssl-cert-snakeoil.pem" ] && [ -f "/etc/ssl/private/ssl-cert-snakeoil.key" ]; then
+        if [ "$2" != "--force-overwrite" ]; then
+             exit 0
+        fi
+    fi
+    make_snakeoil
+fi
+
+# # should be a less common char
+# problem is that openssl virtually accepts everything and we need to
+# sacrifice one char.
+
+TMPFILE="$(mktemp)" || exit 1
+
+create_temporary_cnf
+
+# create the certiface.
+
+export RANDFILE=/dev/random
+
+if [ "$1" != "generate-default-snakeoil" ]; then
+	# openssl req -config $TMPFILE -new -x509 -nodes -out $output -keyout $output > /dev/null 2>&1
+    openssl req -config $TMPFILE -new -x509 -days 365 -nodes -out $output -keyout $output > /dev/null 2>&1
+    chmod 600 $output
+    # hash symlink
+    cd $(dirname $output)
+    ln -sf $(basename $output) $(openssl x509 -hash -noout -in $output)
+else
+    # openssl req -config $TMPFILE -new -x509 -nodes \
+    openssl req -config $TMPFILE -new -x509 -days 365 nodes \
+	-out /etc/ssl/certs/ssl-cert-snakeoil.pem \
+        -keyout /etc/ssl/private/ssl-cert-snakeoil.key > /dev/null 2>&1
+    chmod 644 /etc/ssl/certs/ssl-cert-snakeoil.pem
+    chmod 640 /etc/ssl/private/ssl-cert-snakeoil.key
+    chown root:ssl-cert /etc/ssl/private/ssl-cert-snakeoil.key
+    # hash symlink
+    cd /etc/ssl/certs/
+    ln -sf ssl-cert-snakeoil.pem $(openssl x509 -hash -noout -in ssl-cert-snakeoil.pem)
+fi
+
+# cleanup
+rm -f $TMPFILE
