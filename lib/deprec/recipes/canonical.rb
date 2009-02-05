@@ -9,10 +9,20 @@
 #
 Capistrano::Configuration.instance(:must_exist).load do 
   
+  %w(ruby).each do |package|
+    namespace "deprec:#{package}" do
+      
+      desc "Install #{package.capitalize}"
+      task :install do 
+      end
+      
+    end
+  end
+  
   %w(web app db).each do |server|
     namespace "deprec:#{server}" do
       
-      desc "Install #{server} server"
+      desc "Install #{server.capitalize} server"
       task :install, :roles => server do 
       end
       
@@ -54,4 +64,5 @@ Capistrano::Configuration.instance(:must_exist).load do
       
     end
   end
+  
 end
