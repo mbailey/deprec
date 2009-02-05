@@ -13,7 +13,6 @@ Capistrano::Configuration.instance(:must_exist).load do
       
       set(:passenger_document_root) { "#{current_path}/public" }
       set :passenger_rails_allow_mod_rewrite, 'off'
-      set :passenger_vhost_dir, '/etc/apache2/sites-available'
       # Default settings for Passenger config files
       set :passenger_log_level, 0
       set :passenger_user_switching, 'on'
@@ -38,7 +37,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         install_deps
         deprec2.download_src(SRC_PACKAGES[:passenger], src_dir)
 
-        if passenger_use_ree
+        if ruby_vm_type.to_s == 'ree'
           # Install the Passenger that came with Ruby Enterprise Edition
           run "yes | #{sudo} env PATH=#{ree_install_dir}/bin:$PATH #{ree_install_dir}/bin/passenger-install-apache2-module"
         else
@@ -133,12 +132,12 @@ Capistrano::Configuration.instance(:must_exist).load do
       desc "Push Passenger configs (project level) to server"
       task :config_project, :roles => :app do
         deprec2.push_configs(:passenger, PROJECT_CONFIG_FILES[:passenger])
-        symlink_passenger_vhost
+        symlink_apache_vhost
         activate_project
       end
 
-      task :symlink_passenger_vhost, :roles => :app do
-        sudo "ln -sf #{deploy_to}/passenger/apache_vhost #{passenger_vhost_dir}/#{application}"
+      task :symlink_apache_vhost, :roles => :app do
+        sudo "ln -sf #{deploy_to}/passenger/apache_vhost #{apache_vhost_dir}/#{application}"
       end
       
       task :activate, :roles => :app do
