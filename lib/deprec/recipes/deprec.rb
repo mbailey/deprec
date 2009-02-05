@@ -26,6 +26,7 @@ Capistrano::Configuration.instance(:must_exist).load do
   SRC_PACKAGES = {} unless defined?(SRC_PACKAGES)
   
   # Server options
+  CHOICES_RUBY_VM   = [:mri, :ree]
   CHOICES_WEBSERVER = [:nginx, :apache, :none]
   CHOICES_APPSERVER = [:mongrel, :webrick, :passenger, :none]
   CHOICES_DATABASE  = [:mysql, :postgresql, :sqlite, :none]
@@ -34,7 +35,7 @@ Capistrano::Configuration.instance(:must_exist).load do
   #
   # The defaults below are legacy values to support older deployments.
   # Newly generated deploy.rb files have use apache, passenger and ree 
-  default :passenger_use_ree, false
+  default :ruby_vm_type,    :mri
   default :web_server_type, :nginx
   default :app_server_type, :mongrel
   default :db_server_type,  :mysql
@@ -105,16 +106,23 @@ Capistrano::Configuration.instance(:must_exist).load do
   on :load, 'deprec:connect_canonical_tasks' 
 
   namespace :deprec do
-
+    
     task :connect_canonical_tasks do      
       # link application specific recipes into canonical task names
       # e.g. deprec:web:restart => deprec:nginx:restart 
-      metaclass = class << self; self; end
-      [:web, :app, :db].each do |server|
-        server_type = send("#{server}_server_type").to_sym
+      
+      
+      namespaces_to_connect = { :web => :web_server_type,
+                                :app => :app_server_type,
+                                :db  => :db_server_type,
+                                :ruby => :ruby_vm_type
+                              }
+      metaclass = class << self; self; end # XXX unnecessary?
+      namespaces_to_connect.each do |server, choice|
+        server_type = send(choice).to_sym
         if server_type != :none
-          metaclass.send(:define_method, server) { namespaces[server] }
-          self.namespaces[server] = deprec.send(server_type)
+          metaclass.send(:define_method, server) { namespaces[server] } # XXX unnecessary?
+          namespaces[server] = deprec.send(server_type)          
         end
       end
     end
