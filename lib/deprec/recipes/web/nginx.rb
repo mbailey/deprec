@@ -62,11 +62,6 @@ Capistrano::Configuration.instance(:must_exist).load do
       ]
       
       PROJECT_CONFIG_FILES[:nginx] = [
-      
-        {:template => 'rails_nginx_vhost.conf.erb',
-         :path => "rails_nginx_vhost.conf", 
-         :mode => 0644,
-         :owner => 'root:root'},
            
         {:template => 'logrotate.conf.erb',
          :path => "logrotate.conf", 
@@ -107,16 +102,6 @@ Capistrano::Configuration.instance(:must_exist).load do
       desc "Push out config files for rails app."
       task :config_project, :roles => :web do
         deprec2.push_configs(:nginx, PROJECT_CONFIG_FILES[:nginx])
-        symlink_nginx_vhost
-        symlink_nginx_logrotate_config
-      end
-      
-      task :symlink_nginx_vhost, :roles => :web do
-        sudo "ln -sf #{deploy_to}/nginx/rails_nginx_vhost.conf #{nginx_vhost_dir}/#{application}.conf"
-      end
-      
-      task :symlink_nginx_logrotate_config, :roles => :web do
-        sudo "ln -sf #{deploy_to}/nginx/logrotate.conf /etc/logrotate.d/nginx-#{application}"
       end
 
       desc <<-DESC
