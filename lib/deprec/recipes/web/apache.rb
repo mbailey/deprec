@@ -3,15 +3,25 @@ Capistrano::Configuration.instance(:must_exist).load do
   namespace :deprec do
     namespace :apache do
       
+      set :apache_vhost_dir, '/etc/apache2/sites-available'
+      set :apache_ssl_enabled, false
+      set :apache_ssl_ip, nil
+      set :apache_ssl_forward_all, apache_ssl_enabled
+      set :apache_ssl_chainfile, false
+      set :apache_modules_enabled, %w(rewrite ssl proxy_balancer proxy_http deflate headers)
+      set :apache_log_dir, '/var/log/apache2'
+       
       desc "Install apache"
       task :install do
         install_deps
-        enable_mod_rewrite
+        enable_modules
+        reload
+        # /usr/sbin/make-ssl-cert generate-default-snakeoil
       end
       
       # install dependencies for apache
       task :install_deps do
-        apt.install( {:base => %w(apache2-mpm-prefork apache2-prefork-dev rsync)}, :stable )
+        apt.install( {:base => %w(apache2-mpm-prefork apache2-prefork-dev rsync ssl-cert)}, :stable )
       end
       
       SYSTEM_CONFIG_FILES[:apache] = [
@@ -49,10 +59,11 @@ Capistrano::Configuration.instance(:must_exist).load do
       task :config_project do
       end
       
-      task :enable_mod_rewrite, :roles => :web do
-        sudo "a2enmod rewrite"
+      task :enable_modules, :roles => :web do
+        apache_modules_enabled.each { |mod| sudo "a2enmod #{mod}" }
+        reload
       end
-
+      
       desc "Start Apache"
       task :start, :roles => :web do
         send(run_method, "/etc/init.d/apache2 start")
