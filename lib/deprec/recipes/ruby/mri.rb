@@ -10,11 +10,12 @@ Capistrano::Configuration.instance(:must_exist).load do
         :configure => "./configure --with-readline-dir=/usr/local;"
       }
   
-      desc "Install Rubys"
+      desc "Install Ruby"
       task :install do
         install_deps
         deprec2.download_src(SRC_PACKAGES[:mri], src_dir)
         deprec2.install_from_src(SRC_PACKAGES[:mri], src_dir)
+        top.deprec.rubygems.install
       end
       
       task :install_deps do
