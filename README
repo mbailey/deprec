@@ -9,7 +9,12 @@ Get your app running on a fresh Ubuntu (7.10, 8.04.1) server these commands:
     cd your_rails_app
     depify . 
     # Edit config/deploy.rb
-    cap deprec:rails:install_stack 
+    cap deprec:rails:install_stack
+
+	# WARNING! Don't run the following command if you are using a shared 
+	# database server that has already been installed.
+	cap deprec:db:install 
+
     cap deploy:setup 
     cap deploy 
     cap deploy:migrate

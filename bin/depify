@@ -52,13 +52,13 @@ caprc = unindent(<<-FILE)
   #
   # Use ssh keys instead of typing password every time
   # Replace with the path to your ssh public key
-  # ssh_options[:keys] = %w(/path/to/your_home_dir/.ssh/id_rsa)
+  ssh_options[:keys] = File.join(ENV['HOME'], '.ssh', 'id_rsa')
   #
   # Allow ssh keys to be forwarded (to scm server, through :gateway, etc) 
-  # ssh_options[:forward_agent] = true 
+  ssh_options[:forward_agent] = true 
   #
   # Stop some annoying warnings
-  # ssh_options[:paranoid] = false
+  ssh_options[:paranoid] = false
 FILE
 
 files = {
@@ -80,10 +80,10 @@ files = {
     # your SCM below:
     set :scm, :git
    
-    set :passenger_use_ree, true
-    set :web_server_type, :apache
-    set :app_server_type, :passenger
-    set :db_server_type, :mysql
+    set :ruby_vm_type,      :ree
+    set :web_server_type,   :apache
+    set :app_server_type,   :passenger
+    set :db_server_type,    :mysql
     
     # set :gems_for_project, %w(dr_nic_magic_models swiftiply) # list of gems to be installed
     
@@ -91,12 +91,11 @@ files = {
     role :app, domain
     role :web, domain
     role :db,  domain, :primary => true
-    role :scm, domain # used by deprec if you want to install subversion
 
     # If you aren't deploying to /opt/apps/\#{application} on the target
     # servers (which is the deprec default), you can specify the actual location
     # via the :deploy_to variable:
-    # set :deploy_to, "/var/www/\#{application}"
+    # set :deploy_to, "/opt/apps/\#{application}"
     
     namespace :deploy do
       task :restart, :roles => :app, :except => { :no_release => true } do

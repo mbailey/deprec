@@ -1,5 +1,51 @@
 == git
  
+== 1.99.33 (February  5, 2009)
+
+# Added options for :web, :app, :db and :ruby software to install/use.
+#
+# Newly generated deploy.rb files specify Passenger, Apache and Ruby Enterprise 
+Edition. If not specified, deprec defaults to Mongrel, Nginx and Ruby-1.8.7.
+This is so that existing users of deprec2 previews will not be affected.
+
+* Added :ruby_vm_type option to choose between :mri and :ree Ruby versions
+
+* Added :app_server_type
+  :passenger [set in new deploy.rb]
+  :mongrel   [default if not set]
+
+* Added :web_server_type 
+  :apache [set in new depoy.rb] (for :mongrel or :passenger apps)
+  :nginx  [default if not set]  (for :mongrel apps) 
+
+* Added :db_server_type
+  :mysql [default]
+  :postgresql
+  :sqlite
+
+# Other additions
+
+* cap deprec:rails:setup_database
+
+  Creates database and user for Rails app using data from database.yml.
+  Respects value of :db_server_type
+
+* Postgresql recipes [Eric Harris-Braun]
+
+* Starling Recipes [Rob Caporetto]
+
+* cap deprec:utils:handy 
+
+    Installs a bunch of handy utils I can't live without:
+
+    lynx nmap netcat telnet dnsutils rsync curl wget mailx mutt vim-full tree
+
+* Updated Apache vhost template for mongrel. Supports https and puts in dummy
+  certificate. Useful settings are:
+
+  set :apache_ssl_enabled, true
+  set :apache_ssl_forward_all, true
+
 == 1.99.30 (November 28, 2008)
 
 * Bugfix: use current_path for passenger_root
