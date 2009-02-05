@@ -2,18 +2,19 @@
 Capistrano::Configuration.instance(:must_exist).load do 
 
   namespace :deprec do
-    namespace :ruby do
+    namespace :mri do
             
-      SRC_PACKAGES[:ruby] = {
+      SRC_PACKAGES[:mri] = {
         :md5sum => "5e5b7189674b3a7f69401284f6a7a36d  ruby-1.8.7-p72.tar.gz", 
         :url => "ftp://ftp.ruby-lang.org/pub/ruby/1.8/ruby-1.8.7-p72.tar.gz",
         :configure => "./configure --with-readline-dir=/usr/local;"
       }
   
+      desc "Install Rubys"
       task :install do
         install_deps
-        deprec2.download_src(SRC_PACKAGES[:ruby], src_dir)
-        deprec2.install_from_src(SRC_PACKAGES[:ruby], src_dir)
+        deprec2.download_src(SRC_PACKAGES[:mri], src_dir)
+        deprec2.install_from_src(SRC_PACKAGES[:mri], src_dir)
       end
       
       task :install_deps do
@@ -35,15 +36,12 @@ Capistrano::Configuration.instance(:must_exist).load do
         :install => 'ruby setup.rb;'
       }
       
+      desc "Install Rubygems"
       task :install do
         install_deps
         deprec2.download_src(SRC_PACKAGES[:rubygems], src_dir)
         deprec2.install_from_src(SRC_PACKAGES[:rubygems], src_dir)
         # gem2.upgrade #  you may not want to upgrade your gems right now
-        # If we want to selfupdate then we need to 
-        # create symlink as latest gems version is broken
-        # gem2.update_system
-        # sudo ln -s /usr/bin/gem1.8 /usr/bin/gem
       end
       
       # install dependencies for rubygems
