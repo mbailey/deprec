@@ -1,6 +1,14 @@
 # Copyright 2006-2008 by Mike Bailey. All rights reserved.
 Capistrano::Configuration.instance(:must_exist).load do 
-  namespace :deprec do namespace :monit do
+  namespace :deprec do 
+    namespace :monit do
+    
+  # We're using monit primarily to control Mongrel processes so 
+  # the tasks are restricted to :app. You may with to use it for
+  # other processes. In this case, specify HOSTS=hostname on the
+  # command line or use: 
+  #   for_roles(:role_name) { top.deprec.monit.task_name}
+  # in your recipes.
         
   set :monit_user,  'monit'
   set :monit_group, 'monit'
@@ -36,7 +44,7 @@ Capistrano::Configuration.instance(:must_exist).load do
   }
   
   desc "Install monit"
-  task :install do
+  task :install, :roles => :app do
     install_deps
     deprec2.download_src(SRC_PACKAGES[:monit], src_dir)
     deprec2.install_from_src(SRC_PACKAGES[:monit], src_dir)
@@ -48,7 +56,7 @@ Capistrano::Configuration.instance(:must_exist).load do
   end
   
   # install dependencies for monit
-  task :install_deps do
+  task :install_deps, :roles => :app do
     apt.install( {:base => %w(flex bison libssl-dev)}, :stable )
   end
     
@@ -83,7 +91,7 @@ Capistrano::Configuration.instance(:must_exist).load do
   end
   
   desc "Push monit config files to server"
-  task :config do
+  task :config, :roles => :app do
     deprec2.push_configs(:monit, SYSTEM_CONFIG_FILES[:monit])
   end
 
@@ -111,7 +119,7 @@ Capistrano::Configuration.instance(:must_exist).load do
     Activate monit start scripts on server.
     Setup server to start monit on boot.
   DESC
-  task :activate do
+  task :activate, :roles => :app do
     send(run_method, "update-rc.d monit defaults")
   end
   
@@ -119,7 +127,7 @@ Capistrano::Configuration.instance(:must_exist).load do
     Dectivate monit start scripts on server.
     Setup server to start monit on boot.
   DESC
-  task :deactivate do
+  task :deactivate, :roles => :app do
     send(run_method, "update-rc.d -f monit remove")
   end
   
