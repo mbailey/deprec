@@ -5,8 +5,8 @@
 # Added options for :web, :app, :db and :ruby software to install/use.
 #
 # Newly generated deploy.rb files specify Passenger, Apache and Ruby Enterprise 
-Edition. If not specified, deprec defaults to Mongrel, Nginx and Ruby-1.8.7.
-This is so that existing users of deprec2 previews will not be affected.
+# Edition. If not specified, deprec defaults to Mongrel, Nginx and Ruby-1.8.7.
+# This is so that existing users of deprec2 previews will not be affected.
 
 * Added :ruby_vm_type option to choose between :mri and :ree Ruby versions
 
