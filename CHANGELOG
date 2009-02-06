@@ -1,5 +1,9 @@
 == git
  
+== 1.99.34 (February  6, 2009)
+
+* Bugfix: restricted some tasks to certain roles
+
 == 1.99.33 (February  5, 2009)
 
 # Added options for :web, :app, :db and :ruby software to install/use.
