@@ -171,15 +171,9 @@ Capistrano::Configuration.instance(:must_exist).load do
       task :activate_project do
         symlink_mongrel_cluster
         symlink_monit_config
-        if web_server_type == :application
+        if web_server_type.to_s == 'apache'
           sudo "a2ensite #{application}" 
         end
-      end
-      
-      # Apache specific
-      task :activate_project, :roles => :app do
-        sudo "a2ensite #{application}"
-        top.deprec.web.reload
       end
       
       task :deactivate, :roles => :app do
