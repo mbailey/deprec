@@ -69,7 +69,7 @@ Capistrano::Configuration.instance(:must_exist).load do
          :owner => 'root:root'}  
       ]
 
-      task :initial_config do
+      task :initial_config, :roles => :web do
         SYSTEM_CONFIG_FILES[:nginx].each do |file|
           deprec2.render_template(:nginx, file.merge(:remote => true))
         end

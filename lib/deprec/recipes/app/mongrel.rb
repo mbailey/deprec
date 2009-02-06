@@ -159,16 +159,16 @@ Capistrano::Configuration.instance(:must_exist).load do
         send(run_method, "mongrel_rails cluster::restart --clean -C #{mongrel_conf}")
       end
       
-      task :activate do
+      task :activate, :roles => :app do
         activate_system        
         activate_project
       end  
       
-      task :activate_system do
+      task :activate_system, :roles => :app do
         send(run_method, "update-rc.d mongrel_cluster defaults")
       end
       
-      task :activate_project do
+      task :activate_project, :roles => :app do
         symlink_mongrel_cluster
         symlink_monit_config
         if web_server_type.to_s == 'apache'
