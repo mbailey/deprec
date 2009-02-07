@@ -48,6 +48,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         PROJECT_CONFIG_FILES[:apache].each do |file|
           deprec2.render_template(:apache, file)
         end
+        top.deprec.ssl.config_gen if apache_ssl_enabled
       end
       
       desc "Push apache config files to server"
@@ -57,6 +58,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       
       # Stub so generic tasks don't fail (e.g. deprec:web:config_project)
       task :config_project do
+        top.deprec.ssl.config if apache_ssl_enabled
       end
       
       task :enable_modules, :roles => :web do
