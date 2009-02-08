@@ -44,6 +44,10 @@ Capistrano::Configuration.instance(:must_exist).load do
         deprec2.push_configs(:ssl, PROJECT_CONFIG_FILES[:ssl])
       end
       
+      task :generate_snakeoil_cert, :roles => :web do
+        sudo "/usr/sbin/make-ssl-cert generate-default-snakeoil"
+      end
+      
     end
     
   end

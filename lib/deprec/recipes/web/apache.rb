@@ -16,7 +16,6 @@ Capistrano::Configuration.instance(:must_exist).load do
         install_deps
         enable_modules
         reload
-        # /usr/sbin/make-ssl-cert generate-default-snakeoil
       end
       
       # install dependencies for apache
@@ -25,8 +24,12 @@ Capistrano::Configuration.instance(:must_exist).load do
       end
       
       SYSTEM_CONFIG_FILES[:apache] = [
-        # They're generated and put in place during install
-        # I may put them in here at some point
+        
+        { :template => 'namevirtualhosts.conf',
+          :path => '/etc/apache2/conf.d/namevirtualhosts.conf',
+          :mode => 0644,
+          :owner => 'root:root'}
+
       ]
 
       PROJECT_CONFIG_FILES[:apache] = [
@@ -48,7 +51,11 @@ Capistrano::Configuration.instance(:must_exist).load do
         PROJECT_CONFIG_FILES[:apache].each do |file|
           deprec2.render_template(:apache, file)
         end
-        top.deprec.ssl.config_gen if apache_ssl_enabled
+        # XXX Need to flesh out generation of custom certs
+        # In the meantime we'll just use the snakeoil cert
+        #
+        # top.deprec.ssl.config_gen if apache_ssl_enabled
+        top.deprec.ssl.generate_snakeoil_cert if apache_ssl_enabled
       end
       
       desc "Push apache config files to server"
@@ -58,7 +65,10 @@ Capistrano::Configuration.instance(:must_exist).load do
       
       # Stub so generic tasks don't fail (e.g. deprec:web:config_project)
       task :config_project do
-        top.deprec.ssl.config if apache_ssl_enabled
+        # XXX Need to flesh out generation of custom certs
+        # In the meantime we'll just use the snakeoil cert
+        #
+        # top.deprec.ssl.config if apache_ssl_enabled
       end
       
       task :enable_modules, :roles => :web do
@@ -104,12 +114,6 @@ Capistrano::Configuration.instance(:must_exist).load do
         # not yet implemented
       end
 
-      # Generate an index.html page  
-      task :install_index_page do
-        std.su_put deprec2.render_template(:apache, :template => 'index.html.erb'), File.join('/var/www/index.html')
-        std.su_put deprec2.render_template(:apache, :template => 'master.css'), File.join('/var/www/master.css')
-      end
-      
     end
   end
 end
