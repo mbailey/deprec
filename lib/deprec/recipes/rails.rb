@@ -9,6 +9,7 @@ Capistrano::Configuration.instance(:must_exist).load do
   set :app_symlinks, nil
   set :rails_env, 'production'
   set :gems_for_project, nil # Array of gems to be installed for app
+  set :packages_for_project, nil # Array of packages to be installed for app
   set :shared_dirs, nil # Array of directories that should be created under shared/
                         # and linked to in the project
 
@@ -18,6 +19,7 @@ Capistrano::Configuration.instance(:must_exist).load do
     top.deprec.rails.create_app_user_and_group
     top.deprec.rails.setup_paths
     top.deprec.rails.setup_shared_dirs
+    top.deprec.rails.install_packages_for_project
     top.deprec.rails.install_gems_for_project
   end
 
@@ -202,10 +204,16 @@ Capistrano::Configuration.instance(:must_exist).load do
         end
       end
       
+      task :install_packages_for_project, :roles => :app do
+        if packages_for_project
+          apt.install({ :base => packages_for_project }, :stable)
+        end
+      end
+      
       task :install_gems_for_project, :roles => :app do
-          if gems_for_project
-            gems_for_project.each { |gem| gem2.install(gem) }
-          end
+        if gems_for_project
+          gems_for_project.each { |gem| gem2.install(gem) }
+        end
       end
       
       desc "Activate web, app and monit"
