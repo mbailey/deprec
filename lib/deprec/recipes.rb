@@ -50,5 +50,6 @@ require "#{File.dirname(__FILE__)}/recipes/sphinx"
 require "#{File.dirname(__FILE__)}/recipes/utils"
 require "#{File.dirname(__FILE__)}/recipes/apt_mirror"
 # require "#{File.dirname(__FILE__)}/recipes/wordpress" Not working
+require "#{File.dirname(__FILE__)}/recipes/wpmu"
 require "#{File.dirname(__FILE__)}/recipes/ar_sendmail"
 require "#{File.dirname(__FILE__)}/recipes/starling"

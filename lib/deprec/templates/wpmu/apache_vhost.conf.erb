@@ -1,0 +1,13 @@
+NameVirtualHost *
+<VirtualHost *>
+    ServerName <%= wpmu_domain %>
+    DocumentRoot <%= wpmu_root %>
+    <Directory <%= wpmu_root %>>
+        Options Indexes FollowSymLinks MultiViews
+        AllowOverride FileInfo Options
+        Order allow,deny
+        allow from all
+    </Directory>
+    ErrorLog <%= apache_log_dir %>/wpmu-error.log
+    CustomLog <%= apache_log_dir %>/wpmu-access.log combined
+</VirtualHost>
