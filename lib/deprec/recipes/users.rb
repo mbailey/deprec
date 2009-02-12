@@ -34,7 +34,7 @@ Capistrano::Configuration.instance(:must_exist).load do
 
         deprec2.invoke_with_input("passwd #{target_user}", /UNIX password/, new_password)
         
-        if make_admin.grep(/y/i)
+        if make_admin.match(/y/i)
           deprec2.groupadd('admin')
           deprec2.add_user_to_group(target_user, 'admin')
           deprec2.append_to_file_if_missing('/etc/sudoers', '%admin ALL=(ALL) ALL')
