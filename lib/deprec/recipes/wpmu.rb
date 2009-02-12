@@ -25,6 +25,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         initial_config
         sudo "a2ensite wpmu"
         top.deprec.apache.reload
+        manual_instructions
       end
       
       task :manual_instructions do
