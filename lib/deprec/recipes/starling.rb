@@ -33,6 +33,33 @@ Capistrano::Configuration.instance(:must_exist).load do
 
         activate
       end
+      
+      # Configure
+      
+      SYSTEM_CONFIG_FILES[:starling] = [
+        {:template => 'starling-init-script.erb',
+         :path => '/etc/init.d/starling',
+         :mode => 0755,
+         :owner => 'root:root'},
+         
+         {:template => 'monit.conf.erb',
+          :path => "/etc/monit.d/monit_starling.conf", 
+          :mode => 0600,
+          :owner => 'root:root'}
+      ]
+      
+      # Generating Configuration Files
+      desc "Generate configuration file(s) for Starling from template(s)"
+      task :config_gen do
+        SYSTEM_CONFIG_FILES[:starling].each do |file|
+          deprec2.render_template(:starling, file)
+        end  
+      end
+
+      desc 'Deploy configuration files(s) for Starling'
+      task :config, :roles => :app do
+        deprec2.push_configs(:starling, SYSTEM_CONFIG_FILES[:starling])
+      end
 
       # Control
 
@@ -61,22 +88,10 @@ Capistrano::Configuration.instance(:must_exist).load do
         send(run_method, "update-rc.d -f starling remove")
       end
 
-      # Generating Configuration Files
-      desc "Generate configuration file(s) for Starling from template(s)"
-      task :config_gen do
-        SYSTEM_CONFIG_FILES[:starling].each do |file|
-          deprec2.render_template(:starling, file)
-        end  
-      end
-
-      desc 'Deploy configuration files(s) for Starling'
-      task :config, :roles => :app do
-        deprec2.push_configs(:starling, SYSTEM_CONFIG_FILES[:starling])
-      end
-
       # User/Group creation & permission assignment
-      # These were based off the tasks used in the mongrel recipe - as this was probably
-      # the nicest way to ensure these tasks were doing the right thing.
+      # These were based off the tasks used in the mongrel recipe - 
+      # as this was probably the nicest way to ensure these tasks 
+      # were doing the right thing.
       desc "create user and group for starling to run as"
       task :create_starling_user_and_group, :roles => :app do
         deprec2.groupadd(starling_group) 
@@ -99,18 +114,6 @@ Capistrano::Configuration.instance(:must_exist).load do
         sudo "ln -s #{ree_short_path}/bin/starling /usr/local/bin/starling"
       end
 
-      # Configure
-      SYSTEM_CONFIG_FILES[:starling] = [
-        {:template => 'starling-init-script.erb',
-         :path => '/etc/init.d/starling',
-         :mode => 0755,
-         :owner => 'root:root'},
-         
-         {:template => 'monit.conf.erb',
-          :path => "/etc/monit.d/monit_starling.conf", 
-          :mode => 0600,
-          :owner => 'root:root'}
-      ]
     end
   end
 end
