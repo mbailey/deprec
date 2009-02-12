@@ -1,10 +1,10 @@
 deprec/TODO.txt
 
 == Milestone 1
+* update README
 * Stop double printing of tasks when linked to canonical name
 * unlink ree when normal ruby installed
 * test deploy:migrate when database is not on app server
-* update README
 * check REE is unlinked when ruby-1.8.7 installed
 
 

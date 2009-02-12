@@ -21,7 +21,7 @@ following may come in handy.
 If you have an authorized_keys file, copy it to a location where deprec
 can find it. Deprec will then offer to copy it out to remote hosts when
 you setup new accounts for yourself. If you don't have authorized_keys,
-copy out your id_rsa.pub or id_dsa.pub.
+copy out your id_rsa.pub or id_dsa.pub file.
 
 You can also put the authorized_keys of colleagues in this dir and deprec
 will offer to copy them out when creating accounts for them too.
