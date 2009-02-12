@@ -1,5 +1,0 @@
-# functions
-
-create domu 
-- xen-create-image
-- generate config file
