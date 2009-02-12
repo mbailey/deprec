@@ -16,8 +16,8 @@ Capistrano::Configuration.instance(:must_exist).load do
       # Installation
       desc "Installs the Starling gem"
       task :install, :roles => :app do
-        deprec2.sudo_stream("gem install eventmachine --no-rdoc --no-ri")
-        deprec2.sudo_stream("gem install starling-starling --source http://gems.github.com -v 0.9.9 --no-rdoc --no-ri")
+        sudo("gem install eventmachine --no-rdoc --no-ri")
+        sudo("gem install starling-starling --source http://gems.github.com -v 0.9.9 --no-rdoc --no-ri")
 
         deprec2.mkdir(starling_spool_dir, :via => :sudo)
         deprec2.mkdir(starling_run_dir, :via => :sudo)
@@ -25,7 +25,8 @@ Capistrano::Configuration.instance(:must_exist).load do
 
         create_starling_user_and_group
         set_perms_for_starling_dirs
-        
+        symlink_starling_for_rubyee if ruby_vm_type == :ree
+
         SYSTEM_CONFIG_FILES[:starling].each do |file|
           deprec2.render_template(:starling, file.merge(:remote=>true))
         end
@@ -90,6 +91,13 @@ Capistrano::Configuration.instance(:must_exist).load do
         sudo "chgrp -R #{starling_group} #{starling_spool_dir} #{starling_run_dir} #{starling_log_dir}"
         sudo "chmod -R g+w #{starling_spool_dir} #{starling_run_dir} #{starling_log_dir}" 
       end      
+
+      task :symlink_starling_for_rubyee, :roles => :app do
+        # This ensures we symlink from the REE common directory, NOT the
+        # actual REE install directory (so when we change the REE version,
+        # we don't have to fuddle around again).
+        sudo "ln -s #{ree_short_path}/bin/starling /usr/local/bin/starling"
+      end
 
       # Configure
       SYSTEM_CONFIG_FILES[:starling] = [
