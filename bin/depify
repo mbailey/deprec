@@ -47,18 +47,7 @@ caprc = unindent(<<-FILE)
   # Include deprec - deployment recipes for Capistrano (www.deprec.org)
   #
   require 'deprec'
-  #
-  # SSH options
-  #
-  # Use ssh keys instead of typing password every time
-  # Replace with the path to your ssh public key
-  ssh_options[:keys] = File.join(ENV['HOME'], '.ssh', 'id_rsa')
-  #
-  # Allow ssh keys to be forwarded (to scm server, through :gateway, etc) 
-  ssh_options[:forward_agent] = true 
-  #
-  # Stop some annoying warnings
-  ssh_options[:paranoid] = false
+
 FILE
 
 files = {
