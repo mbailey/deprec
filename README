@@ -2,9 +2,56 @@
 deprec - Deployment Recipes for Capistrano
 ------------------------------------------
 
-== Update 28 Jan 2009
+== Introduction
 
-Get your app running on a fresh Ubuntu (7.10, 8.04) server these commands:
+The deprec [1] gem is a set of tasks for Capistrano [2]. These tasks provide
+for the installation, configuration and control of system services on servers
+running Ubuntu linux. Deprec was created in 2006 by Mike Bailey to setup an
+environment for running Ruby on Rails web applications on Ubuntu servers. Since
+then its uses have grown to installing Xen virtualization, mail, monitoring, high
+availability IP failover and other services.
+
+The tasks are run at the command line on your workstation and connect to 
+remote servers via ssh to run commands and copy out files.
+
+Deprec-2.x is a complete rewrite of the project that achieves the following:
+
+- support for Capistrano 2
+- generated config files are stored locally to enable editing and version control
+- support for more services (heartbeat, nagios, nginx, ntp, postfix, etc) 
+- multiple Rails deployment options (Passenger+Apache, Mongrel+Apache/Nginx)
+- creation of a standard base set of task names
+- tasks are cleanly separated into namespaced units (one file per service)
+- interactive prompting for missing config values
+
+Deprec and Capistrano are written in the Ruby programming language [3] however 
+no knowledge of Ruby is required to use it. Users should be able to write 
+new tasks and modify existing options without prior knowledge of Ruby.
+
+
+== Installation
+
+Deprec can be obtained from rubyforge[4] and installed using rubygems[5].
+
+	sudo gem install deprec  # installs deprec and dependancies 
+	cap depify .			 # creates ~/.caprc which you may edit
+	cap -T					 # should list lots of deprec tasks
+
+The .caprc file is loaded every time you use Capistrano. It in turn loads 
+the deprec tasks so you always have them available. Editing the .caprc file 
+in your home directory allows you to specify the location of your ssh key
+and enable some other useful options (documented in the comments). You can
+also put tasks here that you want access to, regardless of the current working
+directory.
+
+
+== Getting a Ruby on Rails app running on a fresh Ubuntu server
+
+This is still what brings people to deprec. You can install a full Rails stack
+and get multiple apps running on it in much less time than it would take to 
+do it manually (e.g. an hour vs. a weekend).
+
+Get your app running on a fresh Ubuntu (7.10, 8.04) server with these commands:
 
     cd your_rails_app
     depify . 
@@ -28,79 +75,8 @@ Recorded times for complete install on Ubuntu hardy server (7.10 amd64)
 Note you can choose combinations of:
 	
 	* Ruby Enterprise Edition or ruby-1.8.7
-	* Passenger or mongrel (passenger requires apache option)
+	* Passenger or mongrel (passenger requires you choose to the apache option)
 	* Apache or nginx
-
-== Introduction
-
-The deprec [1] gem is a set of tasks for Capistrano [2]. These tasks provide
-for the installation, configuration and control of system services. Deprec 
-was created in 2006 by Mike Bailey to setup an environment for running Ruby 
-on Rails web applications on Ubuntu dapper servers. Since then its uses have
-grown to installing mail, monitoring, high availability IP failover and other 
-services.
-
-The tasks are run at the command line on your workstation and connect to 
-remote servers via ssh to run commands and copy out files.
-
-Deprec-2.x is a complete rewrite of the project that achieves the following:
-
-- support for Capistrano 2
-- support for more services (heartbeat, nagios, nginx, ntp, postfix, etc) 
-- creation of a standard base set of task names
-- tasks are cleanly separated into namespaced units (one file per service)
-- service config files are stored locally to enable edits and version control
-- interactive prompting for missing config values
-
-One idea that is in the trash can is supporting other distros/OS's. While I got
-caught up in the excitement of The Big Rewrite I've decided I don't need it. If 
-you want to deploy to something other than Ubuntu I suggest you look for other 
-alternatives.
-
-Deprec and Capistrano are written in the Ruby programming language [3] however 
-no knowledge of Ruby is required to use it. Users should be able to write 
-new tasks and modify existing options without prior knowledge of Ruby.
-
-
-== Installation
-
-Deprec can be obtained from rubyforge[4] and installed using rubygems[5].
-
-	sudo gem install deprec  # installs deprec and dependancies 
-	cap depify .			 # creates ~/.caprc which you may edit
-	cap -T					 # should list lots of deprec tasks
-
-The .caprc file is loaded every time you use Capistrano. It in turn loads 
-the deprec tasks so you always have them available. Editing the .caprc file 
-in your home directory allows you to specify the location of your ssh key
-and enable some other useful options (documented in the comments). You can
-also put tasks here that you want to always have access to.
-
-
-== Getting a Ruby on Rails app running on a fresh Ubuntu server
-
-This is still what brings people to deprec. You can install a full Rails stack
-and get multiple apps running on it in much less time than it would take to 
-do it manually. Think an hour vs. a weekend. (The irony is I'm up writing this
-on a Saturday night.)
-
-	export HOSTS=<target.host.name>
-
-	# Install Rails stack
-	cap deprec:rails:install_rails_stack
-
-	# Install mysql (if it's running on the same box)
-	cap deprec:mysql:install
-	cap deprec:mysql:config_gen
-	cap deprec:mysql:config
-
-	# Install your Rails app
-	cap deploy:setup
-	cap deploy
-	cap deprec:db:create
-	cap deprec:db:migrate
-	cap deprec:nginx:restart
-	cap deprec:mongrel:restart
 
 You can find documentation on the deprec site. http://www.deprec.org/
 
@@ -129,9 +105,19 @@ This gem includes a modified copy of Neil Wilson's very useful vmbuilder_plugins
 
 == Thanks
 
-Eric Harris-Braun: great testing, bug reports and suggestions
-Gus Gollings: helped restore www.deprec.org
-Craig Ambrose: testing, documentation and beer
+Deprec wouldn't be what it is without the contributions of many people, a few of whom are listed here:
+
+  Square Circle Triangle: commissioned work that has included in the project.
+  Eric Harris-Braun: great testing, bug reports and suggestions
+  Gus Gollings: helped restore www.deprec.org
+  Craig Ambrose: testing, documentation and beer
+
+  github forks of note:
+    isaac
+    paulreimer
+    jasherai
+    saimonmoore
+    zippy
 
 
 == License
@@ -158,8 +144,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
-[1] http://www.deprec.org
-[2] http://www.capify.org
+[1] http://www.deprec.org/
+[2] http://www.capify.org/
 [3] http://www.ruby-lang.org/en/
 [4] http://rubyforge.org/
 [5] http://rubygems.org/
+[6] http://www.sct.com.au/
