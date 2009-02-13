@@ -1,0 +1,41 @@
+#
+# Install tracks locally
+#
+git clone git://github.com/bsag/tracks.git
+cd tracks
+
+cp config/database.yml.tmpl config/database.yml
+cp config/site.yml.tmpl config/site.yml
+cp -r log.tmpl log -u 
+rake db:create
+rake db:migrate
+./script/server  # Test locally
+
+
+#
+# Install deprec
+#
+sudo gem install deprec
+cap deprec:users:passwd HOSTS=192.168.0.135 USER=root # Change root password
+cap deprec:users:add 	HOSTS=192.168.0.135 USER=root # Add personal account
+
+
+#
+# Create deploy.rb file for tracks
+#
+depify .
+curl -o config/deploy.rb http://mbailey.github.com/deprec/deploy.rb-tracks
+# Edit config/deploy.rb specifying the domain name to serve the app on.	
+
+
+#
+# Install on remote server
+# 
+
+cap deprec:rails:install_stack
+cap deprec:db:install
+cap deploy:setup 
+cap deploy 
+cap deploy:migrate
+
+# Tracks is now running on your server. Enjoy!
