@@ -19,24 +19,19 @@ following may come in handy.
 	cap deprec:ssh:config_gen # generates ssh server configs
 
 If you have an authorized_keys file, copy it to a location where deprec
-can find it. Deprec will then offer to copy it out to remote hosts when
-you setup new accounts for yourself. If you don't have authorized_keys,
-copy out your id_rsa.pub or id_dsa.pub file.
-
-You can also put the authorized_keys of colleagues in this dir and deprec
-will offer to copy them out when creating accounts for them too.
-
-We name these files using the username of their owner.
+can find it. We name these files using the username of their owner.
 
 	cp ~/.ssh/authorized_keys config/ssh/authorized_keys/${USER}
-
-Define an environment variable for the server we'll be working on
-
-	export HOSTS=<your.slice.address>
+	
+Deprec will then offer to copy it out to remote hosts when
+you setup new accounts for yourself. If you don't have authorized_keys,
+copy out your id_rsa.pub or id_dsa.pub file. You can also put the 
+authorized_keys of colleagues in this dir and deprec will offer to 
+copy them out when creating accounts for them too.
 
 Change the root password you received for your new slice.
 
-	cap deprec:users:passwd USER=root
+	cap deprec:users:passwd USER=root HOSTS=<your.slice.address>
 
 		Enter user to change password for  |root|
 		Password: 
@@ -44,7 +39,7 @@ Change the root password you received for your new slice.
 		Retype new UNIX password: 
 
 
-Create an account with sudo access for mysql^H^Hself
+Create an account with sudo access for myself:
 
 	cap deprec:users:add USER=root 
 
@@ -61,7 +56,7 @@ Create an account with sudo access for mysql^H^Hself
 
 Create another account without sudo access for a colleague.
 Notice how I longer need to specify USER=root? That's because I'm using the 
-account I just created.
+account I just created (mbailey).
 
 	cap deprec:users:add
 
