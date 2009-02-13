@@ -1,6 +1,6 @@
-deprec: Install and configure Nagios on Ubuntu 7.10 (gutsy)
-===========================================================
-											 by Mike Bailey
+deprec: Install and configure Nagios on Ubuntu 7.10 (gutsy), 8.04 (hardy)
+=========================================================================
+										 
 * Quickstart
 
 	# You need the following item defined in config/deploy.rb (or ~/.caprc)

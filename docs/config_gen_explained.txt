@@ -25,7 +25,7 @@ Changes to service configuration should never be made on the server. Deprec
 acknowledges this by offering no assistance to people who want to copy config 
 files back from servers. But pushing the files out couldn't be simpler!
 
-	cap deprec:nginx:config # pushes out all config files for trac
+	cap deprec:nginx:config # pushes out all config files for nginx
 
 deprec2 takes into consideration the fact that that some services are used to 
 host more than one application. For example, a webserver will often have one 
@@ -37,11 +37,3 @@ When you deploy a Ruby on Rails app with deprec it drops configs for your projec
 into the config/ directory for your project and symlinks them into a shared path
 on the server. This means you can install multiple apps on a remote server and 
 they shouldn't stop on each other. 
-	
-== Extra services
-
-- nginx
-- monit
-- postfix
-- nagios
-- more...
