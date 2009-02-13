@@ -1,0 +1,42 @@
+require 'deprec'
+
+# deploy.rb for installing tracks 
+# 
+# http://github.com/bsag/tracks/tree/master
+#
+# This file demonstrates how simple deprec-2.0.0 can make installing a Rails app.
+#
+# If you want to use Passenger, Ruby Enterprise Edition and Apache, simple update
+# the value for :domain below and you're ready to deploy.
+#
+# Otherwise you can tweak the settings as required.
+#
+set :domain, "tracks.failmode.com"  # < --- Change this to your hostname
+
+# Now run the following on a fresh Ubuntu Slice to have a running copy of tracks.
+#
+#   cap deprec:rails:install_stack
+#   cap deprec:db:install
+#   cap deploy:setup 
+#   cap deploy 
+#   cap deploy:migrate
+
+set :ruby_vm_type,      :ree        # ree, mri
+set :web_server_type,   :apache     # apache, nginx
+set :app_server_type,   :passenger  # passenger, mongrel
+set :db_server_type,    :mysql      # mysql, postgresql, sqlite
+
+set :application, "tracks"
+set :repository,  "git://github.com/bsag/tracks.git"
+set :scm, :git
+
+# Update these if you're not running everything on one host.
+role :app, domain
+role :web, domain
+role :db,  domain, :primary => true
+
+namespace :deploy do
+  task :restart, :roles => :app, :except => { :no_release => true } do
+    top.deprec.app.restart
+  end
+end
