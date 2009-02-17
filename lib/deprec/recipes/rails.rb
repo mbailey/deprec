@@ -47,6 +47,14 @@ Capistrano::Configuration.instance(:must_exist).load do
   namespace :deprec do
     namespace :rails do
       
+      #
+      # If database.yml is not kept in scm and it is present in local
+      # config dir then push it out to server.
+      #
+      before 'deprec:rails:symlink_database_yml', :roles => :app do
+        push_database_yml unless database_yml_in_scm
+      end
+      
       task :setup_database, :roles => :db do
         if ! roles[:db].servers.empty? # Some apps don't use database!
           deprec2.read_database_yml
@@ -80,13 +88,13 @@ Capistrano::Configuration.instance(:must_exist).load do
       DESC
       task :install_stack do   
 
-        top.deprec.ruby.install    
-        top.deprec.web.install        # Uses value of web_server_type 
+        top.deprec.ruby.install
+        top.deprec.rails.install
         top.deprec.svn.install
         top.deprec.git.install
+        top.deprec.web.install        # Uses value of web_server_type 
         top.deprec.app.install        # Uses value of app_server_type
         top.deprec.monit.install
-        top.deprec.rails.install
         top.deprec.logrotate.install  
         
         # We not longer install database server as part of this task.
@@ -199,6 +207,7 @@ Capistrano::Configuration.instance(:must_exist).load do
             if path != '.'
               deprec2.mkdir("#{current_path}/#{path}")
             end
+            sudo "test -d #{current_path}/#{dir} && mv #{current_path}/#{dir} #{current_path}/#{dir}.moved_by_deprec; exit 0"
             run "ln -nfs #{shared_path}/#{dir} #{current_path}/#{dir}" 
           end
         end
@@ -271,6 +280,13 @@ Capistrano::Configuration.instance(:must_exist).load do
       desc "Link in the production database.yml" 
       task :symlink_database_yml, :roles => :app do
         run "ln -nfs #{shared_path}/config/database.yml #{release_path}/config/database.yml" 
+      end
+      
+      desc "Copy database.yml to shared/config/database.yml. Useful if not kept in scm"
+      task :push_database_yml, :roles => :app do
+        if File.exists?('config/database.yml')
+          put(File.read('config/database.yml'), "#{shared_path}/config/database.yml")
+        end
       end
       
     end
