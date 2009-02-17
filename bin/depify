@@ -69,10 +69,10 @@ files = {
     # your SCM below:
     set :scm, :git
    
-    set :ruby_vm_type,      :ree
-    set :web_server_type,   :apache
-    set :app_server_type,   :passenger
-    set :db_server_type,    :mysql
+    set :ruby_vm_type,      :ree        # :ree, :mri
+    set :web_server_type,   :apache     # :apache, :nginx
+    set :app_server_type,   :passenger  # :passenger, :mongrel
+    set :db_server_type,    :mysql      # :mysql, :postgresql, :sqlite
     
     # set :packages_for_project, %w(libmagick9-dev imagemagick libfreeimage3) # list of packages to be installed
     # set :gems_for_project, %w(rmagick mini_magick image_science) # list of gems to be installed
