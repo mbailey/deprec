@@ -55,11 +55,23 @@ Capistrano::Configuration.instance(:must_exist).load do
         # In the meantime we'll just use the snakeoil cert
         #
         # top.deprec.ssl.config_gen if apache_ssl_enabled
-        top.deprec.ssl.generate_snakeoil_cert if apache_ssl_enabled
+        top.deprec.ssl.config_gen if apache_ssl_enabled
       end
       
       desc "Push apache config files to server"
       task :config, :roles => :web do
+        config_system
+      end
+      
+      desc "Generate initial configs and copy direct to server."
+      task :initial_config, :roles => :web do
+        SYSTEM_CONFIG_FILES[:apache].each do |file|
+          deprec2.render_template(:apache, file.merge(:remote => true))
+        end
+      end
+      
+      desc "Push apache config files to server"
+      task :config_system, :roles => :web do
         deprec2.push_configs(:apache, SYSTEM_CONFIG_FILES[:apache])
       end
       
@@ -68,7 +80,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         # XXX Need to flesh out generation of custom certs
         # In the meantime we'll just use the snakeoil cert
         #
-        # top.deprec.ssl.config if apache_ssl_enabled
+        top.deprec.ssl.config if apache_ssl_enabled
       end
       
       task :enable_modules, :roles => :web do
