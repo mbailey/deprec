@@ -1,15 +1,26 @@
 deprec/TODO.txt
 
 == Milestone 1
-* update README
-* Stop double printing of tasks when linked to canonical name
-* unlink ree when normal ruby installed
-* test deploy:migrate when database is not on app server
-* check REE is unlinked when ruby-1.8.7 installed
+
+ssl problem "ssl_error_rx_record_too_long"
+- remove default site?
+
+	sort out cert generation
+
+	ensure this is installed
+		NameVirtualHost *:80
+ 
+		<IfModule mod_ssl.c>
+		     NameVirtualHost *:443
+		</IfModule>
+
 
 
 == Milestone 2
 * make quieter
+* Stop double printing of tasks when linked to canonical name
+* unlink ree when normal ruby installed
+* check REE is unlinked when ruby-1.8.7 installed
 
 
 == Milestone 3

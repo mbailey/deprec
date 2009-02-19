@@ -1,5 +1,22 @@
 == git
 
+
+== 2.0.1 (February 20, 2009)
+
+Newly created ~/.caprc does not load Rails recipes.
+
+This solves the problem of Capistrano's default deploy tasks
+having 'before' and 'after' tasks added when you're deploying
+a project that isn't setup to use deprec.
+
+Existing users can update their existing ~/.caprc, replacing:
+
+    require 'deprec'
+
+with:
+
+    require 'deprec_minus_rails'
+
 == 2.0.0 (February 14, 2009)
 
 * Official deprec-2.0 Rubyforge release!
