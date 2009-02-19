@@ -43,10 +43,15 @@ caprc = unindent(<<-FILE)
   # into Capfile or deploy.rb for those projects
   #
   # Uncomment any of the following entries to enable them.
-  #
+  
   # Include deprec - deployment recipes for Capistrano (www.deprec.org)
   #
-  require 'deprec'
+  # This loads all recipes minus the ones in rails.rb
+  # The recipes in rails.rb add 'before' and 'after' tasks to
+  # some of the builtin cap deploy tasks which are not appropriate
+  # for deploying a project that isn't setup to use deprec.
+  #
+  require 'deprec_minus_rails'
 
 FILE
 
