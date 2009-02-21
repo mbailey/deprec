@@ -62,9 +62,19 @@ Capistrano::Configuration.instance(:must_exist).load do
           end
         }
         
-        if target_user == user
+        # If we have an authorized keys file for this user
+        # then copy that out
+        if File.exists?("config/ssh/authorized_keys/#{target_user}") 
+          deprec2.mkdir "/home/#{target_user}/.ssh", :mode => 0700, :owner => "#{target_user}.users", :via => :sudo
+          std.su_put File.read("config/ssh/authorized_keys/#{target_user}"), "/home/#{target_user}/.ssh/authorized_keys", '/tmp/', :mode => 0600
+          sudo "chown #{target_user}.users /home/#{target_user}/.ssh/authorized_keys"
+        
+        elsif target_user == user
           
-          unless ssh_options[:keys]  
+          if key = %w[id_rsa id_dsa identity].detect { |f| File.exists?("#{ENV['HOME']}/.ssh/#{f}.pub") }
+            deprec2.mkdir '.ssh', :mode => 0700
+            put(ssh_options[:keys].collect{|key| File.read(key+'.pub')}.join("\n"), '.ssh/authorized_keys', :mode => 0600 )
+          else
             puts <<-ERROR
 
             You need to define the name of your SSH key(s)
@@ -75,16 +85,6 @@ Capistrano::Configuration.instance(:must_exist).load do
             ERROR
             exit
           end
-        
-          deprec2.mkdir '.ssh', :mode => 0700
-          put(ssh_options[:keys].collect{|key| File.read(key+'.pub')}.join("\n"), '.ssh/authorized_keys', :mode => 0600 )
-          
-        else  
-          
-          deprec2.mkdir "/home/#{target_user}/.ssh", :mode => 0700, :owner => "#{target_user}.users", :via => :sudo
-          std.su_put File.read("config/ssh/authorized_keys/#{target_user}"), "/home/#{target_user}/.ssh/authorized_keys", '/tmp/', :mode => 0600
-          sudo "chown #{target_user}.users /home/#{target_user}/.ssh/authorized_keys"
-          
         end
       end
       
