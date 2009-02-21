@@ -125,7 +125,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       
       desc "Push nagios config files to server"
       task :config, :roles => :nagios do
-        set :application, 'nagios'
+        default :application, 'nagios'
         deprec2.push_configs(:nagios, SYSTEM_CONFIG_FILES[:nagios])
         sudo "ln -sf #{deploy_to}/nagios/conf/nagios_apache_vhost.conf /usr/local/apache2/conf/apps"
         config_check

@@ -62,19 +62,19 @@ Capistrano::Configuration.instance(:must_exist).load do
   # end
 
   default(:application) do
-    Capistrano::CLI.ui.ask "enter name of project(no spaces)" do |q|
+    Capistrano::CLI.ui.ask "Enter name of project(no spaces)" do |q|
       q.validate = /^[0-9a-z_]*$/
     end
   end 
 
   default(:domain) do
-    Capistrano::CLI.ui.ask "enter domain name for project" do |q|
+    Capistrano::CLI.ui.ask "Enter domain name for project" do |q|
       q.validate = /^[0-9a-z_\.]*$/
     end
   end
 
   default(:repository) do
-    Capistrano::CLI.ui.ask "enter repository URL for project" do |q|
+    Capistrano::CLI.ui.ask "Enter repository URL for project" do |q|
       # q.validate = //
     end
   end

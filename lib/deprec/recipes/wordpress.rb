@@ -3,7 +3,7 @@ Capistrano::Configuration.instance(:must_exist).load do
   
   require 'digest'
   
-  set :application,  'wordpress'
+  default :application,  'wordpress'
   set(:wordpress_domain) { Capistrano::CLI.ui.ask 'Enter domain wordpress will be served on' }
   set :db_name,     'wordpress'
   set :db_user,     'wordpress'
