@@ -40,8 +40,8 @@ Capistrano::Configuration.instance(:must_exist).load do
     set_owner_of_environment_rb if web_server_type.to_s == 'passenger'
   end
 
-  after :deploy, deploy.cleanup
-
+  after :deploy, "deploy:cleanup"
+  
   namespace :deprec do
     namespace :rails do
       
