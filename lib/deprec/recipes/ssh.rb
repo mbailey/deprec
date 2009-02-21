@@ -71,9 +71,16 @@ Capistrano::Configuration.instance(:must_exist).load do
         
         elsif target_user == user
           
-          if key = %w[id_rsa id_dsa identity].detect { |f| File.exists?("#{ENV['HOME']}/.ssh/#{f}.pub") }
+          # If the user has specified a key Capistrano should use
+          if ssh_options[:keys]
             deprec2.mkdir '.ssh', :mode => 0700
-            put(ssh_options[:keys].collect{|key| File.read(key+'.pub')}.join("\n"), '.ssh/authorized_keys', :mode => 0600 )
+            put(ssh_options[:keys].collect{|key| File.read(key)}.join("\n"), '.ssh/authorized_keys', :mode => 0600 )
+          
+          # Try to find the current users public key
+          elsif keys = %w[id_rsa id_dsa identity].collect { |f| "#{ENV['HOME']}/.ssh/#{f}.pub" if File.exists?("#{ENV['HOME']}/.ssh/#{f}.pub") }.compact
+            deprec2.mkdir '.ssh', :mode => 0700
+            put(keys.collect{|key| File.read(key)}.join("\n"), '.ssh/authorized_keys', :mode => 0600 )
+            
           else
             puts <<-ERROR
 
@@ -85,7 +92,18 @@ Capistrano::Configuration.instance(:must_exist).load do
             ERROR
             exit
           end
+        else
+          puts <<-ERROR
+          
+          Could not find ssh public key(s) for user #{user}
+          
+          Please create file containing ssh public keys in:
+          
+            config/ssh/authorized_keys/#{target_user}
+            
+          ERROR
         end
+        
       end
       
     end
