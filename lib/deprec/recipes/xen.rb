@@ -18,7 +18,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         top.deprec.xentools.install
         disable_apparmour
         disable_tls
-        enable_hardy_domu
+        # enable_hardy_domu Should only be run on gutsy
         initial_config
       end
       
@@ -42,27 +42,27 @@ Capistrano::Configuration.instance(:must_exist).load do
       
       SYSTEM_CONFIG_FILES[:xen] = [
                 
-        {:template => "xend-config.sxp.erb",
-        :path => '/etc/xen/xend-config.sxp',
-        :mode => 0644,
-        :owner => 'root:root'},
-         
-        {:template => "xendomains.erb",
-         :path => '/etc/default/xendomains',
-         :mode => 0755,
-         :owner => 'root:root'},
-         
+        # {:template => "xend-config.sxp.erb",
+        # :path => '/etc/xen/xend-config.sxp',
+        # :mode => 0644,
+        # :owner => 'root:root'},
+        #  
+        # {:template => "xendomains.erb",
+        #  :path => '/etc/default/xendomains',
+        #  :mode => 0755,
+        #  :owner => 'root:root'},
+        #  
         # This gives you a second network bridge on second ethernet device  
         {:template => "network-bridge-wrapper",
          :path => '/etc/xen/scripts/network-bridge-wrapper',
          :mode => 0755,
          :owner => 'root:root'},
-         
-        # Bugfix for gutsy - xendomains fails to shut down domains on system shutdown
-        {:template => "xend-init.erb",
-         :path => '/etc/init.d/xend',
-         :mode => 0755,
-         :owner => 'root:root'}
+        #  
+        # # Bugfix for gutsy - xendomains fails to shut down domains on system shutdown
+        # {:template => "xend-init.erb",
+        #  :path => '/etc/init.d/xend',
+        #  :mode => 0755,
+        #  :owner => 'root:root'}
          
       ]
       
@@ -90,7 +90,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       # xen-create-image --force --ip=192.168.1.31 --hostname=x1 --mac=00:16:3E:11:12:31
       
       # Start a virtual image (and open console to it)
-      # xm create -c /etc/xen/x1.cfg
+      # xm create /etc/xen/x1.cfg -c
       
       desc "Start Xen"
       task :start, :roles => :dom0 do

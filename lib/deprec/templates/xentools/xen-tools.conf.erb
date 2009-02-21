@@ -257,7 +257,7 @@ reiser_options = defaults
 # serial_device = hvc0 #default
 # serial_device = tty1
 #
-# disk_device = xvda #default
+disk_device = xvda #default
 # disk_device = sda
 #
 
@@ -274,18 +274,3 @@ reiser_options = defaults
 # output    = /etc/xen
 # extension = .cfg
 #
-
-#
-#  If you're using a newer version of the Xen guest kernel you will
-# need to make sure that you use 'xvc0' for the guest serial device,
-# and 'xvdX' instead of 'sdX' for serial devices.
-#
-#  You may specify the things to use here:
-#
-# serial_device = tty1 #default
-# serial_device = xvc0
-#
-disk_device = xvda  #default
-# disk_device = sda
-#
-
