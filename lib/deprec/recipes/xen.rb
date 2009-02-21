@@ -15,6 +15,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       desc "Install Xen"
       task :install, :roles => :dom0 do
         install_deps
+        top.deprec.xentools.install
         disable_apparmour
         disable_tls
         enable_hardy_domu
@@ -23,9 +24,11 @@ Capistrano::Configuration.instance(:must_exist).load do
       
       task :install_deps, :roles => :dom0 do
         # for amd64 version of ubuntu 7.10
-        apt.install( {:base => %w(linux-image-xen bridge-utils libxen3.1 python-xen-3.1 xen-docs-3.1 xen-hypervisor-3.1 xen-ioemu-3.1 xen-tools xen-utils-3.1 lvm2)}, :stable )
+        # apt.install( {:base => %w(linux-image-xen bridge-utils libxen3.1 python-xen-3.1 xen-docs-3.1 xen-hypervisor-3.1 xen-ioemu-3.1 xen-tools xen-utils-3.1 lvm2)}, :stable )
         # alternatively, for x86 version of ubuntu:
         # apt-get install ubuntu-xen-server libc6-xen lvm2    
+        apt.install( {:base => %w(ubuntu-xen-server libc6-xen lvm2)}, :stable )
+        
       end
       
       task :disable_apparmour, :roles => :dom0 do
@@ -68,7 +71,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         # Non-standard! We're pushing these straight out
         SYSTEM_CONFIG_FILES[:xen].each do |file|
           deprec2.render_template(:xen, file.merge(:remote => true))
-        end      
+        end     
       end
       
       desc "Generate configuration file(s) for Xen from template(s)"

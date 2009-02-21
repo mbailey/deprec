@@ -1,5 +1,8 @@
 deprec/TODO.txt
 
+* check for cdrom line in /etc/apt/sources.list
+# deb cdrom:[Ubuntu-Server 7.10 _Gutsy Gibbon_ - Release i386 (20071016)]/ gutsy main restricted
+
 == Milestone 1
 
 ssl problem "ssl_error_rx_record_too_long"
