@@ -61,13 +61,13 @@ Capistrano::Configuration.instance(:must_exist).load do
          :mode => 0644,
          :owner => 'root:root'},
          
-        {:template => 'nginx_vhost.erb',
+        {:template => 'nginx_vhost.conf.erb',
          :path => "nginx_vhost.conf", 
          :mode => 0644,
          :owner => 'root:root'},
          
-        {:template => 'apache_vhost.erb',
-         :path => "apache_vhost", 
+        {:template => 'apache_vhost.conf.erb',
+         :path => "apache_vhost.conf", 
          :mode => 0644,
          :owner => 'root:root'}
       
@@ -111,11 +111,11 @@ Capistrano::Configuration.instance(:must_exist).load do
       end
       
       task :symlink_apache_vhost, :roles => :app do
-        sudo "ln -sf #{deploy_to}/mongrel/apache_vhost #{apache_vhost_dir}/#{application}"
+        sudo "ln -sf #{deploy_to}/mongrel/apache_vhost.conf #{apache_vhost_dir}/#{application}.conf"
       end
       
       task :symlink_nginx_vhost, :roles => :app do
-        sudo "ln -sf #{deploy_to}/mongrel/nginx_vhost #{nginx_vhost_dir}/#{application}"
+        sudo "ln -sf #{deploy_to}/mongrel/nginx_vhost.conf #{nginx_vhost_dir}/#{application}.conf"
       end
       
       task :symlink_monit_config, :roles => :app do
