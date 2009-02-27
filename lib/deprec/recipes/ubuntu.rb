@@ -24,6 +24,12 @@ Capistrano::Configuration.instance(:must_exist).load do
         sudo "shutdown -h now"
       end
       
+      desc "Remove locks from aborted apt-get command."
+      task :remove_locks do
+        sudo "rm /var/lib/apt/lists/lock"
+        # XXX There's one more - add it!
+      end
+      
     end
   end
 end
