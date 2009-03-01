@@ -115,7 +115,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       end
       
       task :symlink_nginx_vhost, :roles => :app do
-        sudo "ln -sf #{deploy_to}/mongrel/nginx_vhost #{nginx_vhost_dir}/#{application}"
+        sudo "ln -sf #{deploy_to}/mongrel/nginx_vhost.conf #{nginx_vhost_dir}/#{application}.conf"
       end
       
       task :symlink_monit_config, :roles => :app do
