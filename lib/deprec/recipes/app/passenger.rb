@@ -134,8 +134,13 @@ Capistrano::Configuration.instance(:must_exist).load do
         deprec2.push_configs(:passenger, PROJECT_CONFIG_FILES[:passenger])
         symlink_apache_vhost
         activate_project
+        set_ownership_of_environment_rb
       end
-
+      
+      task :set_ownership_of_environment_rb, :roles => :app do
+        sudo "chown #{app_user} #{current_path}/config/environment.rb"
+      end
+      
       task :symlink_apache_vhost, :roles => :app do
         sudo "ln -sf #{deploy_to}/passenger/apache_vhost #{apache_vhost_dir}/#{application}"
       end
