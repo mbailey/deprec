@@ -2,7 +2,9 @@
 <IfModule passenger_module>
 	<VirtualHost *:80>
 	  ServerName <%= domain %>
-	  ServerAlias <%= domain.sub(/.*?\./, "assets#{counter}.") %>
+      <%- 4.times do |counter| -%>
+        ServerAlias <%= domain.sub(/.*?\./, "assets#{counter}.") %>
+      <%- end %>
 	  DocumentRoot "<%= passenger_document_root %>"
 	  RailsEnv <%= rails_env %>
 	  # RailsAllowModRewrite <%= passenger_rails_allow_mod_rewrite %>
