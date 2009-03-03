@@ -1,5 +1,9 @@
 == git
 
+== 2.0.3 (March 3, 2009)
+
+* bugfix - can't set ownership of environment.rb before deploy!
+
 == 2.0.2 (March 3, 2009)
 
 * Change owner of config/environment.rb to the value of app_user after deploy
