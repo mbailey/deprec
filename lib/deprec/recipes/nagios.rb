@@ -39,7 +39,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         deprec2.groupadd(nagios_cmd_group)
         deprec2.add_user_to_group(nagios_user, nagios_cmd_group)
         # Add apache user to nagios group to permit commands via web interface
-        deprec2.add_user_to_group(apache_user, nagios_cmd_group)
+        deprec2.add_user_to_group('daemon', nagios_cmd_group)
       end
          
       # Install dependencies for nagios
