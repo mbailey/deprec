@@ -5,6 +5,7 @@ Capistrano::Configuration.instance(:must_exist).load do
   set(:app_user) { app_user_prefix + application }
   set :app_group_prefix,  'app_'
   set(:app_group) { app_group_prefix + application }
+  set(:app_user_homedir) { deploy_to }
   set :database_yml_in_scm, true
   set :app_symlinks, nil
   set :rails_env, 'production'
@@ -161,7 +162,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         deprec2.useradd(app_user, :group => app_group, :homedir => false)
         # Set the primary group for the user the application runs as (in case 
         # user already existed when previous command was run)
-        sudo "usermod --gid #{app_group} #{app_user}"
+        sudo "usermod --gid #{app_group} --home #{app_user_homedir} #{app_user}"
       end
       
       task :set_perms_on_shared_and_releases, :roles => :app do
