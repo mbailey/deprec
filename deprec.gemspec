@@ -2,7 +2,7 @@ require 'rubygems'
 
 SPEC = Gem::Specification.new do |s|
   s.name = 'deprec'
-  s.version = '2.0.1'
+  s.version = '2.0.2'
   
   s.authors = ['Mike Bailey']
   s.description = <<-EOF
