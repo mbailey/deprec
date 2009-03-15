@@ -1,5 +1,9 @@
 == git
 
+== 2.0.4 (March 16, 2009)
+
+* bugfix - updated Passenger version number
+
 == 2.0.3 (March 3, 2009)
 
 * bugfix - can't set ownership of environment.rb before deploy!
