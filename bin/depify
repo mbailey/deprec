@@ -2,33 +2,6 @@
 
 require 'optparse'
 
-OptionParser.new do |opts|
-  opts.banner = "Usage: #{File.basename($0)} [path]"
-
-  opts.on("-h", "--help", "Displays this help info") do
-    puts opts
-    exit 0
-  end
-
-  begin
-    opts.parse!(ARGV)
-  rescue OptionParser::ParseError => e
-    warn e.message
-    puts opts
-    exit 1
-  end
-end
-
-if ARGV.empty?
-  abort "Please specify the directory to depify, e.g. `#{File.basename($0)} .'"
-elsif !File.exists?(ARGV.first)
-  abort "`#{ARGV.first}' does not exist."
-elsif !File.directory?(ARGV.first)
-  abort "`#{ARGV.first}' is not a directory."
-elsif ARGV.length > 1
-  abort "Too many arguments; please specify only the directory to capify."
-end
-
 def unindent(string)
   indentation = string[/\A\s*/]
   string.strip.gsub(/^#{indentation}/, "")
@@ -114,6 +87,39 @@ def create_file(file, content)
     puts "[add] writing `#{file}'"
     File.open(file, "w") { |f| f.write(content) }
   end
+end
+
+
+OptionParser.new do |opts|
+  opts.banner = "Usage: #{File.basename($0)} [path]"
+
+  opts.on("-c", "Install ~/.caprc file") do
+    create_file(File.join(ENV['HOME'], '.caprc'), caprc)
+    exit 0
+  end
+  
+  opts.on("-h", "--help", "Displays this help info") do
+    puts opts
+    exit 0
+  end
+  
+  begin
+    opts.parse!(ARGV)
+  rescue OptionParser::ParseError => e
+    warn e.message
+    puts opts
+    exit 1
+  end
+end
+
+if ARGV.empty?
+  abort "Please specify the directory to depify, e.g. `#{File.basename($0)} .'"
+elsif !File.exists?(ARGV.first)
+  abort "`#{ARGV.first}' does not exist."
+elsif !File.directory?(ARGV.first)
+  abort "`#{ARGV.first}' is not a directory."
+elsif ARGV.length > 1
+  abort "Too many arguments; please specify only the directory to capify."
 end
 
 create_file(File.join(ENV['HOME'], '.caprc'), caprc)
