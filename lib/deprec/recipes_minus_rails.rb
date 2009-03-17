@@ -2,14 +2,6 @@
 unless Capistrano::Configuration.respond_to?(:instance)
   abort "deprec2 requires Capistrano 2"
 end
-
-# Don't load the rails recipes in ~/.caprc
-#
-# This excludes the 'before' and 'after' tasks deprec adds to 
-# facilitate rails setup.
-#
-#require "#{File.dirname(__FILE__)}/recipes/rails"
-
 require "#{File.dirname(__FILE__)}/recipes/canonical"
 require "#{File.dirname(__FILE__)}/recipes/deprec"
 require "#{File.dirname(__FILE__)}/recipes/deprecated"
@@ -27,6 +19,7 @@ require "#{File.dirname(__FILE__)}/recipes/web/nginx"
 require "#{File.dirname(__FILE__)}/recipes/git"
 require "#{File.dirname(__FILE__)}/recipes/gitosis"
 require "#{File.dirname(__FILE__)}/recipes/svn"
+require "#{File.dirname(__FILE__)}/recipes/integrity"
 
 require "#{File.dirname(__FILE__)}/recipes/users"
 require "#{File.dirname(__FILE__)}/recipes/ssh"
@@ -43,6 +36,7 @@ require "#{File.dirname(__FILE__)}/recipes/ntp"
 require "#{File.dirname(__FILE__)}/recipes/logrotate"
 require "#{File.dirname(__FILE__)}/recipes/ssl"
 
+# require "#{File.dirname(__FILE__)}/recipes/rails"
 require "#{File.dirname(__FILE__)}/recipes/postfix"
 require "#{File.dirname(__FILE__)}/recipes/memcache"
 require "#{File.dirname(__FILE__)}/recipes/monit"

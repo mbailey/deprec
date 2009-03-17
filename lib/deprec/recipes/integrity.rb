@@ -81,12 +81,12 @@ Capistrano::Configuration.instance(:must_exist).load do
       
       task :activate, :roles => :ci do
         sudo "a2ensite integrity"
-        top.deprec.web.reload
+        restart_apache
       end
       
       task :deactivate, :roles => :ci do
         sudo "a2dissite integrity"
-        top.deprec.web.reload
+        restart_apache
       end
       
       desc "Restart Application"
