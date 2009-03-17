@@ -1,0 +1,43 @@
+# Domain where integrity will be running from. This is used to have
+# nice URLs in your notifications.
+# For example:
+#   http://builder.integrityapp.com
+:base_uri: http://<%= integrity_domain %>
+
+# This should be a complete connection string to your database.
+#
+# Examples:
+# * `mysql://user:password@localhost/integrity`
+# * `postgres://user:password@localhost/integrity`
+# * `sqlite3:///home/integrity/db/integrity.sqlite`
+#
+# Note:
+# * The appropriate data_objects adapter must be installed (`do_mysql`, etc)
+# * You must create the `integrity` database on localhost, of course.
+:database_uri: sqlite3:///<%= integrity_install_dir %>/integrity.db
+
+# This is where your project's code will be checked out to. Make sure it's
+# writable by the user that runs Integrity.
+:export_directory: <%= integrity_install_dir %>/builds
+
+# Path to the integrity log file
+:log: <%= integrity_install_dir %>/log/integrity.log
+
+# Enable or disable HTTP authentication for the app. BE AWARE that if you
+# disable this anyone can delete and alter projects, so do it only if your
+# app is running in a controlled environment (ie, behind your company's
+# firewall.)
+:use_basic_auth: <%= integrity_use_basic_auth %>
+
+<%- if integrity_use_basic_auth -%>
+# When `use_basic_auth` is true, the admin's username for HTTP authentication.
+:admin_username: <%= integrity_admin_username %>
+
+# When `use_basic_auth` is true, the admin's password. Usually saved as a
+# SHA1 hash. See the next option.
+:admin_password: <%= integrity_hash_admin_password ? SHA1::hexdigest(integrity_admin_password) : integrity_admin_password %>
+
+# If this is true, then whenever we authenticate the admin user, will hash
+# it using SHA1. If not, we'll assume the provided password is in plain text.
+:hash_admin_password: <%= integrity_hash_admin_password %>
+<%- end -%>
