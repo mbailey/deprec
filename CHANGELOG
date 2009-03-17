@@ -1,5 +1,9 @@
 == git
 
+== 2.0.6 (March 17, 2009)
+
+* Added option to create ~/.caprc file.  run 'depify -c'
+
 == 2.0.5 (March 17, 2009)
 
 * Added recipes and config templates for Integrity ci. http://integrityapp.com/
