@@ -52,6 +52,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         end
         
         initial_config_push
+        activate_system
         
       end
       
@@ -61,7 +62,6 @@ Capistrano::Configuration.instance(:must_exist).load do
         SYSTEM_CONFIG_FILES[:passenger].each do |file|
           deprec2.render_template(:passenger, file.merge(:remote => true))
         end
-        activate_system
       end
 
       # Install dependencies for Passenger
