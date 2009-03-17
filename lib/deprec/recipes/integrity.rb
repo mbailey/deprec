@@ -70,6 +70,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       task :config, :roles => :ci do
         deprec2.push_configs(:integrity, SYSTEM_CONFIG_FILES[:integrity])
         sudo "chown #{integrity_user} #{integrity_install_dir}/config.ru"
+        activate
       end
       
       # XXX Setup database for testing project
