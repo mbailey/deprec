@@ -1,5 +1,10 @@
 == git
 
+== 2.0.8 (March 17, 2009)
+
+* :config task now renders configs directly to remote server if locally 
+  rendered versions (from :config_gen task) do not exist.
+
 == 2.0.7 (March 17, 2009)
 
 * bugfix

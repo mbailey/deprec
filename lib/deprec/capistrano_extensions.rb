@@ -159,29 +159,22 @@ module Deprec2
   def push_configs(app, files)   
     app = app.to_s
     files.each do |file|
-      # If the file path is relative we will prepend a path to this projects
-      # own config directory for this service.
-      if file[:path][0,1] != '/'
-        full_remote_path = File.join(deploy_to, app, file[:path]) 
-      else
-        full_remote_path = file[:path]
-      end
       full_local_path = File.join('config', app, file[:path])
-      sudo "test -d #{File.dirname(full_remote_path)} || sudo mkdir -p #{File.dirname(full_remote_path)}"
-      #
-      # XXX work this in to check for per-host variants of config files
-      #
-      # if any variants of this file exist for this host (they have -hostname at end)
-      #   servers = find_servers_for_task(current_task)
-      #   servers.each do |server|
-      #     puts server(..., :hosts => server) # XXX find a way to restrict su_put to one host
-      #   end
-      # else
-      #   # just send them the normal way, it's quicker in parallel
+      if File.exists?(full_local_path)
+        # If the file path is relative we will prepend a path to this projects
+        # own config directory for this service.
+        if file[:path][0,1] != '/'
+          full_remote_path = File.join(deploy_to, app, file[:path]) 
+        else
+          full_remote_path = file[:path]
+        end
+        sudo "test -d #{File.dirname(full_remote_path)} || sudo mkdir -p #{File.dirname(full_remote_path)}"
         std.su_put File.read(full_local_path), full_remote_path, '/tmp/', :mode=>file[:mode]
-      # end
-      #
-      sudo "chown #{file[:owner]} #{full_remote_path}"
+        sudo "chown #{file[:owner]} #{full_remote_path}"
+      else
+        # Render directly to remote host.
+        render_template(app, file.merge(:remote => true))
+      end
     end
   end
   
