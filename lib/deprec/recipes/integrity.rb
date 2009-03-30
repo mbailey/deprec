@@ -35,9 +35,11 @@ Capistrano::Configuration.instance(:must_exist).load do
 
       # Install dependencies for Integrity
       task :install_deps, :roles => :ci do
-        apt.install( {:base => %w(sqlite3 libsqlite3-dev git)}, :stable )
+        apt.install( {:base => %w(sqlite3 libsqlite3-dev git libxslt1-dev libxml2-dev)}, :stable )
         gem2.install 'sqlite3-ruby'
         gem2.install 'do_sqlite3'
+        # Gems your tests might need
+        gem2.install 'webrat'
       end
       
       SYSTEM_CONFIG_FILES[:integrity] = [
