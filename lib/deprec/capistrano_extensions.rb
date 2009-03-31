@@ -46,7 +46,7 @@ module Deprec2
     remote = options[:remote] || false
     mode = options[:mode] || 0755
     owner = options[:owner] || nil
-  
+    stage = exists?(:stage) ? fetch(:stage).to_s : ''
     # replace this with a check for the file
     if ! template
       puts "render_template() requires a value for the template!"
@@ -76,7 +76,7 @@ module Deprec2
       sudo "chown #{owner} #{path}" if defined?(owner)
     elsif path 
       # render to local file
-      full_path = File.join('config', app.to_s, path)
+      full_path = File.join('config', stage, app.to_s, path)
       path_dir = File.dirname(full_path)
       if File.exists?(full_path)
         if IO.read(full_path) == rendered_template
@@ -158,8 +158,10 @@ module Deprec2
   # be made to configs on the servers so why would you need to pull them back?
   def push_configs(app, files)   
     app = app.to_s
+    stage = exists?(:stage) ? fetch(:stage).to_s : ''
+    
     files.each do |file|
-      full_local_path = File.join('config', app, file[:path])
+      full_local_path = File.join('config', stage, app, file[:path])
       if File.exists?(full_local_path)
         # If the file path is relative we will prepend a path to this projects
         # own config directory for this service.
