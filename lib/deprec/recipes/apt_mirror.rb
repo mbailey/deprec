@@ -44,7 +44,6 @@ Capistrano::Configuration.instance(:must_exist).load do
         SYSTEM_CONFIG_FILES[:apt_mirror].each do |file|
           deprec2.render_template(:apt_mirror, file.merge(:remote => true))
         end
-        activate
       end
 
       # install dependencies for apt_mirror
