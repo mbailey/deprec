@@ -3,11 +3,10 @@ Capistrano::Configuration.instance(:must_exist).load do
   namespace :deprec do 
     namespace :passenger do
           
-      set(:passenger_install_dir) { 
+      set(:passenger_install_dir) {
         if ruby_vm_type == :ree
-          # XXX We can't predict the version included with REE! :-(
-          # XXX Need to find a workaround 
-          "#{ree_install_dir}/lib/ruby/gems/1.8/gems/passenger-2.2.2"
+          base_dir = "#{ree_install_dir}/lib/ruby/gems/1.8/gems/"
+          latest_passenger_version = Dir[base_dir + 'passenger-*'].last
         else
           '/opt/passenger'
         end
