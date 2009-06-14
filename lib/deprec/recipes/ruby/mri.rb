@@ -30,8 +30,8 @@ Capistrano::Configuration.instance(:must_exist).load do
     namespace :rubygems do
   
       SRC_PACKAGES[:rubygems] = {
-        :md5sum => "a04ee6f6897077c5b75f5fd1e134c5a9  rubygems-1.3.1.tgz", 
-        :url => "http://rubyforge.org/frs/download.php/45905/rubygems-1.3.1.tgz",
+        :md5sum => "b17b398503253bf36a101c58f02a226f  rubygems-1.3.4.tgz", 
+        :url => "http://rubyforge.org/frs/download.php/57643/rubygems-1.3.4.tgz",
 	      :configure => "",
 	      :make =>  "",
         :install => 'ruby setup.rb;'

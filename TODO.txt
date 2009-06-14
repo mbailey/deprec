@@ -1,5 +1,17 @@
 deprec/TODO.txt
 
+* show downloads version/date # shows project not stale
+* email OMGWTFTOAST
+
+* mission
+* mailing list etiquette
+* bus factor 1
+* getting contributions
+
+use 'rake gems:install' instead of gems_for_project
+
+* clean out stale tasks (from cap -T)
+
 * check for cdrom line in /etc/apt/sources.list
 # deb cdrom:[Ubuntu-Server 7.10 _Gutsy Gibbon_ - Release i386 (20071016)]/ gutsy main restricted
 
