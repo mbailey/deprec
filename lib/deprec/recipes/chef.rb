@@ -7,7 +7,9 @@ Capistrano::Configuration.instance(:must_exist).load do
       task :install do
         install_deps
         sudo "gem sources -a http://gems.opscode.com"
-        sudo "gem install ohai chef --source http://gems.opscode.com"
+        sudo "gem install ohai chef --no-rdoc --no-ri"
+        config
+        sudo "sudo chef-solo -c /etc/chef/solo.rb -j /etc/chef/solo/chef.json -r http://s3.amazonaws.com/chef-solo/bootstrap-latest.tar.gz"
       end
       
       # Install dependencies for Chef
@@ -18,7 +20,19 @@ Capistrano::Configuration.instance(:must_exist).load do
         top.deprec.rubygems.install
       end
       
-      SYSTEM_CONFIG_FILES[:chef] = []
+      SYSTEM_CONFIG_FILES[:chef] = [
+        
+        {:template => "solo.rb",
+         :path => '/etc/chef/solo.rb',
+         :mode => 0644,
+         :owner => 'root:root'},
+         
+        {:template => "chef.json",
+         :path => '/etc/chef/solo/chef.json',
+         :mode => 0644,
+         :owner => 'root:root'}
+         
+      ]
        
       desc "Generate Chef configs (system & project level)."
       task :config_gen do
@@ -29,40 +43,38 @@ Capistrano::Configuration.instance(:must_exist).load do
 
       desc "Push Chef config files (system & project level) to server"
       task :config, :roles => :chef do
-        deprec2.push_configs(:integrity, SYSTEM_CONFIG_FILES[:integrity])
-        sudo "chown #{integrity_user} #{integrity_install_dir}/config.ru"
-        activate
+        deprec2.push_configs(:chef, SYSTEM_CONFIG_FILES[:chef])
       end
       
-      desc "Set Chef to start on boot"
-      task :activate, :roles => :chef do
-        send(run_method, "update-rc.d chef defaults")
-      end
-      
-      desc "Set Chef to not start on boot"
-      task :deactivate, :roles => :chef do
-        send(run_method, "update-rc.d -f chef remove")
-      end
-      
-      desc "Start Chef"
-      task :start, :roles => :web do
-        send(run_method, "/etc/init.d/chef start")
-      end
-
-      desc "Stop Chef"
-      task :stop, :roles => :web do
-        send(run_method, "/etc/init.d/chef stop")
-      end
-
-      desc "Restart Chef"
-      task :restart, :roles => :web do
-        send(run_method, "/etc/init.d/chef restart")
-      end
-
-      desc "Reload Chef"
-      task :reload, :roles => :web do
-        send(run_method, "/etc/init.d/chef force-reload")
-      end
+      # desc "Set Chef to start on boot"
+      # task :activate, :roles => :chef do
+      #   send(run_method, "update-rc.d chef defaults")
+      # end
+      # 
+      # desc "Set Chef to not start on boot"
+      # task :deactivate, :roles => :chef do
+      #   send(run_method, "update-rc.d -f chef remove")
+      # end
+      # 
+      # desc "Start Chef"
+      # task :start, :roles => :web do
+      #   send(run_method, "/etc/init.d/chef start")
+      # end
+      # 
+      # desc "Stop Chef"
+      # task :stop, :roles => :web do
+      #   send(run_method, "/etc/init.d/chef stop")
+      # end
+      # 
+      # desc "Restart Chef"
+      # task :restart, :roles => :web do
+      #   send(run_method, "/etc/init.d/chef restart")
+      # end
+      # 
+      # desc "Reload Chef"
+      # task :reload, :roles => :web do
+      #   send(run_method, "/etc/init.d/chef force-reload")
+      # end
       
     end
     

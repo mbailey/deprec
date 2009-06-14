@@ -51,9 +51,7 @@ Capistrano::Configuration.instance(:must_exist).load do
 
       desc "Push CouchDB config files (system & project level) to server"
       task :config, :roles => :couchdb do
-        deprec2.push_configs(:integrity, SYSTEM_CONFIG_FILES[:integrity])
-        sudo "chown #{integrity_user} #{integrity_install_dir}/config.ru"
-        activate
+        deprec2.push_configs(:couchdb, SYSTEM_CONFIG_FILES[:couchdb])
       end
       
       desc "Set CouchDB to start on boot"
