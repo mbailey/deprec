@@ -26,7 +26,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       task :install, :roles => :ci do
         install_deps        
         sudo 'gem sources -a http://gems.github.com'
-        gem2.install 'foca-integrity'
+        gem2.install 'integrity'
         
         sudo "integrity install --passenger #{integrity_install_dir}"
         deprec2.useradd 'integrity'

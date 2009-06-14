@@ -79,7 +79,7 @@ Capistrano::Configuration.instance(:must_exist).load do
   ]
   
   desc <<-DESC
-  Generate nginx config from template. Note that this does not
+  Generate monit config from template. Note that this does not
   push the config to the server, it merely generates required
   configuration files. These should be kept under source control.            
   The can be pushed to the server with the :config task.
