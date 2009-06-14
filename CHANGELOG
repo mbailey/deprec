@@ -1,5 +1,12 @@
 == git
 
+== 2.0.10 (June 14, 2009)
+
+* Added CouchDB
+* Added Chef
+* Fixed Passenger gem version problem (permanently!) [gfairbrother]
+* Updated ree version to ruby-enterprise-1.8.6-20090610
+
 == 2.0.9 (April 14, 2009)
 
 * Use passenger-2.1.3
