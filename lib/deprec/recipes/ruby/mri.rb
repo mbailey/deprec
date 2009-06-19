@@ -5,8 +5,8 @@ Capistrano::Configuration.instance(:must_exist).load do
     namespace :mri do
             
       SRC_PACKAGES[:mri] = {
-        :md5sum => "5e5b7189674b3a7f69401284f6a7a36d  ruby-1.8.7-p72.tar.gz", 
-        :url => "ftp://ftp.ruby-lang.org/pub/ruby/1.8/ruby-1.8.7-p72.tar.gz",
+        :md5sum => "18dcdfef761a745ac7da45b61776afa5  ruby-1.8.7-p174.tar.gz", 
+        :url => "ftp://ftp.ruby-lang.org/pub/ruby/1.8/ruby-1.8.7-p174.tar.gz",
         :configure => "./configure --with-readline-dir=/usr/local;"
       }
   
