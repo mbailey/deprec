@@ -17,7 +17,6 @@ Capistrano::Configuration.instance(:must_exist).load do
         install_deps
         top.deprec.xentools.install
         disable_apparmour
-        disable_tls
         # enable_hardy_domu Should only be run on gutsy
         initial_config
       end
@@ -27,7 +26,8 @@ Capistrano::Configuration.instance(:must_exist).load do
         # apt.install( {:base => %w(linux-image-xen bridge-utils libxen3.1 python-xen-3.1 xen-docs-3.1 xen-hypervisor-3.1 xen-ioemu-3.1 xen-tools xen-utils-3.1 lvm2)}, :stable )
         # alternatively, for x86 version of ubuntu:
         # apt-get install ubuntu-xen-server libc6-xen lvm2    
-        apt.install( {:base => %w(ubuntu-xen-server libc6-xen lvm2)}, :stable )
+        # apt.install( {:base => %w(ubuntu-xen-server libc6-xen lvm2)}, :stable )
+        apt.install( {:base => %w(ubuntu-xen-server lvm2)}, :stable )
         
       end
       
@@ -36,9 +36,9 @@ Capistrano::Configuration.instance(:must_exist).load do
         sudo 'update-rc.d -f apparmor remove'
       end
       
-      task :disable_tls, :roles => :dom0 do
-        sudo 'mv /lib/tls /lib/tls.disabled'
-      end
+      # task :disable_tls, :roles => :dom0 do
+      #   sudo 'mv /lib/tls /lib/tls.disabled'
+      # end
       
       SYSTEM_CONFIG_FILES[:xen] = [
                 
