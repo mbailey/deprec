@@ -39,3 +39,50 @@ ssl problem "ssl_error_rx_record_too_long"
 
 
 == Milestone 3
+
+
+
+
+
+# Chef
+
+# Install Server or Client
+
+  # Make sure they're in DNS or chef-client will fail with the following:
+  root@node1:/etc/chef# chef-client   
+  /registrations/node1
+  /openid/consumer/start
+  /usr/local/lib/ruby/1.8/net/http.rb:2097:in `error!': 400 "Bad Request" (Net::HTTPServerException)
+  	from /usr/local/lib/ruby/gems/1.8/gems/chef-0.7.0/lib/chef/rest.rb:233:in `run_request'
+  	from /usr/local/lib/ruby/gems/1.8/gems/chef-0.7.0/lib/chef/rest.rb:95:in `post_rest'
+  	from /usr/local/lib/ruby/gems/1.8/gems/chef-0.7.0/lib/chef/client.rb:223:in `authenticate'
+  	from /usr/local/lib/ruby/gems/1.8/gems/chef-0.7.0/lib/chef/client.rb:74:in `run'
+  	from /usr/local/lib/ruby/gems/1.8/gems/chef-0.7.0/lib/chef/application/client.rb:163:in `run_application'
+  	from /usr/local/lib/ruby/gems/1.8/gems/chef-0.7.0/lib/chef/application/client.rb:161:in `loop'
+  	from /usr/local/lib/ruby/gems/1.8/gems/chef-0.7.0/lib/chef/application/client.rb:161:in `run_application'
+  	from /usr/local/lib/ruby/gems/1.8/gems/chef-0.7.0/lib/chef/application.rb:53:in `run'
+  	from /usr/local/lib/ruby/gems/1.8/gems/chef-0.7.0/bin/chef-client:26
+  	from /usr/local/bin/chef-client:19:in `load'
+  	from /usr/local/bin/chef-client:19
+
+$ time cap deprec:chef:install HOSTS=chef2
+real	14m17.875s
+user	0m7.457s
+sys	0m7.979s
+
+! Server setup needs to restart/reload Apache for SSL cert to get picked up 
+
+! client - unable to resolve node1 - need to put in /etc/hosts?
+
+client> sudo chef-client
+chef web: Registrations -> Validate Registration 
+client> sudo chef-client
+
+
+# Chef repo
+git://github.com/mbailey/chef-repo.git
+
+! client start script
+? how do we push from server?
+? where does validation token come from?
+! 8.04.2 is worth considering

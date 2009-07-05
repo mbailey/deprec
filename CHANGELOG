@@ -1,5 +1,13 @@
 == git
 
+== 2.0.13 (July 5, 2009)
+
+* Bugfix: updated url for REE (old one went away)
+
+== 2.0.12 (June 24, 2009)
+
+* Updated chef recipes
+
 == 2.0.11 (June 19, 2009)
 
 * Security update: ruby-1.8.7-p174
