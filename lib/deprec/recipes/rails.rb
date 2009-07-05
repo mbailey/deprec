@@ -43,6 +43,14 @@ Capistrano::Configuration.instance(:must_exist).load do
 
   after :deploy, "deploy:cleanup"
   
+  namespace :rake do
+    namespace :gems do
+      task :install, :roles => :app do
+        run "cd #{current_path} && #{sudo} rake gems:install"
+      end
+    end
+  end
+  
   namespace :deprec do
     namespace :rails do
       
