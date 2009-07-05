@@ -4,24 +4,31 @@ Capistrano::Configuration.instance(:must_exist).load do
     namespace :chef do
       
       set(:server_fqdn) { Capistrano::CLI.ui.ask 'Enter Chef server hostname' }
-      set :recipes, 'chef::client'
+      set(:recipes) { "chef::#{install_type}" }
       
-      desc "Install Chef client"
-      task :install do
-        config
-        # install_deps
-        sudo 'chef-solo -c /etc/chef/solo.rb -j /etc/chef/chef.json -r http://s3.amazonaws.com/chef-solo/bootstrap-latest.tar.gz'
+      default(:install_type) do
+        Capistrano::CLI.ui.choose do |menu| 
+          %w(client server).each {|c| menu.choice(c)}
+          menu.header = "Select Chef version to install"
+        end
       end
       
-      task :install_server do
-        set :recipes, 'chef::recipes'
-        install
+      desc "Install Chef"
+      task :install do
+        config # Do this first so we can ensure we have any user input
+        install_deps
+        run_solo
+        top.deprec.apache.restart if install_type == 'server'
+      end
+      
+      desc "Run chef-solo to setup on server"
+      task :run_solo do
+        sudo 'chef-solo -c /etc/chef/solo.rb -j /etc/chef/chef.json -r http://s3.amazonaws.com/chef-solo/bootstrap-latest.tar.gz'
       end
       
       # Install dependencies for Chef
       task :install_deps, :roles => :chef do
-        top.deprec.couchdb.install
-        # top.deprec.ruby.install # XXX can we put this back in?
+        top.deprec.couchdb.install if install_type == 'server'
         # apt.install( {:base => %w(ruby ruby1.8-dev libopenssl-ruby1.8 rdoc ri irb)}, :stable )
         top.deprec.ruby.install
         top.deprec.rubygems.install
@@ -54,36 +61,6 @@ Capistrano::Configuration.instance(:must_exist).load do
       task :config, :roles => :chef do
         deprec2.push_configs(:chef, SYSTEM_CONFIG_FILES[:chef])
       end
-      
-      # desc "Set Chef to start on boot"
-      # task :activate, :roles => :chef do
-      #   send(run_method, "update-rc.d chef defaults")
-      # end
-      # 
-      # desc "Set Chef to not start on boot"
-      # task :deactivate, :roles => :chef do
-      #   send(run_method, "update-rc.d -f chef remove")
-      # end
-      # 
-      # desc "Start Chef"
-      # task :start, :roles => :web do
-      #   send(run_method, "/etc/init.d/chef start")
-      # end
-      # 
-      # desc "Stop Chef"
-      # task :stop, :roles => :web do
-      #   send(run_method, "/etc/init.d/chef stop")
-      # end
-      # 
-      # desc "Restart Chef"
-      # task :restart, :roles => :web do
-      #   send(run_method, "/etc/init.d/chef restart")
-      # end
-      # 
-      # desc "Reload Chef"
-      # task :reload, :roles => :web do
-      #   send(run_method, "/etc/init.d/chef force-reload")
-      # end
       
     end
     
