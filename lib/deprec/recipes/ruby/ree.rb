@@ -8,7 +8,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       
       SRC_PACKAGES[:ree] = {
         :md5sum => "0bf66ee626918464a6eccdd83c99d63a #{ree_version}.tar.gz",
-        :url => "http://www.rubyenterpriseedition.com/#{ree_version}.tar.gz",
+        :url => "http://rubyforge.org/frs/download.php/58677/#{ree_version}.tar.gz",
         :configure => '',
         :make => '',
         :install => "./installer --auto /opt/#{ree_version}"
