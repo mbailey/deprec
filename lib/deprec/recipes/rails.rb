@@ -50,6 +50,11 @@ Capistrano::Configuration.instance(:must_exist).load do
       end
     end
   end
+  namespace :db do
+    task :migrate, :roles => :db do
+      run "cd #{current_path} && #{sudo} rake gems:install"
+    end
+  end
   
   namespace :deprec do
     namespace :rails do
