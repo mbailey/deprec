@@ -1,5 +1,9 @@
 == git
 
+== 2.0.15 (August 10, 2009)
+
+* Moved apache logs for vhosts into /var/log/apache2 (override by setting :apache_log_dir)
+
 == 2.0.14 (August 10, 2009)
 
 * Added logrotate config for passenger
