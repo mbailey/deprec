@@ -1,5 +1,9 @@
 == git
 
+== 2.0.14 (August 10, 2009)
+
+* Added logrotate config for passenger
+
 == 2.0.13 (July 5, 2009)
 
 * Bugfix: updated url for REE (old one went away)
