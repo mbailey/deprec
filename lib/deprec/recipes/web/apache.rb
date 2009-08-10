@@ -3,6 +3,7 @@ Capistrano::Configuration.instance(:must_exist).load do
   namespace :deprec do
     namespace :apache do
       
+      set :apache_user, 'www-data'
       set :apache_vhost_dir, '/etc/apache2/sites-available'
       set :apache_ssl_enabled, false
       set :apache_ssl_ip, nil
