@@ -3,6 +3,7 @@ Capistrano::Configuration.instance(:must_exist).load do
   namespace :deprec do
     namespace :xen do
       
+      set :xen_volume_group_name, 'xendisks'
       # Config variables for migration
       default(:xen_slice) { Capistrano::CLI.ui.ask("Slice name") }
       default(:xen_old_host) { Capistrano::CLI.ui.ask("Old Xen host") }
@@ -126,7 +127,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         # Get user input for these values
         xen_old_host && xen_new_host && xen_disk_size && xen_swap_size && xen_slice
 
-        # copy_disk
+        copy_disk
         copy_slice_config
         create_lvm_disks
         build_slice_from_tarball
@@ -135,7 +136,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       task :copy_disk do
         mnt_dir = "/mnt/#{xen_slice}-disk"
       	tarball = "/tmp/#{xen_slice}-disk.tar"
-      	lvm_disk = "/dev/vm_local/#{xen_slice}-disk"
+      	lvm_disk = "/dev/#{xen_volume_group_name}/#{xen_slice}-disk"
 
         # Shutdown slice
       	sudo "xm list | grep #{xen_slice} && #{sudo} xm shutdown #{xen_slice} && sleep 10; exit 0", :hosts => xen_old_host
@@ -168,15 +169,15 @@ Capistrano::Configuration.instance(:must_exist).load do
         disks = {"#{xen_slice}-disk" => xen_disk_size, "#{xen_slice}-swap" => xen_swap_size}
         disks.each { |disk, size|
           puts "Creating #{disk} (#{size} GB)"
-          sudo "lvcreate -L #{size}G -n #{disk} vm_local", :hosts => xen_new_host
-          sudo "mkfs.ext3 /dev/vm_local/#{disk}", :hosts => xen_new_host
+          sudo "lvcreate -L #{size}G -n #{disk} #{xen_volume_group_name}", :hosts => xen_new_host
+          sudo "mkfs.ext3 /dev/#{xen_volume_group_name}/#{disk}", :hosts => xen_new_host
         }
       end
 
       task :build_slice_from_tarball do
         mnt_dir = "/mnt/#{xen_slice}-disk"
       	tarball = "/tmp/#{xen_slice}-disk.tar"
-      	lvm_disk = "/dev/vm_local/#{xen_slice}-disk"
+      	lvm_disk = "/dev/#{xen_volume_group_name}/#{xen_slice}-disk"
 
       	# untar archive into lvm disk
       	sudo "test -d #{mnt_dir} || #{sudo} mkdir #{mnt_dir}; exit 0", :hosts => xen_new_host
