@@ -1,5 +1,42 @@
 deprec/TODO.txt
 
+# collectd
++ start on boot (init.d)
++ copy config from mon.failmode to deprec templates
++ install php_collection
+  - auth
+  - update config.php 
+    ($config['datadirs']   = array('/usr/local/var/lib/collectd/');)
++ nginx plugin
+  - symlink lib on install
+  - add nagios to collectd group (create group)
++ apache plugin
+  /etc/apache2/mods-available/status.conf ExtendedStatus On
+
+
+# nagios
++ pull in commands, services, hostgroups from mon.failmode
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 * show downloads version/date # shows project not stale
 * email OMGWTFTOAST
 

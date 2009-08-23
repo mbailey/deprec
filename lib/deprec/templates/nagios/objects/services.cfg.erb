@@ -1,17 +1,53 @@
 ###############################################################################
 ###############################################################################
 #
+# SERVICE GROUPS
+#
+###############################################################################
+###############################################################################
+
+define servicegroup{
+        servicegroup_name               disk
+}
+
+define servicegroup{
+        servicegroup_name               memory
+}
+define servicegroup{
+        servicegroup_name               cpu
+}
+
+
+###############################################################################
+###############################################################################
+#
 # SERVICES
 #
 ###############################################################################
 ###############################################################################
+
+define service {
+    use     				generic-service ; Name of service template to use
+    hostgroup_name  		servers
+    service_description     SSH
+    check_command   		check_ssh
+}
+
+define service{ 
+	use generic-service 
+	hostgroup_name servers 
+	service_description Memory 
+	servicegroups memory
+	check_command check_nrpe!check_memory 
+}
 
 define service{ 
 	use generic-service 
 	hostgroup_name servers 
 	service_description Swap 
 	servicegroups memory
-	check_command check_nrpe!check_swap 
+	check_command check_nrpe!check_swap
+	notifications_enabled   0
 }
 
 define service{ 
@@ -26,8 +62,58 @@ define service{
 	hostgroup_name servers 
 	servicegroups disk
 	service_description Disk 
-	check_command check_nrpe!check_sda1 
+	check_command check_nrpe!check_xvda2
 }
+
+define service{ 
+	use generic-service 
+	hostgroup_name servers 
+	service_description NTP Time 
+	check_command check_nrpe!check_ntp_time 
+}
+
+define service{ 
+	use generic-service 
+	hostgroup_name servers 
+	service_description DNS 
+	check_command check_dns
+}
+
+define service {
+   use     				generic-service ; Name of service template to use
+   hostgroup_name  		mail
+   service_description  postfix smtp
+   check_command   		check_nrpe!check_postfix_satellite
+}
+
+define service{ 
+	use generic-service 
+	hostgroup_name mysql_servers
+	service_description Mysql 
+	check_command check_nrpe!check_mysql
+}
+
+# Check requests per second to Apache (via collectd)
+#
+# define service{ 
+#   use generic-service 
+#   host_name localhost
+#   service_description apache_requests 
+#   normal_check_interval           1
+#   retry_check_interval            1
+#   check_command check_apache_requests!www.example.com!10!20
+# }
+
+# Check URl is responding
+# 
+# define service{ 
+#   use generic-service 
+#   host_name example_host 
+#   service_description www.example.com 
+#   check_command check_url!www.example.com!http:\/\/www.example.com/some/path
+#   notifications_enabled   1
+# }
+
 
 ###############################################################################
 ###############################################################################

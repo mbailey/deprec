@@ -192,10 +192,22 @@ connection_timeout=300
 command[check_users]=/usr/local/nagios/libexec/check_users -w 5 -c 10
 command[check_load]=/usr/local/nagios/libexec/check_load -w 15,10,5 -c 30,25,20
 command[check_hda1]=/usr/local/nagios/libexec/check_disk -w 20% -c 10% -p /dev/hda1
+command[check_sda1]=/usr/local/nagios/libexec/check_disk -w 20% -c 10% -p /dev/sda1
+command[check_xvda1]=/usr/local/nagios/libexec/check_disk -w 20% -c 10% -p /dev/xvda1
+command[check_xvda2]=/usr/local/nagios/libexec/check_disk -w 20% -c 10% -p /dev/xvda2
+command[check_xvda3]=/usr/local/nagios/libexec/check_disk -w 20% -c 10% -p /dev/xvda3
+command[check_postfix_satellite]=/usr/local/nagios/libexec/check_smtp -H localhost
 command[check_zombie_procs]=/usr/local/nagios/libexec/check_procs -w 5 -c 10 -s Z
-command[check_total_procs]=/usr/local/nagios/libexec/check_procs -w 150 -c 200 
-command[check_memory]=/usr/local/nagios/libexec/check_linux_free_memory.pl -w 10% -c 0% 
-
+command[check_total_procs]=/usr/local/nagios/libexec/check_procs -w 150 -c 200
+command[check_memory]=/usr/local/nagios/libexec/check_linux_free_memory.pl -w 10% -c 0%
+command[check_mysql]=/usr/local/nagios/libexec/check_mysql -H localhost -u root
+command[check_mysql_slave]=/usr/local/nagios/libexec/check_mysql -H localhost -u root --check-slave
+command[check_airbrush]=/usr/local/nagios/libexec/check_procs -C ruby -a airbrush -c 1:1
+command[check_starling]=/usr/local/nagios/libexec/check_procs -C ruby -a starling -c 1:1
+command[check_sphinx]=/usr/local/nagios/libexec/check_procs -C searchd -c 1:1
+command[check_ar_sendmail]=/usr/local/nagios/libexec/check_procs -C ar_sendmail -c 1:1
+command[check_ntp_time]=/usr/local/nagios/libexec/check_ntp_time -H ntp.ubuntu.com -w 0.5 -c 1
+command[check_swap]=/usr/local/nagios/libexec/check_swap -w 50% -c 10%
 
 
 # The following examples allow user-supplied arguments and can

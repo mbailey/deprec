@@ -1,12 +1,12 @@
 ##############################################################################
 #
-# NAGIOS.CFG - Sample Main Config File for Nagios 3.0b7
+# NAGIOS.CFG - Sample Main Config File for Nagios 3.2.0
 #
 # Read the documentation for more information on this configuration
 # file.  I've provided some comments here, but things may not be so
 # clear without further explanation.
 #
-# Last Modified: 11-06-2007
+# Last Modified: 12-14-2008
 #
 ##############################################################################
 
@@ -27,13 +27,13 @@ log_file=/usr/local/nagios/var/nagios.log
 # if you wish (as shown below), or keep them all in a single config file.
 
 # You can specify individual object config files as shown below:
-#cfg_file=/usr/local/nagios/etc/objects/commands.cfg
-#cfg_file=/usr/local/nagios/etc/objects/contacts.cfg
-#cfg_file=/usr/local/nagios/etc/objects/timeperiods.cfg
-#cfg_file=/usr/local/nagios/etc/objects/templates.cfg
+# cfg_file=/usr/local/nagios/etc/objects/commands.cfg
+# cfg_file=/usr/local/nagios/etc/objects/contacts.cfg
+# cfg_file=/usr/local/nagios/etc/objects/timeperiods.cfg
+# cfg_file=/usr/local/nagios/etc/objects/templates.cfg
 
 # Definitions for monitoring the local (Linux) host
-#cfg_file=/usr/local/nagios/etc/objects/localhost.cfg
+# cfg_file=/usr/local/nagios/etc/objects/localhost.cfg
 
 # Definitions for monitoring a Windows machine
 #cfg_file=/usr/local/nagios/etc/objects/windows.cfg
@@ -111,8 +111,7 @@ status_file=/usr/local/nagios/var/status.dat
 
 
 # STATUS FILE UPDATE INTERVAL
-# Combined with the aggregate_status_updates option,
-# this option determines the frequency (in seconds) that
+# This option determines the frequency (in seconds) that
 # Nagios will periodically dump program, host, and 
 # service status data.
 
@@ -534,6 +533,28 @@ enable_predictive_service_dependency_checks=1
 
 
 
+# SOFT STATE DEPENDENCIES
+# This option determines whether or not Nagios will use soft state 
+# information when checking host and service dependencies. Normally 
+# Nagios will only use the latest hard host or service state when 
+# checking dependencies. If you want it to use the latest state (regardless
+# of whether its a soft or hard state type), enable this option. 
+# Values:
+#  0 = Don't use soft state dependencies (default) 
+#  1 = Use soft state dependencies 
+
+soft_state_dependencies=0
+
+
+
+# TIME CHANGE ADJUSTMENT THRESHOLDS
+# These options determine when Nagios will react to detected changes
+# in system time (either forward or backwards).
+
+#time_change_threshold=900
+
+
+
 # AUTO-RESCHEDULING OPTION
 # This option determines whether or not Nagios will attempt to
 # automatically reschedule active host and service checks to
@@ -698,6 +719,31 @@ retained_contact_service_attribute_mask=0
 # have not been tested much, so your mileage is likely to vary...
 
 interval_length=60
+
+
+
+# CHECK FOR UPDATES
+# This option determines whether Nagios will automatically check to
+# see if new updates (releases) are available.  It is recommend that you
+# enable this option to ensure that you stay on top of the latest critical
+# patches to Nagios.  Nagios is critical to you - make sure you keep it in
+# good shape.  Nagios will check once a day for new updates. Data collected
+# by Nagios Enterprises from the update check is processed in accordance 
+# with our privacy policy - see http://api.nagios.org for details.
+
+check_for_updates=1
+
+
+
+# BARE UPDATE CHECK
+# This option deterines what data Nagios will send to api.nagios.org when
+# it checks for updates.  By default, Nagios will send information on the 
+# current version of Nagios you have installed, as well as an indicator as
+# to whether this was a new installation or not.  Nagios Enterprises uses
+# this data to determine the number of users running specific version of 
+# Nagios.  Enable this option if you do not want this information to be sent.
+
+bare_update_check=0
 
 
 
@@ -1230,7 +1276,8 @@ enable_environment_macros=1
 # This option determines how much (if any) debugging information will
 # be written to the debug file.  OR values together to log multiple
 # types of information.
-# Values: -1 = Everything
+# Values: 
+#          -1 = Everything
 #          0 = Nothing
 #	   1 = Functions
 #          2 = Configuration
@@ -1239,7 +1286,11 @@ enable_environment_macros=1
 #          16 = Host/service checks
 #          32 = Notifications
 #          64 = Event broker
-#          128 = Check IPC
+#          128 = External commands
+#          256 = Commands
+#          512 = Scheduled downtime
+#          1024 = Comments
+#          2048 = Macros
 
 debug_level=0
 

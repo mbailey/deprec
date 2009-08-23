@@ -1,5 +1,5 @@
 ###############################################################################
-# COMMANDS.CFG - SAMPLE COMMAND DEFINITIONS FOR NAGIOS 3.0b7
+# COMMANDS.CFG - SAMPLE COMMAND DEFINITIONS FOR NAGIOS 3.2.0
 #
 # Last Modified: 05-31-2007
 #
@@ -27,13 +27,13 @@
 # 'notify-host-by-email' command definition
 define command{
 	command_name	notify-host-by-email
-	command_line	/usr/bin/printf "%b" "***** Nagios *****\n\nNotification Type: $NOTIFICATIONTYPE$\nHost: $HOSTNAME$\nState: $HOSTSTATE$\nAddress: $HOSTADDRESS$\nInfo: $HOSTOUTPUT$\n\nDate/Time: $LONGDATETIME$\n" | /bin/mail -s "** $NOTIFICATIONTYPE$ Host Alert: $HOSTNAME$ is $HOSTSTATE$ **" $CONTACTEMAIL$
+	command_line	/usr/bin/printf "%b" "***** Nagios *****\n\nNotification Type: $NOTIFICATIONTYPE$\nHost: $HOSTNAME$\nState: $HOSTSTATE$\nAddress: $HOSTADDRESS$\nInfo: $HOSTOUTPUT$\n\nDate/Time: $LONGDATETIME$\n" | /usr/bin/mail -s "** $NOTIFICATIONTYPE$ Host Alert: $HOSTNAME$ is $HOSTSTATE$ **" $CONTACTEMAIL$
 	}
 
 # 'notify-service-by-email' command definition
 define command{
 	command_name	notify-service-by-email
-	command_line	/usr/bin/printf "%b" "***** Nagios *****\n\nNotification Type: $NOTIFICATIONTYPE$\n\nService: $SERVICEDESC$\nHost: $HOSTALIAS$\nAddress: $HOSTADDRESS$\nState: $SERVICESTATE$\n\nDate/Time: $LONGDATETIME$\n\nAdditional Info:\n\n$SERVICEOUTPUT$" | /bin/mail -s "** $NOTIFICATIONTYPE$ Service Alert: $HOSTALIAS$/$SERVICEDESC$ is $SERVICESTATE$ **" $CONTACTEMAIL$
+	command_line	/usr/bin/printf "%b" "***** Nagios *****\n\nNotification Type: $NOTIFICATIONTYPE$\n\nService: $SERVICEDESC$\nHost: $HOSTALIAS$\nAddress: $HOSTADDRESS$\nState: $SERVICESTATE$\n\nDate/Time: $LONGDATETIME$\n\nAdditional Info:\n\n$SERVICEOUTPUT$" | /usr/bin/mail -s "** $NOTIFICATIONTYPE$ Service Alert: $HOSTALIAS$/$SERVICEDESC$ is $SERVICESTATE$ **" $CONTACTEMAIL$
 	}
 
 
@@ -125,7 +125,12 @@ define command{
         command_name    check_ftp
         command_line    $USER1$/check_ftp -H $HOSTADDRESS$ $ARG1$
         }
-
+        
+# 'check_dns' command definition
+define command{
+        command_name    check_dns
+        command_line    $USER1$/check_dns -H $HOSTADDRESS$
+        }
 
 # 'check_hpjd' command definition
 define command{
@@ -146,7 +151,23 @@ define command{
         command_name    check_http
         command_line    $USER1$/check_http -I $HOSTADDRESS$ $ARG1$
         }
+        
+# 'check_url' command definition
+define command{
+        command_name    check_url
+        command_line    $USER1$/check_http -H $ARG1$ -u $ARG2$
+        }
 
+
+# 'check_apache_requests' command definition
+define command{
+        command_name    check_apache_requests
+        command_line    /usr/local/bin/collectd-nagios -n 'apache/apache_requests' -s /usr/local/var/run/collectd.sock -H $ARG1$ -w $ARG2$ -c $ARG3$        
+	}
+	
+# collectd-nagios -n 'apache/apache_requests' -s /usr/local/var/run/collectd.sock -H mon.failmode.com -w 20 -c 30
+
+        	
 
 # 'check_ssh' command definition
 define command{
@@ -237,4 +258,8 @@ define command{
 	command_line	/usr/bin/printf "%b" "$LASTSERVICECHECK$\t$HOSTNAME$\t$SERVICEDESC$\t$SERVICESTATE$\t$SERVICEATTEMPT$\t$SERVICESTATETYPE$\t$SERVICEEXECUTIONTIME$\t$SERVICELATENCY$\t$SERVICEOUTPUT$\t$SERVICEPERFDATA$\n" >> /usr/local/nagios/var/service-perfdata.out
 	}
 
+define command{ 
+        command_name    check_nrpe 
+        command_line    $USER1$/check_nrpe -H $HOSTADDRESS$ -c $ARG1$ 
+        } 
 
