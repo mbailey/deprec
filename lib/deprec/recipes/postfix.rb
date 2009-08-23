@@ -12,7 +12,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       end
       
       # Install dependencies for Postfix
-      task :install_deps do
+      task :install_deps, :roles => :mail do
         # mutt and mailx are useful tools for testing mail
         # e.g. echo test | mail test@gmail.com
         apt.install( {:base => %w(postfix mutt mailx)}, :stable )
