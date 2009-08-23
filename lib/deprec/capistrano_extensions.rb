@@ -314,10 +314,10 @@ module Deprec2
 
   # install package from source
   def install_from_src(src_package, src_dir)
+    set_package_defaults(src_package)
     package_dir = File.join(src_dir, src_package[:dir])
     unpack_src(src_package, src_dir)
     apt.install( {:base => %w(build-essential)}, :stable )
-    # XXX replace with invoke_command
     sudo <<-SUDO
     sh -c '
     cd #{package_dir};
