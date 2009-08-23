@@ -1,0 +1,686 @@
+#
+# Config file for collectd(1).
+# Please read collectd.conf(5) for a list of options.
+# http://collectd.org/
+#
+
+##############################################################################
+# Global                                                                     #
+#----------------------------------------------------------------------------#
+# Global settings for the daemon.                                            #
+##############################################################################
+
+#Hostname    "localhost"
+FQDNLookup   true
+#BaseDir     "/usr/local/var/lib/collectd"
+#PIDFile     "/usr/local/var/run/collectd.pid"
+#PluginDir   "/usr/local/lib/collectd"
+#TypesDB     "/usr/local/share/collectd/types.db"
+#Interval     10
+#ReadThreads  5
+
+##############################################################################
+# Logging                                                                    #
+#----------------------------------------------------------------------------#
+# Plugins which provide logging functions should be loaded first, so log     #
+# messages generated when loading or configuring other plugins can be        #
+# accessed.                                                                  #
+##############################################################################
+
+LoadPlugin syslog
+#LoadPlugin logfile
+
+#<Plugin logfile>
+#	LogLevel info
+#	File STDOUT
+#	Timestamp true
+#</Plugin>
+
+#<Plugin syslog>
+#	LogLevel info
+#</Plugin>
+
+##############################################################################
+# LoadPlugin section                                                         #
+#----------------------------------------------------------------------------#
+# Lines beginning with a single `#' belong to plugins which have been built  #
+# but are disabled by default.                                               #
+#                                                                            #
+# Lines begnning with `##' belong to plugins which have not been built due   #
+# to missing dependencies or because they have been deactivated explicitly.  #
+##############################################################################
+
+LoadPlugin apache
+#LoadPlugin apcups
+##LoadPlugin apple_sensors
+#LoadPlugin ascent
+#LoadPlugin battery
+#LoadPlugin bind
+#LoadPlugin conntrack
+LoadPlugin cpu
+#LoadPlugin cpufreq
+#LoadPlugin csv
+#LoadPlugin curl
+#LoadPlugin dbi
+#LoadPlugin df
+#LoadPlugin disk
+#LoadPlugin dns
+#LoadPlugin email
+#LoadPlugin entropy
+#LoadPlugin exec
+#LoadPlugin filecount
+#LoadPlugin fscache
+##LoadPlugin gmond
+#LoadPlugin hddtemp
+LoadPlugin interface
+#LoadPlugin iptables
+##LoadPlugin ipmi
+##LoadPlugin ipvs
+#LoadPlugin irq
+##LoadPlugin java
+##LoadPlugin libvirt
+LoadPlugin load
+#LoadPlugin mbmon
+##LoadPlugin memcachec
+#LoadPlugin memcached
+LoadPlugin memory
+#LoadPlugin multimeter
+#LoadPlugin mysql
+##LoadPlugin netlink
+LoadPlugin network
+#LoadPlugin nfs
+#LoadPlugin nginx
+#LoadPlugin notify_desktop
+#LoadPlugin notify_email
+#LoadPlugin ntpd
+#LoadPlugin nut
+##LoadPlugin onewire
+#LoadPlugin openvpn
+##LoadPlugin oracle
+#LoadPlugin perl
+#LoadPlugin ping
+#LoadPlugin postgresql
+#LoadPlugin powerdns
+#LoadPlugin processes
+#LoadPlugin protocols
+##LoadPlugin rrdcached
+LoadPlugin rrdtool
+#LoadPlugin sensors
+#LoadPlugin serial
+##LoadPlugin snmp
+#LoadPlugin swap
+#LoadPlugin table
+#LoadPlugin tail
+##LoadPlugin tape
+#LoadPlugin tcpconns
+#LoadPlugin teamspeak2
+#LoadPlugin ted
+#LoadPlugin thermal
+#LoadPlugin unixsock
+#LoadPlugin uptime
+#LoadPlugin users
+#LoadPlugin uuid
+#LoadPlugin vmem
+#LoadPlugin vserver
+#LoadPlugin wireless
+##LoadPlugin xmms
+
+##############################################################################
+# Plugin configuration                                                       #
+#----------------------------------------------------------------------------#
+# In this section configuration stubs for each plugin are provided. A desc-  #
+# ription of those options is available in the collectd.conf(5) manual page. #
+##############################################################################
+
+<Plugin apache>
+	URL "http://localhost/server-status?auto"
+#	User "www-user"
+#	Password "secret"
+#	CACert "/etc/ssl/ca.crt"
+</Plugin>
+
+#<Plugin apcups>
+#	Host "localhost"
+#	Port "3551"
+#</Plugin>
+
+#<Plugin ascent>
+#	URL "http://localhost/ascent/status/"
+#	User "www-user"
+#	Password "secret"
+#	CACert "/etc/ssl/ca.crt"
+#</Plugin>
+
+#<Plugin "bind">
+#  URL "http://localhost:8053/"
+#  OpCodes         true
+#  QTypes          true
+#
+#  ServerStats     true
+#  ZoneMaintStats  true
+#  ResolverStats   false
+#  MemoryStats     true
+#
+#  <View "_default">
+#    QTypes        true
+#    ResolverStats true
+#    CacheRRSets   true
+#
+#    Zone "127.in-addr.arpa/IN"
+#  </View>
+#</Plugin>
+
+#<Plugin csv>
+#	DataDir "/usr/local/var/lib/collectd/csv"
+#	StoreRates false
+#</Plugin>
+
+#<Plugin curl>
+#  <Page "stock_quotes">
+#    URL "http://finance.google.com/finance?q=NYSE%3AAMD"
+#    User "foo"
+#    Password "bar"
+#    <Match>
+#      Regex "<span +class=\"pr\"[^>]*> *([0-9]*\\.[0-9]+) *</span>"
+#      DSType "GaugeAverage"
+#      Type "stock_value"
+#      Instance "AMD"
+#    </Match>
+#  </Page>
+#</Plugin>
+
+#<Plugin dbi>
+#	<Query "num_of_customers">
+#		Statement "SELECT 'customers' AS c_key, COUNT(*) AS c_value FROM customers_tbl"
+#		<Result>
+#			Type "gauge"
+#			InstancesFrom "c_key"
+#			ValuesFrom "c_value"
+#		</Result>
+#	</Query>
+#	<Database "customers_db">
+#		Driver "mysql"
+#		DriverOption "host" "localhost"
+#		DriverOption "username" "collectd"
+#		DriverOption "password" "AeXohy0O"
+#		DriverOption "dbname" "custdb0"
+#		#SelectDB "custdb0"
+#		Query "num_of_customers"
+#		#Query "..."
+#	</Database>
+#</Plugin>
+
+#<Plugin df>
+#	Device "/dev/hda1"
+#	Device "192.168.0.2:/mnt/nfs"
+#	MountPoint "/home"
+#	FSType "ext3"
+#	IgnoreSelected false
+#</Plugin>
+
+#<Plugin disk>
+#	Disk "/^[hs]d[a-f][0-9]?$/"
+#	IgnoreSelected false
+#</Plugin>
+
+#<Plugin dns>
+#	Interface "eth0"
+#	IgnoreSource "192.168.0.1"
+#</Plugin>
+
+#<Plugin email>
+#	SocketFile "/usr/local/var/run/collectd-email"
+#	SocketGroup "collectd"
+#	SocketPerms "0770"
+#	MaxConns 5
+#</Plugin>
+
+#<Plugin exec>
+#	Exec "user:group" "/path/to/exec"
+#	NotificationExec "user:group" "/path/to/exec"
+#</Plugin>
+
+#<Plugin filecount>
+#	<Directory "/path/to/dir">
+#		Instance "foodir"
+#		Name "*.conf"
+#		MTime "-5m"
+#		Size "+10k"
+#		Recursive true
+#	</Directory>
+#</Plugin>
+
+#<Plugin "gmond">
+#  MCReceiveFrom "239.2.11.71" "8649"
+#  <Metric "swap_total">
+#    Type "swap"
+#    TypeInstance "total"
+#    DataSource "value"
+#  </Metric>
+#  <Metric "swap_free">
+#    Type "swap"
+#    TypeInstance "free"
+#    DataSource "value"
+#  </Metric>
+#</Plugin>
+
+#<Plugin hddtemp>
+#  Host "127.0.0.1"
+#  Port "7634"
+#
+#  #----------------------------------------------------------------#
+#  # `TranslateDevicename' enabled backwards compatibility behavior #
+#  # and is enabled by default. Setting this option to `false' is   #
+#  # highly recommended.                                            #
+#  #----------------------------------------------------------------#
+#  TranslateDevicename false
+#</Plugin>
+
+#<Plugin interface>
+#	Interface "eth0"
+#	IgnoreSelected false
+#</Plugin>
+
+#<Plugin ipmi>
+#	Sensor "some_sensor"
+#	Sensor "another_one"
+#	IgnoreSelected false
+#	NotifySensorAdd false
+#	NotifySensorRemove true
+#	NotifySensorNotPresent false
+#</Plugin>
+
+#<Plugin iptables>
+#	Chain table chain
+#</Plugin>
+
+#<Plugin irq>
+#	Irq 7
+#	Irq 8
+#	Irq 9
+#	IgnoreSelected true
+#</Plugin>
+
+#<Plugin "java">
+#	JVMArg "-verbose:jni"
+#	JVMArg "-Djava.class.path=/opt/collectd/lib/collectd/bindings/java"
+#
+#	LoadPlugin "org.collectd.java.Foobar"
+#	<Plugin "org.collectd.java.Foobar">
+#	  # To be parsed by the plugin
+#	</Plugin>
+#</Plugin>
+
+#<Plugin libvirt>
+#	Connection "xen:///"
+#	RefreshInterval 60
+#	Domain "name"
+#	BlockDevice "name:device"
+#	InterfaceDevice "name:device"
+#	IgnoreSelected false
+#	HostnameFormat name
+#</Plugin>
+
+#<Plugin mbmon>
+#	Host "127.0.0.1"
+#	Port "411"
+#</Plugin>
+
+#<Plugin memcachec>
+#	<Page "plugin_instance">
+#		Server "localhost"
+#		Key "page_key"
+#		<Match>
+#			Regex "(\\d+) bytes sent"
+#			DSType CounterAdd
+#			Type "ipt_octets"
+#			Instance "type_instance"
+#		</Match>
+#	</Page>
+#</Plugin>
+
+#<Plugin memcached>
+#	Host "127.0.0.1"
+#	Port "11211"
+#</Plugin>
+
+#<Plugin mysql>
+#	<Database db_name>
+#		Host "database.serv.er"
+#		User "db_user"
+#		Password "secret"
+#		Database "db_name"
+#		MasterStats true
+#	</Database>
+#
+#	<Database db_name2>
+#		Host "localhost"
+#		Socket "/var/run/mysql/mysqld.sock"
+#		SlaveStats true
+#		SlaveNotifications true
+#	</Database>
+#</Plugin>
+
+#<Plugin netlink>
+#	Interface "All"
+#	VerboseInterface "All"
+#	QDisc "eth0" "pfifo_fast-1:0"
+#	Class "ppp0" "htb-1:10"
+#	Filter "ppp0" "u32-1:0"
+#	IgnoreSelected false
+#</Plugin>
+
+<Plugin network>
+	Server "<%= collectd_server %>" "25826"
+#	Server "239.192.74.66" "25826"
+#	Listen "ff18::efc0:4a42" "25826"
+#	Listen "239.192.74.66" "25826"
+#	TimeToLive "128"
+#	Forward false
+#	CacheFlush 1800
+</Plugin>
+
+#<Plugin nginx>
+#	URL "http://localhost/status?auto"
+#	User "www-user"
+#	Password "secret"
+#	CACert "/etc/ssl/ca.crt"
+#</Plugin>
+
+#<Plugin notify_desktop>
+#	OkayTimeout 1000
+#	WarningTimeout 5000
+#	FailureTimeout 0
+#</Plugin>
+
+#<Plugin notify_email>
+#       SMTPServer "localhost"
+#	SMTPPort 25
+#	SMTPUser "my-username"
+#	SMTPPassword "my-password"
+#	From "collectd@main0server.com"
+#	# <WARNING/FAILURE/OK> on <hostname>. beware! do not use not more than two %s in this string!!!
+#	Subject "Aaaaaa!! %s on %s!!!!!"
+#	Recipient "email1@domain1.net"
+#	Recipient "email2@domain2.com"
+#</Plugin>
+
+#<Plugin ntpd>
+#	Host "localhost"
+#	Port 123
+#	ReverseLookups false
+#</Plugin>
+
+#<Plugin nut>
+#	UPS "upsname@hostname:port"
+#</Plugin>
+
+#<Plugin onewire>
+#	Device "-s localhost:4304"
+#	Sensor "F10FCA000800"
+#	IgnoreSelected false
+#</Plugin>
+
+#<Plugin openvpn>
+#	StatusFile "/etc/openvpn/openvpn-status.log"
+#</Plugin>
+
+#<Plugin oracle>
+#  <Query "out_of_stock">
+#    Statement "SELECT category, COUNT(*) AS value FROM products WHERE in_stock = 0 GROUP BY category"
+#    <Result>
+#      Type "gauge"
+#      InstancesFrom "category"
+#      ValuesFrom "value"
+#    </Result>
+#  </Query>
+#  <Database "product_information">
+#    ConnectID "db01"
+#    Username "oracle"
+#    Password "secret"
+#    Query "out_of_stock"
+#  </Database>
+#</Plugin>
+
+#<Plugin perl>
+#	IncludeDir "/my/include/path"
+#	BaseName "Collectd::Plugin"
+#	EnableDebugger ""
+#	LoadPlugin foo
+#
+#	<Plugin foo>
+#		Foo "Bar"
+#		Qux "Baz"
+#	</Plugin>
+#</Plugin>
+
+#<Plugin ping>
+#	Host "host.foo.bar"
+#	TTL 255
+#</Plugin>
+
+#<Plugin postgresql>
+#	<Query magic>
+#		Statement "SELECT magic FROM wizard WHERE host = $1;"
+#		Param hostname
+#		<Result>
+#			Type gauge
+#			InstancePrefix "magic"
+#			ValuesFrom magic
+#		</Result>
+#	</Query>
+#	<Query rt36_tickets>
+#		Statement "SELECT COUNT(type) AS count, type \
+#		                  FROM (SELECT CASE \
+#		                               WHEN resolved = 'epoch' THEN 'open' \
+#		                               ELSE 'resolved' END AS type \
+#		                               FROM tickets) type \
+#		                  GROUP BY type;"
+#		<Result>
+#			Type counter
+#			InstancePrefix "rt36_tickets"
+#			InstancesFrom "type"
+#			ValuesFrom "count"
+#		</Result>
+#	</Query>
+#	<Database foo>
+#		Host "hostname"
+#		Port "5432"
+#		User "username"
+#		Password "secret"
+#		SSLMode "prefer"
+#		KRBSrvName "kerberos_service_name"
+#		Query magic
+#	</Database>
+#	<Database bar>
+#		Service "service_name"
+#		Query backend # predefined
+#		Query rt36_tickets
+#	</Database>
+#</Plugin>
+
+#<Plugin powerdns>
+#  <Server "server_name">
+#    Collect "latency"
+#    Collect "udp-answers" "udp-queries"
+#    Socket "/var/run/pdns.controlsocket"
+#  </Server>
+#  <Recursor "recursor_name">
+#    Collect "questions"
+#    Collect "cache-hits" "cache-misses"
+#    Socket "/var/run/pdns_recursor.controlsocket"
+#  </Recursor>
+#  LocalSocket "/opt/collectd/var/run/collectd-powerdns"
+#</Plugin>
+
+#<Plugin processes>
+#	Process "name"
+#</Plugin>
+
+#<Plugin protocols>
+#	Value "/^Tcp:/"
+#	IgnoreSelected false
+#</Plugin>
+
+#<Plugin rrdcached>
+#	DaemonAddress "unix:/tmp/rrdcached.sock"
+#	DataDir "/usr/local/var/lib/collectd/rrd"
+#	CreateFiles true
+#	CollectStatistics true
+#</Plugin>
+
+#<Plugin rrdtool>
+#	DataDir "/usr/local/var/lib/collectd/rrd"
+#	CacheTimeout 120
+#	CacheFlush   900
+#</Plugin>
+
+#<Plugin sensors>
+#	Sensor "it8712-isa-0290/temperature-temp1"
+#	Sensor "it8712-isa-0290/fanspeed-fan3"
+#	Sensor "it8712-isa-0290/voltage-in8"
+#	IgnoreSelected false
+#</Plugin>
+
+#<Plugin snmp>
+#   <Data "powerplus_voltge_input">
+#       Type "voltage"
+#       Table false
+#       Instance "input_line1"
+#       Values "SNMPv2-SMI::enterprises.6050.5.4.1.1.2.1"
+#   </Data>
+#   <Data "hr_users">
+#       Type "users"
+#       Table false
+#       Instance ""
+#       Values "HOST-RESOURCES-MIB::hrSystemNumUsers.0"
+#   </Data>
+#   <Data "std_traffic">
+#       Type "if_octets"
+#       Table true
+#       Instance "IF-MIB::ifDescr"
+#       Values "IF-MIB::ifInOctets" "IF-MIB::ifOutOctets"
+#   </Data>
+#
+#   <Host "some.switch.mydomain.org">
+#       Address "192.168.0.2"
+#       Version 1
+#       Community "community_string"
+#       Collect "std_traffic"
+#       Inverval 120
+#   </Host>
+#   <Host "some.server.mydomain.org">
+#       Address "192.168.0.42"
+#       Version 2
+#       Community "another_string"
+#       Collect "std_traffic" "hr_users"
+#   </Host>
+#   <Host "some.ups.mydomain.org">
+#       Address "192.168.0.3"
+#       Version 1
+#       Community "more_communities"
+#       Collect "powerplus_voltge_input"
+#       Interval 300
+#   </Host>
+#</Plugin>
+
+#<Plugin "table">
+#	<Table "/proc/slabinfo">
+#		Instance "slabinfo"
+#		Separator " "
+#		<Result>
+#			Type gauge
+#			InstancePrefix "active_objs"
+#			InstancesFrom 0
+#			ValuesFrom 1
+#		</Result>
+#		<Result>
+#			Type gauge
+#			InstancePrefix "objperslab"
+#			InstancesFrom 0
+#			ValuesFrom 4
+#		</Result>
+#	</Table>
+#</Plugin>
+
+#<Plugin "tail">
+#  <File "/var/log/exim4/mainlog">
+#    Instance "exim"
+#    <Match>
+#      Regex "S=([1-9][0-9]*)"
+#      DSType "CounterAdd"
+#      Type "ipt_bytes"
+#      Instance "total"
+#    </Match>
+#    <Match>
+#      Regex "\\<R=local_user\\>"
+#      DSType "CounterInc"
+#      Type "counter"
+#      Instance "local_user"
+#    </Match>
+#  </File>
+#</Plugin>
+
+#<Plugin tcpconns>
+#	ListeningPorts false
+#	LocalPort "25"
+#	RemotePort "25"
+#</Plugin>
+
+#<Plugin teamspeak2>
+#	Host "127.0.0.1"
+#	Port "51234"
+#	Server "8767"
+#</Plugin>
+
+#<Plugin ted>
+#	Device "/dev/ttyUSB0"
+#	Retries 0
+#</Plugin>
+
+#<Plugin thermal>
+#	ForceUseProcfs false
+#	Device "THRM"
+#	IgnoreSelected false
+#</Plugin>
+
+#<Plugin unixsock>
+#	SocketFile "/usr/local/var/run/collectd-unixsock"
+#	SocketGroup "collectd"
+#	SocketPerms "0660"
+#</Plugin>
+
+#<Plugin uuid>
+#	UUIDFile "/etc/uuid"
+#</Plugin>
+
+#<Plugin vmem>
+#	Verbose false
+#</Plugin>
+
+##############################################################################
+# Filter configuration                                                       #
+#----------------------------------------------------------------------------#
+# The following configures collectd's filtering mechanism. Before changing   #
+# anything in this section, please read the `FILTER CONFIGURATION' section   #
+# in the collectd.conf(5) manual page.                                       #
+##############################################################################
+
+# Load required matches:
+#LoadPlugin match_regex
+#LoadPlugin match_value
+#LoadPlugin match_timediff
+
+# Load required targets:
+#LoadPlugin target_notification
+#LoadPlugin target_replace
+#LoadPlugin target_set
+
+#----------------------------------------------------------------------------#
+# The following block demonstrates the default behavior if no filtering is   #
+# configured at all: All values will be sent to all available write plugins. #
+#----------------------------------------------------------------------------#
+
+#<Chain "Main">
+#  Target "write"
+#</Chain>
