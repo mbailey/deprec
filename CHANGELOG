@@ -1,4 +1,10 @@
-== git
+# deprec changelog
+
+= 2.1.0 (Aug 24, 2009)
+
+* Added Collectd
+* Added Syslog
+* Updated Nagios to 3.2.0
 
 == 2.0.15 (August 10, 2009)
 
