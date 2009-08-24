@@ -74,7 +74,7 @@ Capistrano::Configuration.instance(:must_exist).load do
           # If the user has specified a key Capistrano should use
           if ssh_options[:keys]
             deprec2.mkdir '.ssh', :mode => 0700
-            put(ssh_options[:keys].collect{|key| File.read(key)}.join("\n"), '.ssh/authorized_keys', :mode => 0600 )
+            put(ssh_options[:keys].collect{|key| File.read("#{key}.pub")}.join("\n"), '.ssh/authorized_keys', :mode => 0600 )
           
           # Try to find the current users public key
           elsif keys = %w[id_rsa id_dsa identity].collect { |f| "#{ENV['HOME']}/.ssh/#{f}.pub" if File.exists?("#{ENV['HOME']}/.ssh/#{f}.pub") }.compact
