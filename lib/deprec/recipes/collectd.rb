@@ -26,7 +26,7 @@ Capistrano::Configuration.instance(:must_exist).load do
 
       # install dependencies for sysklogd
       task :install_deps do
-        apt.install( {:base => %w(liboping-dev libperl-dev libdbi0-dev libesmtp-dev libganglia1-dev libmemcache-dev libnet1-dev libnotify-dev libopenipmi-dev liboping-dev libpcap-dev libperl-dev librrd2-dev libsensors-dev libstatgrab-dev nut-dev libvirt-dev)}, :stable )
+        apt.install( {:base => %w(liboping-dev libperl-dev libdbi0-dev libesmtp-dev libganglia1-dev libmemcache-dev libnet1-dev libnotify-dev libopenipmi-dev liboping-dev libpcap-dev libperl-dev librrd2-dev libsensors-dev libstatgrab-dev libvirt-dev)}, :stable )
         apt.install( {:base => %w(rrdtool librrd2-dev librrds-perl libconfig-general-perl libhtml-parser-perl  libregexp-common-perl)}, :stable )
       end
       
