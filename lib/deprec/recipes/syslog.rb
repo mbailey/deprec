@@ -23,7 +23,7 @@ Capistrano::Configuration.instance(:must_exist).load do
          :owner => 'root:root'},
 
        { :template => 'syslogd.erb',
-         :path => '/etc/defaults/syslogd',
+         :path => '/etc/default/syslogd',
          :mode => 0644,
          :owner => 'root:root'}
          
