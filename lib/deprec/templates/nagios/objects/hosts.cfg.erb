@@ -49,7 +49,7 @@ define hostgroup{
 ###############################################################################
 
 define host{
-        use                     linux-server            ; Name of host template to use
+        use                     server            ; Name of host template to use
 							; This host definition will inherit all variables that are defined
 							; in (or inherited by) the linux-server host template definition.
         host_name               localhost
@@ -58,19 +58,19 @@ define host{
         address                 127.0.0.1
         }
 
-define host {
-	use server
-	host_name app01
-	hostgroups servers,app
-	address app01
-}
-
-define host {
-	use server
-	host_name app02
-	hostgroups servers,app
-	address app02
-}
+# define host {
+# 	use server
+# 	host_name app01
+# 	hostgroups servers,app
+# 	address app01
+# }
+# 
+# define host {
+# 	use server
+# 	host_name app02
+# 	hostgroups servers,app
+# 	address app02
+# }
 
 ###############################################################################
 ###############################################################################
