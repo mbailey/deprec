@@ -47,7 +47,7 @@ require "#{File.dirname(__FILE__)}/recipes/nagios"
 require "#{File.dirname(__FILE__)}/recipes/collectd"
 require "#{File.dirname(__FILE__)}/recipes/syslog"
 require "#{File.dirname(__FILE__)}/recipes/heartbeat"
-# require "#{File.dirname(__FILE__)}/recipes/haproxy"
+require "#{File.dirname(__FILE__)}/recipes/haproxy"
 
 require "#{File.dirname(__FILE__)}/recipes/ubuntu"
 require "#{File.dirname(__FILE__)}/recipes/lvm"

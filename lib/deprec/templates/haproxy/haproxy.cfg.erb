@@ -1,0 +1,42 @@
+# /etc/haproxy.cfg
+#
+# Reload gracelly with:
+#
+# haproxy -f /etc/haproxy.conf -sf `cat /var/run/haproxy.pid`
+#
+global
+      log /var/log/haproxy.log daemon info
+      maxconn 4096
+      pidfile /var/run/haproxy.pid
+      daemon
+
+defaults
+      option forwardfor
+      stats enable
+      stats auth myuser:mypass
+      balance roundrobin
+      option httpclose
+      mode http
+      retries 3
+      option redispatch
+      maxconn 2000
+      contimeout 5000
+      clitimeout 50000
+      srvtimeout 50000
+
+frontend dell *:80
+        acl host_xenium   hdr_beg(host) -i xenium.example.com
+        acl host_xenium   hdr_beg(host) -i x.example.com
+
+        acl host_app1   hdr_beg(host) -i intrepica.com
+        acl host_app1   hdr_beg(host) -i www.intrepica.com
+
+        use_backend     localhost if host_xenium
+        use_backend     app1      if host_app1
+
+backend localhost
+  server LOCALHOST 127.0.0.1:81
+
+backend app1
+  server APP1 192.168.0.179:80
+

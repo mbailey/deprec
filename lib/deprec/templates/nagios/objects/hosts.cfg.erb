@@ -10,11 +10,6 @@ define hostgroup{
 	hostgroup_name  servers
 }
 
-define hostgroup{
-        hostgroup_name  linux-servers ; The name of the hostgroup
-        alias           Linux Servers ; Long name of the group
-        }
-
 define hostgroup{ 
 	hostgroup_name  app
 }
@@ -53,7 +48,7 @@ define host{
 							; This host definition will inherit all variables that are defined
 							; in (or inherited by) the linux-server host template definition.
         host_name               localhost
-        hostgroups              linux-servers
+        hostgroups              servers
         alias                   localhost
         address                 127.0.0.1
         }
