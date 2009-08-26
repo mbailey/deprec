@@ -2,7 +2,6 @@ deprec/TODO.txt
 
 # collectd
 + start on boot (init.d)
-+ copy config from mon.failmode to deprec templates
 + install php_collection
   - auth
   - update config.php 

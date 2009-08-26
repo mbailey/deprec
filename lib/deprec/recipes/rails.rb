@@ -286,13 +286,15 @@ Capistrano::Configuration.instance(:must_exist).load do
 
       desc "Link in the production database.yml" 
       task :symlink_database_yml, :roles => :app do
-        run "ln -nfs #{shared_path}/config/database.yml #{release_path}/config/database.yml" 
+        run "ln -nfs #{shared_path}/config/database.yml #{current_path}/config/database.yml" 
       end
       
       desc "Copy database.yml to shared/config/database.yml. Useful if not kept in scm"
       task :push_database_yml, :roles => :app do
-        if File.exists?('config/database.yml')
-          put(File.read('config/database.yml'), "#{shared_path}/config/database.yml")
+        stage = exists?(:stage) ? fetch(:stage).to_s : ''
+        full_local_path = File.join('config', stage, 'database.yml')
+        if File.exists?(full_local_path)
+          put(File.read(full_local_path), "#{shared_path}/config/database.yml")
         end
       end
       

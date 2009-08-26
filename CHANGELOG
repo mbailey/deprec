@@ -1,5 +1,14 @@
 # deprec changelog
 
+= 2.1.2 (Aug 26, 2009)
+
+* Better support for Capistrano multistage
+  Look for database.yml in config/#{stage}/database.yml
+
+= 2.1.1 (Aug 25, 2009)
+
+* Added haproxy
+
 = 2.1.0 (Aug 24, 2009)
 
 * Added Collectd
