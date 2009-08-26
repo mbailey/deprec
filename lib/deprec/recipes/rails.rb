@@ -294,7 +294,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         stage = exists?(:stage) ? fetch(:stage).to_s : ''
         full_local_path = File.join('config', stage, 'database.yml')
         if File.exists?(full_local_path)
-          put(File.read(full_local_path), "#{shared_path}/config/database.yml")
+          std.su_put(File.read(full_local_path), "#{shared_path}/config/database.yml", '/tmp/')
         end
       end
       
