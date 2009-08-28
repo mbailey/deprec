@@ -9,13 +9,15 @@ Capistrano::Configuration.instance(:must_exist).load do
       }
       
       desc "Install haproxy"
-      task :install do
+      task :install, :roles => :haproxy do
         install_deps
         deprec2.download_src(SRC_PACKAGES[:haproxy], src_dir)
         deprec2.install_from_src(SRC_PACKAGES[:haproxy], src_dir)
+        config
+        activate
       end
       
-      task :install_deps do
+      task :install_deps, :roles => :haproxy do
         apt.install( {:base => %w(build-essential)}, :stable )
       end
       
