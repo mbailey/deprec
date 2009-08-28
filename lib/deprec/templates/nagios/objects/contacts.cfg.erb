@@ -65,14 +65,25 @@ define contactgroup{
 
 # Generic contact definition template - This is NOT a real contact, just a template!
 
-define contact{
-        name                            generic-contact    	; The name of this contact template
-        service_notification_period     24x7			; service notifications can be sent anytime
-        host_notification_period        24x7			; host notifications can be sent anytime
-        service_notification_options    w,u,c,r,f,s		; send notifications for all service states, flapping events, and scheduled downtime events
-        host_notification_options       d,u,r,f,s		; send notifications for all host states, flapping events, and scheduled downtime events
-        service_notification_commands   notify-service-by-email	; send service notifications via email
-        host_notification_commands      notify-host-by-email	; send host notifications via email
-        register                        0       		; DONT REGISTER THIS DEFINITION - ITS NOT A REAL CONTACT, JUST A TEMPLATE!
-        }
+define contact{ # example contact
+	name contact_template
+	# contact_name	name
+	# alias	longer_name
+	# contactgroups	contactgroup_names
+	host_notifications_enabled	0
+	service_notifications_enabled	0
+	host_notification_period	24x7
+	service_notification_period	24x7
+	host_notification_options	d,u,r,f,s
+	service_notification_options	w,u,c,r,f,s
+	host_notification_commands	notify-host-by-email
+	service_notification_commands	notify-service-by-email
+	# email	user@address.com
+	# pager	pager_number or pager_email_gateway
+	# addressx	additional_contact_address
+	# can_submit_commands	[0/1]
+	# retain_status_information	[0/1]
+	# retain_nonstatus_information	[0/1]
+	register 0
+}
 

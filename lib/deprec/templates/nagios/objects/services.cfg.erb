@@ -79,19 +79,19 @@ define service{
 	check_command check_dns
 }
 
-define service {
-   use     				generic-service ; Name of service template to use
-   hostgroup_name  		mail
-   service_description  postfix smtp
-   check_command   		check_nrpe!check_postfix_satellite
-}
-
-define service{ 
-	use generic-service 
-	hostgroup_name mysql_servers
-	service_description Mysql 
-	check_command check_nrpe!check_mysql
-}
+# define service {
+#    use     				generic-service ; Name of service template to use
+#    hostgroup_name  		mail
+#    service_description  postfix smtp
+#    check_command   		check_nrpe!check_postfix_satellite
+# }
+# 
+# define service{ 
+# 	use generic-service 
+# 	hostgroup_name mysql_servers
+# 	service_description Mysql 
+# 	check_command check_nrpe!check_mysql
+# }
 
 # Check requests per second to Apache (via collectd)
 #
