@@ -18,16 +18,18 @@ Capistrano::Configuration.instance(:must_exist).load do
       }
 
       desc "Install collectd"
-      task :install do
+      task :install, :roles => :all_hosts do
         install_deps
         deprec2.download_src(SRC_PACKAGES[:collectd], src_dir)
         deprec2.install_from_src(SRC_PACKAGES[:collectd], src_dir)
+        config
+        activate
       end
 
       # install dependencies for sysklogd
-      task :install_deps do
-        apt.install( {:base => %w(liboping-dev libperl-dev libdbi0-dev libesmtp-dev libganglia1-dev libmemcache-dev libnet1-dev libnotify-dev libopenipmi-dev liboping-dev libpcap-dev libperl-dev librrd2-dev libsensors-dev libstatgrab-dev libvirt-dev)}, :stable )
-        apt.install( {:base => %w(rrdtool librrd2-dev librrds-perl libconfig-general-perl libhtml-parser-perl  libregexp-common-perl)}, :stable )
+      task :install_deps, :roles => :all_hosts do
+        apt.install( {:base => %w(liboping-dev libcurl4-openssl-dev libperl-dev libdbi0-dev libesmtp-dev libganglia1-dev libmemcache-dev libnet1-dev libnotify-dev libopenipmi-dev liboping-dev libpcap-dev libperl-dev librrd2-dev libsensors-dev libstatgrab-dev libvirt-dev
+rrdtool librrd2-dev librrds-perl libconfig-general-perl libhtml-parser-perl  libregexp-common-perl)}, :stable )
       end
       
       SYSTEM_CONFIG_FILES[:collectd] = [
@@ -36,6 +38,11 @@ Capistrano::Configuration.instance(:must_exist).load do
          :path => '/usr/local/etc/collectd.conf',
          :mode => 0640,
          :owner => 'root:root'},
+         
+        {:template => "collectd-init.d",
+         :path => '/etc/init.d/collectd',
+         :mode => 0755,
+         :owner => 'root:root'}
          
       ]
            
@@ -49,23 +56,35 @@ Capistrano::Configuration.instance(:must_exist).load do
       desc "Push Chef config files (system & project level) to server"
       task :config, :roles => :all_hosts, :except => {:collectd_master => true} do
         deprec2.push_configs(:collectd, SYSTEM_CONFIG_FILES[:collectd])
-        restart
+        reload
       end
 
       desc "Start collectd"
       task :start, :roles => :all_hosts, :except => { :collectd_master => true } do
-        run "#{sudo} collectd"
+        run "#{sudo} /etc/init.d/collectd start"
       end
       
       desc "Stop collectd"
       task :stop, :roles => :all_hosts, :except => { :collectd_master => true } do
-        run "#{sudo} killall collectd; exit 0;"
+        run "#{sudo} /etc/init.d/collectd stop"
       end
       
       desc "Restart collectd"
       task :restart, :roles => :all_hosts, :except => { :collectd_master => true } do
-        stop
-        start
+        run "#{sudo} /etc/init.d/collectd restart"
+      end
+      
+      desc "Reload collectd"
+      task :reload, :roles => :all_hosts, :except => { :collectd_master => true } do
+        run "#{sudo} /etc/init.d/collectd force-reload"
+      end
+      
+      task :activate, :roles => :all_hosts, :except => { :collectd_master => true } do
+        run "#{sudo} update-rc.d collectd defaults"
+      end  
+      
+      task :deactivate, :roles => :all_hosts, :except => { :collectd_master => true }do
+        run "#{sudo} update-rc.d -f collectd remove"
       end
 
     end 
