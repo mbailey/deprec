@@ -1,5 +1,13 @@
 deprec/TODO.txt
 
+# Mysql - delete initially created accounts
+#         they stop 'mike'@'%' from working
+# http://bugs.mysql.com/bug.php?id=36576
+# http://dev.mysql.com/doc/refman/5.0/en/default-privileges.html
+DROP USER '';
+DROP USER ''@'localhost';
+
+
 # collectd
 + start on boot (init.d)
 + install php_collection
