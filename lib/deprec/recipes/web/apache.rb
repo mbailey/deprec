@@ -29,8 +29,18 @@ Capistrano::Configuration.instance(:must_exist).load do
         { :template => 'namevirtualhosts.conf',
           :path => '/etc/apache2/conf.d/namevirtualhosts.conf',
           :mode => 0644,
-          :owner => 'root:root'}
+          :owner => 'root:root'},
+          
+        # { :template => 'ports.conf.erb',
+        #   :path => '/etc/apache2/ports.conf',
+        #   :mode => 0644,
+        #   :owner => 'root:root'},
 
+        { :template => 'status.conf.erb',
+          :path => '/etc/apache2/mods-available/status.conf',
+          :mode => 0644,
+          :owner => 'root:root'}
+          
       ]
 
       PROJECT_CONFIG_FILES[:apache] = [
@@ -62,6 +72,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       desc "Push apache config files to server"
       task :config, :roles => :web do
         config_system
+        reload
       end
       
       desc "Generate initial configs and copy direct to server."
