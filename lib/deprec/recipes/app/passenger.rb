@@ -201,7 +201,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       
       desc "Restart Application"
       task :restart, :roles => :app do
-        run "touch #{current_path}/tmp/restart.txt"
+        run "#{sudo} touch #{current_path}/tmp/restart.txt"
       end
       
       desc "Restart Apache"
