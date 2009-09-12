@@ -48,8 +48,9 @@ haproxy_stop()
 
 haproxy_reload()
 {
-	$HAPROXY -f "$CONFIG" -p $PIDFILE -D $EXTRAOPTS -st $(<$PIDFILE) \
-		|| return 2
+
+        # haproxy -f /etc/haproxy.conf -sf `cat /var/run/haproxy.pid`
+ 	$HAPROXY -f "$CONFIG" -sf `cat $PIDFILE` || return 2
 	return 0
 }
 
