@@ -64,7 +64,8 @@ Capistrano::Configuration.instance(:must_exist).load do
       desc 'Deploy configuration filess for haproxy' 
       task :config, :roles => :haproxy do
         config_system
-        config_project
+        # config_project
+        reload
       end
 
       task :config_system, :roles => :haproxy do
