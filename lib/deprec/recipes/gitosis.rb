@@ -7,14 +7,19 @@ Capistrano::Configuration.instance(:must_exist).load do
 
       set :gitosis_user, 'git'
 
-      desc "Install git"
+      SRC_PACKAGES[:gitosis] = {
+        :url => "git://eagain.net/gitosis.git",
+        :download_method => :git,
+        :configure => '',
+        :make => '',
+        :install => '#{sudo} python setup.py install'
+      }
+      
+      desc "Install gitosis"
       task :install do
-        deprec2.create_src_dir
         install_deps
-        run <<-SUDO
-          cd #{src_dir} && test -d gitosis || #{sudo} git clone git://eagain.net/gitosis.git; exit 0
-        SUDO
-        run "cd #{src_dir}/gitosis && #{sudo} python setup.py install"
+        deprec2.download_src(SRC_PACKAGES[:gitosis], src_dir)
+        deprec2.install_from_src(SRC_PACKAGES[:gitosis], src_dir)
         create_user
         init
       end
@@ -35,7 +40,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         sudo "sudo -H -u #{git_user} gitosis-init < ~/.ssh/authorized_keys"
         sudo "chmod 0755 /home/git/repositories/gitosis-admin.git/hooks/post-update" 
         puts
-        puts "Now check out the gitosis-admin repos, edit configs and push changes back"
+        puts "Now check out the gitosis-admin repo, edit configs and push changes back"
         puts "Your changes with update gitosis as soon as they are checked in."
         puts
         puts "git clone git@YOUR_SERVER_HOSTNAME:gitosis-admin.git"
