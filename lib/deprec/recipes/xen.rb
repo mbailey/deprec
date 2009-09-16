@@ -205,6 +205,13 @@ Capistrano::Configuration.instance(:must_exist).load do
   end
 end
 
+# Add support for intrepid and jaunty guests to hardy host
+#
+# root@x1:/usr/share/debootstrap/scripts# ln -s gutsy jaunty
+# root@x1:/usr/share/debootstrap/scripts# ln -s gutsy intrepid
+#
+# root@x1:/usr/lib/xen-tools# ln -s edgy.d intrepid.d
+# root@x1:/usr/lib/xen-tools# ln -s edgy.d jaunty.d
 
 # Stop the 'incrementing ethX problem'
 #
