@@ -10,8 +10,8 @@ Capistrano::Configuration.instance(:must_exist).load do
       set :git_root, '/var/git'
 
       SRC_PACKAGES[:git] = {
-        :url => "http://kernel.org/pub/software/scm/git/git-1.6.3.2.tar.gz",
-        :md5sum => "c9819ba1ad3edbcf3b5de3116048d59f  git-1.6.3.2.tar.gz"
+        :url => "http://kernel.org/pub/software/scm/git/git-1.6.4.2.tar.gz",
+        :md5sum => "c9819ba1ad3edbcf3b5de3116048d59f  git-1.6.4.2.tar.gz"
       }
 
       desc "Install git"
