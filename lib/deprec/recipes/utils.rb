@@ -41,7 +41,7 @@ Capistrano::Configuration.instance(:must_exist).load do
 
         desc "Install some useful utils"
         task :other do
-          apps = %w(lsof vim-full tree psmisc screen)
+          apps = %w(lsof vim tree psmisc screen)
           apt.install( {:base => apps}, :stable )
         end
 
