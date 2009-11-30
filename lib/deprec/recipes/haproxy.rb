@@ -4,8 +4,8 @@ Capistrano::Configuration.instance(:must_exist).load do
     namespace :haproxy do
       
       SRC_PACKAGES[:haproxy] = {
-        :md5sum => "e37046e0cb2f407d92c41d7731d1dd10  haproxy-1.3.20.tar.gz",  
-        :url => "http://haproxy.1wt.eu/download/1.3/src/haproxy-1.3.20.tar.gz"
+        :md5sum => "b84e0935cfea99eda43645d53bb82367  haproxy-1.3.22.tar.gz",  
+        :url => "http://haproxy.1wt.eu/download/1.3/src/haproxy-1.3.22.tar.gz"
       }
       
       desc "Install haproxy"
