@@ -71,7 +71,7 @@ module Deprec2
       # render to remote machine
       puts 'You need to specify a path to render the template to!' unless path
       exit unless path
-      sudo "test -d #{File.dirname(path)} || sudo mkdir -p #{File.dirname(path)}"
+      sudo "test -d #{File.dirname(path)} || #{sudo} mkdir -p #{File.dirname(path)}"
       std.su_put rendered_template, path, '/tmp/', :mode => mode
       sudo "chown #{owner} #{path}" if defined?(owner)
     elsif path 
@@ -170,7 +170,7 @@ module Deprec2
         else
           full_remote_path = file[:path]
         end
-        sudo "test -d #{File.dirname(full_remote_path)} || sudo mkdir -p #{File.dirname(full_remote_path)}"
+        sudo "test -d #{File.dirname(full_remote_path)} || #{sudo} mkdir -p #{File.dirname(full_remote_path)}"
         std.su_put File.read(full_local_path), full_remote_path, '/tmp/', :mode=>file[:mode]
         sudo "chown #{file[:owner]} #{full_remote_path}"
       else
@@ -205,7 +205,7 @@ module Deprec2
     switches += " --shell=#{options[:shell]} " if options[:shell]
     switches += ' --create-home ' unless options[:homedir] == false
     switches += " --gid #{options[:group]} " unless options[:group].nil?
-    invoke_command "grep '^#{user}:' /etc/passwd || sudo /usr/sbin/useradd #{switches} #{user}", 
+    invoke_command "grep '^#{user}:' /etc/passwd || #{sudo} /usr/sbin/useradd #{switches} #{user}", 
     :via => run_method
   end
 
@@ -213,12 +213,12 @@ module Deprec2
   def groupadd(group, options={})
     via = options.delete(:via) || run_method
     # XXX I don't like specifying the path to groupadd - need to sort out paths before long
-    invoke_command "grep '#{group}:' /etc/group || sudo /usr/sbin/groupadd #{group}", :via => via
+    invoke_command "grep '#{group}:' /etc/group || #{sudo} /usr/sbin/groupadd #{group}", :via => via
   end
 
   # add group to the list of groups this user belongs to
   def add_user_to_group(user, group)
-    invoke_command "groups #{user} | grep ' #{group} ' || sudo /usr/sbin/usermod -G #{group} -a #{user}",
+    invoke_command "groups #{user} | grep ' #{group} ' || #{sudo} /usr/sbin/usermod -G #{group} -a #{user}",
     :via => run_method
   end
 
