@@ -91,7 +91,6 @@ Capistrano::Configuration.instance(:must_exist).load do
     
       
       SYSTEM_CONFIG_FILES[:network].each do |file, details|
-        puts "#{file}"
         desc "Generate and push #{details[:path]}"
         task file.to_sym do
           deprec2.render_template(:network, details)
