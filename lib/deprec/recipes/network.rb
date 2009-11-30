@@ -86,6 +86,16 @@ Capistrano::Configuration.instance(:must_exist).load do
         sudo '/etc/init.d/networking restart'
       end
       
+      desc "Push out resolv.conf"
+      task :resolv do
+        FILE = {
+          :template => "resolv.conf.erb",
+          :path => '/etc/resolv.conf',
+          :mode => 0644,
+          :owner => 'root:root'}
+        deprec2.render_template(:network, FILE.merge(:remote=>true))
+      end
+      
       
     end
   end
