@@ -198,8 +198,8 @@ Capistrano::Configuration.instance(:must_exist).load do
     end
     
     SRC_PACKAGES[:nagios_plugins] = {
-      :url => "http://prdownloads.sourceforge.net/sourceforge/nagiosplug/nagios-plugins-1.4.13.tar.gz",
-      :md5sum => "be6cc7699fff3ee29d1fd4d562377386  nagios-plugins-1.4.13.tar.gz", 
+      :url => "http://prdownloads.sourceforge.net/sourceforge/nagiosplug/nagios-plugins-1.4.14.tar.gz",
+      :md5sum => "a1835a48a777863ed2583de3c82446a9  nagios-plugins-1.4.14.tar.gz", 
       :configure => "./configure --with-nagios-user=#{nagios_user} --with-nagios-group=#{nagios_group};",
     }   
           

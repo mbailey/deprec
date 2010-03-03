@@ -1,5 +1,11 @@
 # deprec changelog
 
+= 2.1.9 (Mar  3, 2009)
+
+* monit-5.1.1
+* haproxy-1.4.0
+
+
 = 2.1.5 (Dec  3, 2009)
 
 * collectd-4.8.1

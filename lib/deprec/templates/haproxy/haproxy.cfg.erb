@@ -24,19 +24,8 @@ defaults
       clitimeout 50000
       srvtimeout 50000
 
-frontend dell *:80
-        acl host_xenium   hdr_beg(host) -i xenium.example.com
-        acl host_xenium   hdr_beg(host) -i x.example.com
-
-        acl host_app1   hdr_beg(host) -i intrepica.com
-        acl host_app1   hdr_beg(host) -i www.intrepica.com
-
-        use_backend     localhost if host_xenium
-        use_backend     app1      if host_app1
-
-backend localhost
-  server LOCALHOST 127.0.0.1:81
-
-backend app1
-  server APP1 192.168.0.179:80
+listen example_lb *:81
+      option httpchk HEAD /check.txt HTTP/1.0
+      server web1 127.0.0.1:80 weight 6  maxconn 12 check # cookie A 
+      server web2 127.0.0.1:80 weight 10 maxconn 12 check # cookie B
 
