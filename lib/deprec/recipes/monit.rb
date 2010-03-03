@@ -30,8 +30,8 @@ Capistrano::Configuration.instance(:must_exist).load do
   # Upstream changes: http://www.tildeslash.com/monit/dist/CHANGES.txt  
   # Ubuntu package version = monit-4.8.1  
   SRC_PACKAGES[:monit] = {
-    :md5sum => "dae7859ec10551fc941daeae60dee9d3  monit-5.0.3.tar.gz", 
-    :url => "http://mmonit.com/monit/dist/monit-5.0.3.tar.gz"
+    :md5sum => "4bbd3845ae1cbab13ec211824e0486dc  monit-5.1.1.tar.gz", 
+    :url => "http://mmonit.com/monit/dist/monit-5.1.1.tar.gz"
   }
   
   desc "Install monit"
@@ -63,8 +63,8 @@ Capistrano::Configuration.instance(:must_exist).load do
      :mode => 0700,
      :owner => 'root:root'},
       
-    {:template => 'nothing',
-     :path => "/etc/monit.d/nothing",
+    {:template => 'nothing.monitrc',
+     :path => "/etc/monit.d/nothing.monitrc",
      :mode => 0700,
      :owner => 'root:root'}
   ]

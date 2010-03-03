@@ -6,39 +6,53 @@
 ## are case insensitive. All path's MUST BE FULLY QUALIFIED, starting with '/'.
 ##
 ## Below you will find examples of some frequently used statements. For 
-## information about the control file, a complete list of statements and 
-## options please have a look in the monit manual.
+## information about the control file and a complete list of statements and 
+## options, please have a look in the Monit manual.
 ##
 ##
 ###############################################################################
 ## Global section
 ###############################################################################
 ##
-## Start monit in the background (run as a daemon) and check services at 
-## 2-minute intervals.
+## Start Monit in the background (run as a daemon):
 #
-set daemon  <%= monit_check_interval %>
+set daemon  <%= monit_check_interval %>  # check services at 2-minute intervals
+#     with start delay 240  # optional: delay the first check by 4-minutes (by 
+#                           # default Monit check immediately after Monit start)
 #
 #
 ## Set syslog logging with the 'daemon' facility. If the FACILITY option is
-## omitted, monit will use 'user' facility by default. If you want to log to 
-## a stand alone log file instead, specify the path to a log file
+## omitted, Monit will use 'user' facility by default. If you want to log to 
+## a standalone log file instead, specify the full path to the log file
 #
-set logfile <%= monit_log %>                       
+set logfile <%= monit_log %>
 #
+#
+### Set the location of the Monit id file which stores the unique id for the
+### Monit instance. The id is generated and stored on first Monit start. By 
+### default the file is placed in $HOME/.monit.id.
+#
+# set idfile /var/.monit.id
+#
+### Set the location of the Monit state file which saves monitoring states
+### on each cycle. By default the file is placed in $HOME/.monit.state. If
+### the state file is stored on a persistent filesystem, Monit will recover
+### the monitoring state across reboots. If it is on temporary filesystem, the
+### state will be lost on reboot which may be convenient in some situations.
+#
+# set statefile /var/.monit.state
 #
 ## Set the list of mail servers for alert delivery. Multiple servers may be 
-## specified using comma separator. By default monit uses port 25 - this
-## is possible to override with the PORT option.
+## specified using a comma separator. By default Monit uses port 25 - it is
+## possible to override this with the PORT option.
 #
-<%= '# ' unless monit_mailserver %>set mailserver <%= monit_mailserver || 'localhost' %>     # primary mailserver (append a comma
-#				# to this line if you add more.)
+<%= '# ' unless monit_mailserver %>set mailserver <%= monit_mailserver || 'mail.bar.baz' %>     # primary mailserver 
 #                backup.bar.baz port 10025,  # backup mailserver on port 10025
 #                localhost                   # fallback relay
 #
 #
-## By default monit will drop alert events if no mail servers are available. 
-## If you want to keep the alerts for a later delivery retry, you can use the 
+## By default Monit will drop alert events if no mail servers are available. 
+## If you want to keep the alerts for later delivery retry, you can use the 
 ## EVENTQUEUE statement. The base directory where undelivered alerts will be 
 ## stored is specified by the BASEDIR option. You can limit the maximal queue
 ## size using the SLOTS option (if omitted, the queue is limited by space 
@@ -46,7 +60,13 @@ set logfile <%= monit_log %>
 #
 # set eventqueue
 #     basedir /var/monit  # set the base directory where events will be stored
-#     slots 100           # optionaly limit the queue size
+#     slots 100           # optionally limit the queue size
+#
+#
+## Send status and events to M/Monit (for more informations about M/Monit 
+## see http://mmonit.com/).
+#
+# set mmonit http://monit:monit@192.168.1.10:8080/collector
 #
 #
 ## Monit by default uses the following alert mail format:
@@ -63,33 +83,33 @@ set logfile <%= monit_log %>
 ## 	Description: $DESCRIPTION            #
 ##                                           #
 ## Your faithful employee,                   #
-## monit                                     #
+## Monit                                     #
 ## --8<--
 ##
 ## You can override this message format or parts of it, such as subject
 ## or sender using the MAIL-FORMAT statement. Macros such as $DATE, etc.
-## are expanded at runtime. For example, to override the sender:
+## are expanded at runtime. For example, to override the sender, use:
 #
 <%= '# ' unless monit_mailserver %>set mail-format { from: <%= monit_mail_from %> }
 #
 #
-## You can set alert recipients here whom will receive alerts if/when a 
+## You can set alert recipients whom will receive alerts if/when a 
 ## service defined in this file has errors. Alerts may be restricted on 
 ## events by using a filter as in the second example below. 
-#
 <% monit_alert_recipients.each do |recipient| %>
 <%= '# ' unless monit_mailserver %>set alert <%= recipient %>                       # receive all alerts
 <% end %>
 <% monit_timeout_recipients.each do |recipient| %>
 <%= '# ' unless monit_mailserver %>set alert <%= recipient %> only on { timeout }  # receive just service-
-	                                                			# timeout alert
+                                                                                # timeout alert
 <% end %>
 
 #
 #
+#
 ## Monit has an embedded web server which can be used to view status of 
-## services monitored, the current configuration, actual services parameters
-## and manage services from a web interface.
+## services monitored and manage services from a web interface. See the
+## Monit Wiki if you want to enable SSL for the web server. 
 #
 <% if monit_webserver_enabled %>
 set httpd port <%= monit_webserver_port %> and
@@ -98,7 +118,10 @@ set httpd port <%= monit_webserver_port %> and
      allow <%= host %> # allow <%= host %> to connect to the server
   <% end %>
      allow <%= monit_webserver_auth_user %>:<%= monit_webserver_auth_pass %>      # require user <%= monit_webserver_auth_user %> with password <%= monit_webserver_auth_pass %>
+#     allow @monit           # allow users of group 'monit' to connect (rw)
+#     allow @users readonly  # allow users of group 'users' to connect readonly
 <% end %>
+
 #
 #
 ###############################################################################
@@ -119,9 +142,10 @@ set httpd port <%= monit_webserver_port %> and
 #
 #    
 ## Check a file for existence, checksum, permissions, uid and gid. In addition
-## to alert recipients in the global section, customized alert will be sent to 
+## to alert recipients in the global section, customized alert can be sent to 
 ## additional recipients by specifying a local alert handler. The service may 
-## be grouped using the GROUP option.
+## be grouped using the GROUP option. More than one group can be specified by
+## repeating the 'group name' statement.
 #    
 #  check file apache_bin with path /usr/local/apache/bin/httpd
 #    if failed checksum and 
@@ -137,14 +161,14 @@ set httpd port <%= monit_webserver_port %> and
 #    
 ## Check that a process is running, in this case Apache, and that it respond
 ## to HTTP and HTTPS requests. Check its resource usage such as cpu and memory,
-## and number of children. If the process is not running, monit will restart 
-## it by default. In case the service was restarted very often and the 
+## and number of children. If the process is not running, Monit will restart 
+## it by default. In case the service is restarted very often and the 
 ## problem remains, it is possible to disable monitoring using the TIMEOUT
 ## statement. This service depends on another service (apache_bin) which
 ## is defined above.
 #    
 #  check process apache with pidfile /usr/local/apache/logs/httpd.pid
-#    start program = "/etc/init.d/httpd start"
+#    start program = "/etc/init.d/httpd start" with timeout 60 seconds
 #    stop program  = "/etc/init.d/httpd stop"
 #    if cpu > 60% for 2 cycles then alert
 #    if cpu > 80% for 5 cycles then restart
@@ -152,7 +176,7 @@ set httpd port <%= monit_webserver_port %> and
 #    if children > 250 then restart
 #    if loadavg(5min) greater than 10 for 8 cycles then stop
 #    if failed host www.tildeslash.com port 80 protocol http
-#       and request "/monit/doc/next.php"
+#       and request "/somefile.html"
 #       then restart
 #    if failed port 443 type tcpssl protocol http
 #       with timeout 15 seconds
@@ -162,12 +186,12 @@ set httpd port <%= monit_webserver_port %> and
 #    group server
 #    
 #    
-## Check device permissions, uid, gid, space and inode usage. Other services,
+## Check filesystem permissions, uid, gid, space and inode usage. Other services,
 ## such as databases, may depend on this resource and an automatically graceful
 ## stop may be cascaded to them before the filesystem will become full and data
 ## lost.
 #
-#  check device datafs with path /dev/sdb1
+#  check filesystem datafs with path /dev/sdb1
 #    start program  = "/bin/mount /data"
 #    stop program  = "/bin/umount /data"
 #    if failed permission 660 then unmonitor
@@ -189,7 +213,7 @@ set httpd port <%= monit_webserver_port %> and
 #    if failed uid data then alert
 #    if failed gid data then alert
 #    if timestamp > 15 minutes then alert
-#    if size > 100 MB then exec "/my/cleanup/script"
+#    if size > 100 MB then exec "/my/cleanup/script" as uid dba and gid dba
 #
 #
 ## Check directory permission, uid and gid.  An event is triggered if the 
@@ -202,15 +226,14 @@ set httpd port <%= monit_webserver_port %> and
 #    if failed gid 0 then unmonitor
 #
 #
-## Check a remote host network services availability using a ping test and 
-## check response content from a web server. Up to three pings are sent and 
-## connection to a port and a application level network check is performed.
+## Check a remote host availability by issuing a ping test and check the 
+## content of a response from a web server. Up to three pings are sent and 
+## connection to a port and an application level network check is performed.
 #
 #  check host myserver with address 192.168.1.1
 #    if failed icmp type echo count 3 with timeout 3 seconds then alert
 #    if failed port 3306 protocol mysql with timeout 15 seconds then alert
-#    if failed url
-#       http://user:password@www.foo.bar:8080/?querystring
+#    if failed url http://user:password@www.foo.bar:8080/?querystring
 #       and content == 'action="j_security_check"'
 #       then alert
 #
@@ -222,6 +245,6 @@ set httpd port <%= monit_webserver_port %> and
 ## It is possible to include additional configuration parts from other files or
 ## directories.
 #
-include /etc/monit.d/*
+include /etc/monit.d/*.monitrc
 #
 #
