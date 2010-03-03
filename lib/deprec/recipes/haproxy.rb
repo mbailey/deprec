@@ -4,8 +4,11 @@ Capistrano::Configuration.instance(:must_exist).load do
     namespace :haproxy do
       
       SRC_PACKAGES[:haproxy] = {
-        :md5sum => "b84e0935cfea99eda43645d53bb82367  haproxy-1.3.22.tar.gz",  
-        :url => "http://haproxy.1wt.eu/download/1.3/src/haproxy-1.3.22.tar.gz"
+        :md5sum => "0d6019b79631048765a7dfd55f1875cd  haproxy-1.4.0.tar.gz",
+        :url => "http://haproxy.1wt.eu/download/1.4/src/haproxy-1.4.0.tar.gz",
+        :configure => '',
+        :make => "TARGET=linux26"
+
       }
       
       desc "Install haproxy"
@@ -15,6 +18,12 @@ Capistrano::Configuration.instance(:must_exist).load do
         deprec2.install_from_src(SRC_PACKAGES[:haproxy], src_dir)
         config
         activate
+        create_check_file
+      end
+
+      # default config expects this file in web root
+      task :create_check_file, :roles => :haproxy do
+        sudo "test -d /var/www && #{sudo} touch /var/www/check.txt"
       end
       
       task :install_deps, :roles => :haproxy do
