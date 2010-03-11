@@ -254,6 +254,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         # XXX currently it's run on the nagios server too 
         # XXX shouldn't do any harm but we should split them up later 
         deprec2.append_to_file_if_missing('/etc/services', 'nrpe            5666/tcp # NRPE')    
+        config
       end
       
       task :install_deps do
