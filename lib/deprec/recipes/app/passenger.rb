@@ -3,15 +3,7 @@ Capistrano::Configuration.instance(:must_exist).load do
   namespace :deprec do 
     namespace :passenger do
           
-      set(:passenger_install_dir) {
-        if ruby_vm_type == :ree
-          base_dir = "#{ree_install_dir}/lib/ruby/gems/1.8/gems/"
-          latest_passenger_version = capture("ls -d #{base_dir + 'passenger-*'} | tail -1").chomp
-        else
-          '/opt/passenger'
-        end
-      }
-      
+      set(:passenger_install_dir) { "/usr/local/lib/ruby/gems/1.8/gems/passenger-#{passenger_version}" }
       set(:passenger_document_root) { "#{current_path}/public" }
       set :passenger_rails_allow_mod_rewrite, 'off'
       # Default settings for Passenger config files
