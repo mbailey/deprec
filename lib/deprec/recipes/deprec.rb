@@ -35,9 +35,9 @@ Capistrano::Configuration.instance(:must_exist).load do
   #
   # The defaults below are legacy values to support older deployments.
   # Newly generated deploy.rb files have use apache, passenger and ree 
-  default :ruby_vm_type,    :mri
-  default :web_server_type, :nginx
-  default :app_server_type, :mongrel
+  default :ruby_vm_type,    :ree
+  default :web_server_type, :apache
+  default :app_server_type, :passenger
   default :db_server_type,  :mysql
   #
   # default(:web_server_type) do
