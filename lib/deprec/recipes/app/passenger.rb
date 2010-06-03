@@ -2,11 +2,13 @@
 Capistrano::Configuration.instance(:must_exist).load do 
   namespace :deprec do 
     namespace :passenger do
-          
-      set(:passenger_install_dir) { "/usr/local/lib/ruby/gems/1.8/gems/passenger-#{passenger_version}" }
+
+      set :passenger_version, '2.2.13'    
+      set :passenger_install_dir, "/usr/local/lib/ruby/gems/1.8/gems/passenger-#{passenger_version}"
+   
+      # Default settings for Passenger config files
       set(:passenger_document_root) { "#{current_path}/public" }
       set :passenger_rails_allow_mod_rewrite, 'off'
-      # Default settings for Passenger config files
       set :passenger_log_level, 0
       set(:passenger_log_dir) { "#{shared_path}/log"} 
       set :passenger_user_switching, 'on'
@@ -17,56 +19,18 @@ Capistrano::Configuration.instance(:must_exist).load do
       set :passenger_rails_autodetect, 'on'
       set :passenger_rails_spawn_method, 'smart' # smart | conservative
 
-      SRC_PACKAGES[:passenger] = {
-        :url => "git://github.com/FooBarWidget/passenger.git",
-        :download_method => :git,
-        :version => 'release-2.2.2', # Specify a tagged release to deploy
-        :configure => '',
-        :make => '',
-        :install => './bin/passenger-install-apache2-module'
-      }
-
       desc "Install passenger"
       task :install, :roles => :app do
         install_deps
-        deprec2.download_src(SRC_PACKAGES[:passenger], src_dir)
-
-        if ruby_vm_type.to_s == 'ree'
-          # Install the Passenger that came with Ruby Enterprise Edition
-          run "yes | #{sudo} env PATH=#{ree_install_dir}/bin:$PATH #{ree_install_dir}/bin/passenger-install-apache2-module"
-        else
-          # Non standard - passenger requires input
-          package_dir = File.join(src_dir, 'passenger.git')
-          dest_dir = passenger_install_dir + '-' + (SRC_PACKAGES[:passenger][:version] || 'trunk')
-          run "#{sudo} rsync -avz #{package_dir}/ #{dest_dir}"
-          run "cd #{dest_dir} && yes '' | #{sudo} ./bin/passenger-install-apache2-module"
-          run "#{sudo} unlink #{passenger_install_dir} 2>/dev/null; #{sudo} ln -sf #{dest_dir} #{passenger_install_dir}"
-        end
-        
-        initial_config_push
-        activate_system
-        
+        gem2.install 'passenger', passenger_version
+        sudo "passenger-install-apache2-module _#{passenger_version}_ -a"
+        config_system
+        activate_system 
       end
       
-      task :initial_config_push, :roles => :web do
-        # XXX Non-standard!
-        # We need to push out the .load and .conf files for Passenger
-        SYSTEM_CONFIG_FILES[:passenger].each do |file|
-          deprec2.render_template(:passenger, file.merge(:remote => true))
-        end
-      end
-
       # Install dependencies for Passenger
       task :install_deps, :roles => :app do
         apt.install( {:base => %w(apache2-mpm-prefork apache2-prefork-dev rsync)}, :stable )
-        gem2.install 'fastthread'
-        gem2.install 'rack'
-        gem2.install 'rake'
-        # These are more Rails than Passenger - Mike
-        # gem2.install 'rails'
-        # gem2.install "mysql -- --with-mysql-config='/usr/bin/mysql_config'"
-        # gem2.install 'sqlite3-ruby'
-        # gem2.install 'postgres'
       end
       
       SYSTEM_CONFIG_FILES[:passenger] = [
@@ -143,7 +107,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       
       # Passenger runs Rails as the owner of this file.
       task :set_owner_of_environment_rb, :roles => :app do
-        sudo "chown  #{app_user} #{current_path}/config/environment.rb"
+        sudo "chown #{app_user} #{current_path}/config/environment.rb"
       end
       
       task :symlink_apache_vhost, :roles => :app do
