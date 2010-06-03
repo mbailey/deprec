@@ -9,7 +9,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       set :apache_ssl_ip, nil
       set :apache_ssl_forward_all, apache_ssl_enabled
       set :apache_ssl_chainfile, false
-      set :apache_modules_enabled, %w(rewrite ssl proxy_balancer proxy_http deflate headers)
+      set :apache_modules_enabled, %w(rewrite ssl proxy_balancer proxy_http deflate expires headers)
       set :apache_log_dir, '/var/log/apache2'
        
       desc "Install apache"
