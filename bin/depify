@@ -26,10 +26,10 @@ caprc = unindent(<<-FILE)
   #
   require 'deprec_minus_rails'
 
-  # Uncomment this to fix the following error:
+  # This fixes the following problem on Ubuntu Lucid (and others?)
   #  'sudo: no tty present and no askpass program specified'
   #
-  # default_run_options[:pty] = true 
+  default_run_options[:pty] = true 
 
 FILE
 
