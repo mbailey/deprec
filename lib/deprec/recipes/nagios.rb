@@ -13,8 +13,8 @@ Capistrano::Configuration.instance(:must_exist).load do
       # default :application, 'nagios' 
       
       SRC_PACKAGES[:nagios] = {
-        :url => "http://prdownloads.sourceforge.net/sourceforge/nagios/nagios-3.2.0.tar.gz",
-        :md5sum => "3566167cc60ddeaad34e7d2e26ed4a58  nagios-3.2.0.tar.gz", 
+        :url => "http://prdownloads.sourceforge.net/sourceforge/nagios/nagios-3.2.1.tar.gz",
+        :md5sum => "d4655ee8c95c9679fd4fd53dac34bbe3  nagios-3.2.1.tar.gz",
         :configure => "./configure --with-command-group=nagcmd;",
         :make => 'make all;',
         :install => 'make install install-init install-commandmode install-webconf;'
@@ -198,8 +198,8 @@ Capistrano::Configuration.instance(:must_exist).load do
     end
     
     SRC_PACKAGES[:nagios_plugins] = {
-      :url => "http://prdownloads.sourceforge.net/sourceforge/nagiosplug/nagios-plugins-1.4.14.tar.gz",
-      :md5sum => "a1835a48a777863ed2583de3c82446a9  nagios-plugins-1.4.14.tar.gz", 
+      :url => "http://prdownloads.sourceforge.net/sourceforge/nagiosplug/nagios-plugins-1.4.15.tar.gz",
+      :md5sum => "56abd6ade8aa860b38c4ca4a6ac5ab0d  nagios-plugins-1.4.15.tar.gz",
       :configure => "./configure --with-nagios-user=#{nagios_user} --with-nagios-group=#{nagios_group};",
     }   
           
