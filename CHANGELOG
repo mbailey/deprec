@@ -1,5 +1,14 @@
 # deprec changelog
 
+= 2.1.8 (Aug 26, 2010)
+ 		
+* nagios-3.2.1
+* nagios-plugins-1.4.15
+
+= 2.1.7 (July 4, 2010)
+ 		
+* ruby-enterprise-1.8.7-2010.02 [jgrevich]
+
 = 2.1.6 (Mar  3, 2009)
 
 * monit-5.1.1
