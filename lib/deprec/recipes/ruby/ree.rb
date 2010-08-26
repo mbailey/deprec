@@ -3,11 +3,12 @@ Capistrano::Configuration.instance(:must_exist).load do
   namespace :deprec do     
     namespace :ree do
 
+      set :ree_version, 'ruby-enterprise-1.8.7-2010.02'
       set :ree_install_dir, "/usr/local"
       
       SRC_PACKAGES[:ree] = {
-        :url => "http://rubyforge.org/frs/download.php/68719/ruby-enterprise-1.8.7-2010.01.tar.gz",
-        :md5sum => "587aaea02c86ddbb87394a340a25e554  ruby-enterprise-1.8.7-2010.01.tar.gz",
+        :md5sum => "4df7b09c01adfd711b0ab76837611542 #{ree_version}.tar.gz",
+        :url => "http://rubyforge.org/frs/download.php/71096/#{ree_version}.tar.gz",
         :configure => '',
         :make => '',
         :install => "./installer --auto #{ree_install_dir}"
