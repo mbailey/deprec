@@ -105,6 +105,10 @@ Capistrano::Configuration.instance(:must_exist).load do
   # XXX for some reason this is causing "before deprec:rails:install" to be executed twice
   on :load, 'deprec:connect_canonical_tasks' 
 
+  # It can be useful to know the user running this command
+  # even when USER is set to someone else. Sorry windows!
+  set :current_user, `whoami`.chomp
+
   namespace :deprec do
     
     task :connect_canonical_tasks do      
