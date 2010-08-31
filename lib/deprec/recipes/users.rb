@@ -2,24 +2,16 @@
 Capistrano::Configuration.instance(:must_exist).load do 
   namespace :deprec do
     namespace :users do
-      
-      # desc "Create user account"
-      # task :add do
-      #   target_user = Capistrano::CLI.ui.ask "Enter userid for new user" do |q|
-      #     q.default = user
-      #   end
-      #   deprec2.useradd(target_user, :shell => '/bin/bash')
-      #   puts "Setting password for new account"
-      #   deprec2.invoke_with_input("passwd #{target_user}", /UNIX password/)
-      # end
+
+      set :new_users_have_sudo, 'no'
       
       desc "Create account"
       task :add do
         target_user = Capistrano::CLI.ui.ask "Enter userid for new user" do |q|
-          q.default = user
+          q.default = `whoami`.chomp
         end 
         make_admin = Capistrano::CLI.ui.ask "Should this be an admin account?" do |q|
-          q.default = 'no'
+          q.default = new_users_have_sudo
         end
         copy_keys = false
         if File.readable?("config/ssh/authorized_keys/#{target_user}")
@@ -28,7 +20,15 @@ Capistrano::Configuration.instance(:must_exist).load do
           end
         end
         
-        new_password = Capistrano::CLI.ui.ask("Enter new password for #{target_user}") { |q| q.echo = false }
+        while true do
+          new_password = Capistrano::CLI.ui.ask("Enter new password for #{target_user}") { |q| q.echo = false }
+          password_conf = Capistrano::CLI.ui.ask("Re-enter new password for #{target_user}") { |q| q.echo = false }
+          if new_password != password_conf
+            puts "Passwords do not match. Fail.\n\n"
+          else
+            break
+          end
+        end 
         
         deprec2.useradd(target_user, :shell => '/bin/bash')
 
