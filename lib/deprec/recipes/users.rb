@@ -8,7 +8,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       desc "Create account"
       task :add do
         target_user = Capistrano::CLI.ui.ask "Enter userid for new user" do |q|
-          q.default = `whoami`.chomp
+          q.default = current_user
         end 
         make_admin = Capistrano::CLI.ui.ask "Should this be an admin account?" do |q|
           q.default = new_users_have_sudo
@@ -40,10 +40,8 @@ Capistrano::Configuration.instance(:must_exist).load do
           deprec2.append_to_file_if_missing('/etc/sudoers', '%admin ALL=(ALL) ALL')
         end
         
-        if copy_keys && copy_keys.grep(/y/i)
-          set :target_user, target_user
-          top.deprec.ssh.setup_keys
-        end
+        set :target_user, target_user
+        top.deprec.ssh.setup_keys
         
       end
       

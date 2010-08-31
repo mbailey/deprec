@@ -55,32 +55,23 @@ Capistrano::Configuration.instance(:must_exist).load do
       
       desc "Sets up authorized_keys file on remote server"
       task :setup_keys do
-        
         default(:target_user) { 
           Capistrano::CLI.ui.ask "Setup keys for which user?" do |q|
-            q.default = user
+            q.default = current_user
           end
         }
         
         # If we have an authorized keys file for this user
         # then copy that out
         if File.exists?("config/ssh/authorized_keys/#{target_user}") 
-          deprec2.mkdir "/home/#{target_user}/.ssh", :mode => 0700, :owner => "#{target_user}.users", :via => :sudo
-          std.su_put File.read("config/ssh/authorized_keys/#{target_user}"), "/home/#{target_user}/.ssh/authorized_keys", '/tmp/', :mode => 0600
-          sudo "chown #{target_user}.users /home/#{target_user}/.ssh/authorized_keys"
-        
-        elsif target_user == user
-          
+          keys = File.read("config/ssh/authorized_keys/#{target_user}")
+        elsif target_user == current_user
           # If the user has specified a key Capistrano should use
           if ssh_options[:keys]
-            deprec2.mkdir '.ssh', :mode => 0700
-            put(ssh_options[:keys].collect{|key| File.read("#{key}.pub")}.join("\n"), '.ssh/authorized_keys', :mode => 0600 )
-          
+            keys = ssh_options[:keys].collect{|key| File.read("#{key}.pub")}.join("\n")
           # Try to find the current users public key
-          elsif keys = %w[id_rsa id_dsa identity].collect { |f| "#{ENV['HOME']}/.ssh/#{f}.pub" if File.exists?("#{ENV['HOME']}/.ssh/#{f}.pub") }.compact
-            deprec2.mkdir '.ssh', :mode => 0700
-            put(keys.collect{|key| File.read(key)}.join("\n"), '.ssh/authorized_keys', :mode => 0600 )
-            
+          elsif key_files = %w[id_rsa id_dsa identity].collect { |f| "#{ENV['HOME']}/.ssh/#{f}.pub" if File.exists?("#{ENV['HOME']}/.ssh/#{f}.pub") }.compact
+            keys = key_files.collect{|key| File.read(key)}.join("\n")
           else
             puts <<-ERROR
 
@@ -95,17 +86,22 @@ Capistrano::Configuration.instance(:must_exist).load do
         else
           puts <<-ERROR
           
-          Could not find ssh public key(s) for user #{user}
-          
+          Could not find ssh public key(s) for user #{target_user}
+         
           Please create file containing ssh public keys in:
           
-            config/ssh/authorized_keys/#{target_user}
+          config/ssh/authorized_keys/#{target_user}
             
           ERROR
+          exit
         end
         
+        # copy keys to remote server
+        deprec2.mkdir "/home/#{target_user}/.ssh", :mode => 0700, :owner => "#{target_user}.users", :via => :sudo
+        std.su_put keys, "/home/#{target_user}/.ssh/authorized_keys", '/tmp/', :mode => 0600
+        sudo "chown #{target_user}.users /home/#{target_user}/.ssh/authorized_keys"
       end
-      
+
     end
   end
 end
