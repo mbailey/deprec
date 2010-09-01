@@ -1,0 +1,33 @@
+###########
+# Functions
+###########
+# Delete an entry from ~/.ssh/known_hosts
+# Usage: sshdel <line_number>
+function sshdel { perl -i -n -e "print unless (\$. == $1)" ~/.ssh/known_hosts; }
+
+#########
+# Aliases
+#########
+
+# ls
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+
+# Git aliases for bash
+alias gst='git status'
+alias gl='git pull'
+alias gp='git push'
+alias gd='git diff | mate'
+alias gc='git commit -v'
+alias gca='git commit -v -a'
+alias gb='git branch'
+alias gba='git branch -a'
+alias rr='xargs ps -p < '
+alias gcp='git cherry-pick'
+
+# Time http request
+alias tc='time curl -s -o /dev/null'
+
+# Load rubygems
+alias irb='irb -rubygems'

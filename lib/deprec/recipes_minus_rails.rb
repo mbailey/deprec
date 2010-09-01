@@ -19,6 +19,7 @@ require "#{File.dirname(__FILE__)}/recipes/ruby/ree"
 require "#{File.dirname(__FILE__)}/recipes/web/apache"
 require "#{File.dirname(__FILE__)}/recipes/web/nginx"
 
+require "#{File.dirname(__FILE__)}/recipes/bash"
 require "#{File.dirname(__FILE__)}/recipes/git"
 # require "#{File.dirname(__FILE__)}/recipes/gitosis"
 require "#{File.dirname(__FILE__)}/recipes/svn"
