@@ -23,7 +23,7 @@ LogLevel INFO
 
 # Authentication:
 LoginGraceTime 120
-PermitRootLogin no
+PermitRootLogin <%= ssh_permit_root_login %>
 StrictModes yes
 
 RSAAuthentication yes
@@ -74,5 +74,5 @@ AcceptEnv LANG LC_*
 
 Subsystem sftp /usr/lib/openssh/sftp-server
 
-UsePAM no
-UseDNS no
+UsePAM <%= ssh_use_pam %>
+UseDNS <%= ssh_use_dns %>
