@@ -94,9 +94,10 @@ Capistrano::Configuration.instance(:must_exist).load do
         desc "Generate and push #{details[:path]}"
         task file.to_sym do
           deprec2.render_template(:network, details)
+          run "#{sudo} hostname #{network_hostname}" if file == :hostname
         end
       end
-      
+
       # XXX need to set the order for these as it breaks sudo currently
       desc "Update system networking configuration"
       task :config do
