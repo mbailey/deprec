@@ -190,8 +190,11 @@ module Deprec2
   def append_to_file_if_missing(filename, value, options={})
     # XXX sort out single quotes in 'value' - they'l break command!
     # XXX if options[:requires_sudo] and :use_sudo then use sudo
-    run <<-END
-    grep -F "#{value}" #{filename} > /dev/null 2>&1 || echo "#{value}" | #{sudo} tee >> #{filename}
+    sudo <<-END
+    sh -c '
+    grep -F "#{value}" #{filename} > /dev/null 2>&1 || 
+    echo "#{value}" >> #{filename}
+    '
     END
   end
 
