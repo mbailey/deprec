@@ -20,7 +20,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       desc "Push bash config files to server"
       task :config do
         deprec2.push_configs(:bash, SYSTEM_CONFIG_FILES[:bash].collect{|file| file.merge(:owner => user)})
-        deprec2.append_to_file_if_missing('.bashrc', '. .bash_global')
+        deprec2.append_to_file_if_missing('.bashrc', '. ~/.bash_global')
       end
 
     end
