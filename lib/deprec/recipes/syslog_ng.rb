@@ -3,10 +3,16 @@ Capistrano::Configuration.instance(:must_exist).load do
   namespace :deprec do
     namespace :syslog_ng do
 
-      set(:syslog_ng_loghost) { Capistrano::CLI.ui.ask "Loghost address" }
+      set(:syslog_ng_loghost_name) { 
+        Capistrano::CLI.ui.ask "Loghost address" do |q|
+          q.default = ''
+        end
+      }
+      set :syslog_ng_loghost_port, 514
             
       desc "Install syslog-ng"
       task :install do
+        syslog_ng_loghost_name
         install_deps
         config
       end

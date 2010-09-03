@@ -97,8 +97,8 @@ source s_all {
 ######
 # destinations
 
-<% if syslog_ng_loghost and syslog_ng_loghost.to_s != '' %>
-destination loghost { tcp("<%= syslog_ng_loghost %>" port (514)); };
+<% if syslog_ng_loghost_name and syslog_ng_loghost_name.to_s != '' %>
+destination loghost { tcp("<%= syslog_ng_loghost_name %>" port (<%= syslog_ng_loghost_port %>)); };
 <% end %>
 
 # some standard log files
@@ -200,7 +200,7 @@ filter f_xconsole {
 # these rules provide the same behavior as the commented original syslogd rules
 
 
-<% if syslog_ng_loghost and syslog_ng_loghost.to_s != '' %>
+<% if syslog_ng_loghost_name and syslog_ng_loghost_name.to_s != '' %>
 # Send to loghost
 log {
   source(s_all);
