@@ -9,6 +9,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       
       desc "Create account"
       task :add do
+        [users_target_user, users_target_group, users_make_admin] # get input
         
         while true do
           new_password = Capistrano::CLI.ui.ask("Enter new password for #{users_target_user}") { |q| q.echo = false }
