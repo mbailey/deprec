@@ -1,5 +1,9 @@
 # deprec changelog
 
+= 2.1.10 (Sep  4, 2010)
+
+* Get all user input at start (deprec:users:add)
+
 = 2.1.9 (Sep  4, 2010)
 
 * Added syslog-ng
