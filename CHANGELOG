@@ -1,5 +1,15 @@
 # deprec changelog
 
+= 2.1.9 (Sep  4, 2010)
+
+* Added syslog-ng
+* Added stunnel
+* Added external config options for deprec:users:add
+* Added config variables to sshd_config template
+* Added recipe to push out file with bash options I want everywhere
+* deprec:users:add looks harder for your public ssh keys
+* current_user now contains the output from `whois`
+
 = 2.1.8 (Aug 26, 2010)
  		
 * nagios-3.2.1
