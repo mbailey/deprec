@@ -1,0 +1,47 @@
+# Copyright 2006-2010 by Mike Bailey. All rights reserved.
+Capistrano::Configuration.instance(:must_exist).load do 
+  namespace :deprec do
+    namespace :syslog_ng do
+
+      set(:syslog_ng_loghost) { Capistrano::CLI.ui.ask "Loghost address" }
+            
+      desc "Install syslog-ng"
+      task :install do
+        install_deps
+        config
+      end
+      
+      task :install_deps do
+        apt.install( {:base => %w(syslog-ng)}, :stable )
+      end
+
+      SYSTEM_CONFIG_FILES[:syslog_ng] = [
+        
+        {:template => 'syslog-ng.conf-client',
+        :path => '/etc/syslog-ng/syslog-ng.conf',
+        :mode => 0644,
+        :owner => 'root:root'}
+        
+      ]
+
+      task :config_gen do
+        SYSTEM_CONFIG_FILES[:syslog_ng].each do |file|
+          deprec2.render_template(:syslog_ng, file)
+        end
+      end
+
+      desc "Push ssh config files to server"
+      task :config do
+        deprec2.push_configs(:syslog_ng, SYSTEM_CONFIG_FILES[:syslog_ng])
+        restart
+      end
+
+      desc "Restart syslog-ng"
+      task :restart do
+        run "#{sudo} /etc/init.d/syslog-ng restart"
+      end
+
+    end
+    
+  end
+end
