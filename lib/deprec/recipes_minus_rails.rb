@@ -47,6 +47,8 @@ require "#{File.dirname(__FILE__)}/recipes/network"
 require "#{File.dirname(__FILE__)}/recipes/nagios"
 require "#{File.dirname(__FILE__)}/recipes/collectd"
 require "#{File.dirname(__FILE__)}/recipes/syslog"
+require "#{File.dirname(__FILE__)}/recipes/syslog_ng"
+require "#{File.dirname(__FILE__)}/recipes/stunnel"
 require "#{File.dirname(__FILE__)}/recipes/heartbeat"
 require "#{File.dirname(__FILE__)}/recipes/haproxy"
 
