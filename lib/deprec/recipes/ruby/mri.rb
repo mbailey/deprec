@@ -5,8 +5,8 @@ Capistrano::Configuration.instance(:must_exist).load do
     namespace :mri do
             
       SRC_PACKAGES[:mri] = {
-        :md5sum => "18dcdfef761a745ac7da45b61776afa5  ruby-1.8.7-p174.tar.gz", 
-        :url => "ftp://ftp.ruby-lang.org/pub/ruby/1.8/ruby-1.8.7-p174.tar.gz",
+        :md5sum => "755aba44607c580fddc25e7c89260460  ftp://ftp.ruby-lang.org//pub/ruby/1.9/ruby-1.9.2-p0.tar.gz", 
+        :url => "ftp://ftp.ruby-lang.org//pub/ruby/1.9/ruby-1.9.2-p0.tar.gz",
         :configure => "./configure --with-readline-dir=/usr/local;"
       }
   
@@ -15,7 +15,8 @@ Capistrano::Configuration.instance(:must_exist).load do
         install_deps
         deprec2.download_src(SRC_PACKAGES[:mri], src_dir)
         deprec2.install_from_src(SRC_PACKAGES[:mri], src_dir)
-        top.deprec.rubygems.install
+        # Ruby versions from 1.9.1 install rubygems
+        # top.deprec.rubygems.install
       end
       
       task :install_deps do
@@ -30,8 +31,8 @@ Capistrano::Configuration.instance(:must_exist).load do
     namespace :rubygems do
   
       SRC_PACKAGES[:rubygems] = {
-        :md5sum => "6e317335898e73beab15623cdd5f8cff  rubygems-1.3.5.tgz", 
-        :url => "http://rubyforge.org/frs/download.php/60718/rubygems-1.3.5.tgz",
+        :md5sum => "e85cfadd025ff6ab689375adbf344bbe  rubygems-1.3.7.tgz", 
+        :url => "http://production.cf.rubygems.org/rubygems/rubygems-1.3.7.tgz",
 	    :configure => "",
 	    :make =>  "",
         :install => 'ruby setup.rb;'
