@@ -33,4 +33,4 @@ alias gcp='git cherry-pick'
 alias tc='time curl -s -o /dev/null'
 
 # Load rubygems
-alias irb='irb -rubygems'
+alias irb="irb -I '.' -rubygems"
