@@ -23,7 +23,7 @@ require "#{File.dirname(__FILE__)}/recipes/bash"
 require "#{File.dirname(__FILE__)}/recipes/git"
 # require "#{File.dirname(__FILE__)}/recipes/gitosis"
 require "#{File.dirname(__FILE__)}/recipes/svn"
-require "#{File.dirname(__FILE__)}/recipes/integrity"
+# require "#{File.dirname(__FILE__)}/recipes/integrity"
 
 require "#{File.dirname(__FILE__)}/recipes/users"
 require "#{File.dirname(__FILE__)}/recipes/ssh"
