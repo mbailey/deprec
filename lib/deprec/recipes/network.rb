@@ -101,6 +101,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       # XXX need to set the order for these as it breaks sudo currently
       desc "Update system networking configuration"
       task :config do
+        network_hostname # get user input upfront
         SYSTEM_CONFIG_FILES[:network].values.each do |file|
           deprec2.render_template(:network, file.merge(:remote=>true))
         end
