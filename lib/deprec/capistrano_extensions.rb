@@ -240,26 +240,26 @@ module Deprec2
     mkdir(src_dir, :mode => 0775, :group => group_src, :via => :sudo)
   end
   
-  # download source package if we don't already have it
-  def download_src(src_package, src_dir)
-    set_package_defaults(src_package)
+  # download source pkg if we don't already have it
+  def download_src(src_pkg, src_dir)
+    set_pkg_defaults(src_pkg)
     create_src_dir
     # check if file exists and if we have an MD5 hash or bytecount to compare 
     # against if so, compare and decide if we need to download again
-    if defined?(src_package[:md5sum])
-      md5_clause = " && echo '#{src_package[:md5sum]}' | md5sum -c - "
+    if defined?(src_pkg[:md5sum])
+      md5_clause = " && echo '#{src_pkg[:md5sum]}' | md5sum -c - "
     end
-    case src_package[:download_method]
+    case src_pkg[:download_method]
       # when getting source with git
       when :git
         # ensure git is installed
         apt.install( {:base => %w(git-core)}, :stable) #TODO fix this to test ubuntu version <hardy might need specific git version for full git submodules support
-        package_dir = File.join(src_dir, src_package[:dir])
-        run "if [ -d #{package_dir} ]; then cd #{package_dir} && #{sudo} git checkout master && #{sudo} git pull && #{sudo} git submodule init && #{sudo} git submodule update; else #{sudo} git clone #{src_package[:url]} #{package_dir} && cd #{package_dir} && #{sudo} git submodule init && #{sudo} git submodule update ; fi"
+        pkg_dir = File.join(src_dir, src_pkg[:dir])
+        run "if [ -d #{pkg_dir} ]; then cd #{pkg_dir} && #{sudo} git checkout master && #{sudo} git pull && #{sudo} git submodule init && #{sudo} git submodule update; else #{sudo} git clone #{src_pkg[:url]} #{pkg_dir} && cd #{pkg_dir} && #{sudo} git submodule init && #{sudo} git submodule update ; fi"
       	# Checkout the revision wanted if defined
-      	if src_package[:version]
-      	  run "cd #{package_dir} && git branch | grep '#{src_package[:version]}$' && #{sudo} git branch -D '#{src_package[:version]}'; exit 0"
-      	  run "cd #{package_dir} && #{sudo} git checkout -b #{src_package[:version]} #{src_package[:version]}" 
+      	if src_pkg[:version]
+      	  run "cd #{pkg_dir} && git branch | grep '#{src_pkg[:version]}$' && #{sudo} git branch -D '#{src_pkg[:version]}'; exit 0"
+      	  run "cd #{pkg_dir} && #{sudo} git checkout -b #{src_pkg[:version]} #{src_pkg[:version]}" 
         end
 	
       # when getting source with wget    
@@ -267,66 +267,67 @@ module Deprec2
         # ensure wget is installed
         apt.install( {:base => %w(wget)}, :stable )
         # XXX replace with invoke_command
-        run "cd #{src_dir} && test -f #{src_package[:filename]} #{md5_clause} || #{sudo} wget --quiet --timestamping #{src_package[:url]}"
+        run "cd #{src_dir} && test -f #{src_pkg[:filename]} #{md5_clause} || #{sudo} wget --quiet --timestamping #{src_pkg[:url]}"
+
+      when :deb
+        run "cd #{src_dir} && test -f #{src_pkg[:filename]} #{md5_clause} || #{sudo} wget --quiet --timestamping #{src_pkg[:url]}"
+
       else
-        puts "DOWNLOAD SRC: Download method not recognised. src_package[:download_method]: #{src_package[:download_method]}"
+        puts "DOWNLOAD SRC: Download method not recognised. src_pkg[:download_method]: #{src_pkg[:download_method]}"
     end
   end
 
   # unpack src and make it writable by the group
-  def unpack_src(src_package, src_dir)
-    set_package_defaults(src_package)
-    package_dir = File.join(src_dir, src_package[:dir])
-    case src_package[:download_method]
+  def unpack_src(src_pkg, src_dir)
+    set_pkg_defaults(src_pkg)
+    pkg_dir = File.join([src_dir, src_pkg[:dir]].compact)
+    case src_pkg[:download_method]
       # when unpacking git sources - nothing to do
+      when :deb
+        puts "UNPACK SRC: nothing to do for deb installs"
       when :git
         puts "UNPACK SRC: nothing to do for git installs"
       when :http
-        sudo <<-EOF
-        bash -c '
-        cd #{src_dir};
-        test -d #{package_dir}.old && rm -fr #{package_dir}.old;
-        test -d #{package_dir} && mv #{package_dir} #{package_dir}.old;
-        #{src_package[:unpack]}
-        '
-        EOF
+        run "test -d #{pkg_dir}.old && #{sudo} rm -fr #{pkg_dir}.old; exit 0"
+        run "test -d #{pkg_dir} && #{sudo} mv #{pkg_dir} #{pkg_dir}.old; exit 0"
+        run "cd #{src_dir} && #{sudo} #{src_pkg[:unpack]}" if src_pkg[:unpack] != ''
+        run "#{sudo} chgrp -R #{group} #{pkg_dir}"
+        run "#{sudo} chmod -R g+w #{pkg_dir}"
       else
-        puts "UNPACK SRC: Download method not recognised. src_package[:download_method]: #{src_package[:download_method]} "
+        puts "UNPACK SRC: Download method not recognised. src_pkg[:download_method]: #{src_pkg[:download_method]} "
     end
-    sudo <<-EOF
-    bash -c '
-    cd #{src_dir};
-    chgrp -R #{group} #{package_dir};  
-    chmod -R g+w #{package_dir};
-    '
-    EOF
   end
 
-  def set_package_defaults(pkg)
+  def set_pkg_defaults(pkg)
     pkg[:filename] ||= File.basename(pkg[:url])
-    pkg[:dir] ||= pkg[:filename].sub(/(\.tgz|\.tar\.gz)/,'')
     pkg[:download_method] ||= :http
-    pkg[:unpack] ||= "tar zxf #{pkg[:filename]};"
-    pkg[:configure] ||= './configure ;'
-    pkg[:make] ||= 'make;'
-    pkg[:install] ||= 'make install;'
+    pkg[:post_install] ||= ''
+    case pkg[:download_method]
+    when :http
+      pkg[:dir] ||= pkg[:filename].sub(/(\.tgz|\.tar\.gz)/,'')
+      pkg[:unpack] ||= "tar zxf #{pkg[:filename]};"
+      pkg[:configure] ||= './configure ;'
+      pkg[:make] ||= 'make;'
+      pkg[:install] ||= 'make install;'
+    when :deb
+      pkg[:dir] ||= ''
+      pkg[:unpack] ||= ''
+      pkg[:configure] ||= ''
+      pkg[:make] ||= ''
+      pkg[:install] ||= "dpkg -i #{pkg[:filename]}"
+    end
   end
 
-  # install package from source
-  def install_from_src(src_package, src_dir)
-    set_package_defaults(src_package)
-    package_dir = File.join(src_dir, src_package[:dir])
-    unpack_src(src_package, src_dir)
+  # install pkg from source
+  def install_from_src(src_pkg, src_dir)
+    set_pkg_defaults(src_pkg)
+    pkg_dir = File.join([src_dir, src_pkg[:dir]].compact)
+    unpack_src(src_pkg, src_dir)
     apt.install( {:base => %w(build-essential)}, :stable )
-    sudo <<-SUDO
-    sh -c '
-    cd #{package_dir};
-    #{src_package[:configure]}
-    #{src_package[:make]}
-    #{src_package[:install]}
-    #{src_package[:post_install]}
-    '
-    SUDO
+    run "cd #{pkg_dir} && #{sudo} #{src_pkg[:configure]}" if src_pkg[:configure] != ''
+    run "cd #{pkg_dir} && #{sudo} #{src_pkg[:make]}" if src_pkg[:make] != ''
+    run "cd #{pkg_dir} && #{sudo} #{src_pkg[:install]}" if src_pkg[:install] != ''
+    run "cd #{pkg_dir} && #{sudo} #{src_pkg[:post_install]}" if src_pkg[:post_install] != ''
   end
   
   def read_database_yml
