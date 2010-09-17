@@ -3,15 +3,24 @@ Capistrano::Configuration.instance(:must_exist).load do
   namespace :deprec do 
     namespace :sqlite do
 
+      SRC_PACKAGES[:sqlite] = {
+        :url => "http://www.sqlite.org/sqlite-amalgamation-3.7.2.tar.gz",
+        :md5sum => "bd9586208f48ba840467bcfd066a6fa9  sqlite-amalgamation-3.7.2.tar.gz",
+        :dir => 'sqlite-3.7.2'
+      }
+
+
       desc "Install sqlite"
       task :install, :roles => :db do
         install_deps
+        deprec2.download_src(SRC_PACKAGES[:sqlite], src_dir)
+        deprec2.install_from_src(SRC_PACKAGES[:sqlite], src_dir)
         gem2.install "sqlite3-ruby"
       end
 
       # install dependencies for nginx
       task :install_deps, :roles => :db do
-        apt.install( {:base => %w(sqlite3 libsqlite3-ruby libsqlite3-dev)}, :stable )
+        # apt.install( {:base => %w(blah)}, :stable )
       end
     end
     
