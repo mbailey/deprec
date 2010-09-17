@@ -43,21 +43,18 @@ Capistrano::Configuration.instance(:must_exist).load do
 
   after :deploy, "deploy:cleanup"
   
-  namespace :rake do
-    namespace :gems do
-      task :install, :roles => :app do
-        run "cd #{current_path} && #{sudo} rake gems:install"
-      end
-    end
-  end
-  namespace :db do
-    task :migrate, :roles => :db do
-      run "cd #{current_path} && #{sudo} rake gems:install"
-    end
-  end
-  
   namespace :deprec do
     namespace :rails do
+
+      task :install, :roles => :app do
+        install_deps
+        gem2.install 'rails'
+        gem2.install 'bundler'
+      end
+
+      task :install_deps do
+        apt.install( {:base => %w(libmysqlclient15-dev sqlite3 libsqlite3-ruby libsqlite3-dev libpq-dev)}, :stable )
+      end
       
       #
       # If database.yml is not kept in scm and it is present in local
@@ -74,25 +71,6 @@ Capistrano::Configuration.instance(:must_exist).load do
           top.deprec.db.create_database
           top.deprec.db.grant_user_access_to_database
         end
-      end
-      
-      task :install, :roles => :app do
-        install_deps
-        install_gems
-      end
-
-      task :install_deps do
-        apt.install( {:base => %w(libmysqlclient15-dev sqlite3 libsqlite3-ruby libsqlite3-dev libpq-dev)}, :stable )
-      end
-      
-      # install some required ruby gems
-      task :install_gems do
-        gem2.install 'sqlite3-ruby'
-        gem2.install 'mysql'
-        gem2.install 'ruby-pg'
-        gem2.install 'rails'
-        gem2.install 'rake'
-        gem2.install 'rspec'
       end
       
       desc <<-DESC
