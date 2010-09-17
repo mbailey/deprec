@@ -97,10 +97,6 @@ source s_all {
 ######
 # destinations
 
-<% if syslog_ng_loghost_name and syslog_ng_loghost_name.to_s != '' %>
-destination loghost { tcp("<%= syslog_ng_loghost_name %>" port (<%= syslog_ng_loghost_port %>)); };
-<% end %>
-
 # some standard log files
 destination df_auth { file("/var/log/auth.log"); };
 destination df_syslog { file("/var/log/syslog"); };
@@ -198,17 +194,6 @@ filter f_xconsole {
 # "log" statement
 
 # these rules provide the same behavior as the commented original syslogd rules
-
-
-<% if syslog_ng_loghost_name and syslog_ng_loghost_name.to_s != '' %>
-# Send to loghost
-log {
-  source(s_all);
-  # filter(notdebug);
-  destination(loghost);
-};
-<% end %>
-
 
 # auth,authpriv.*                 /var/log/auth.log
 log {
@@ -361,3 +346,10 @@ log {
         destination(dp_xconsole);
 };
 
+<% if syslog_ng_loghost_name and syslog_ng_loghost_name.to_s != '' %>
+# Send all logs to loghost
+
+destination loghost { tcp("<%= syslog_ng_loghost_name %>" port (<%= syslog_ng_loghost_port %>)); };
+log { source(s_all); destination(loghost); };
+
+<% end %>

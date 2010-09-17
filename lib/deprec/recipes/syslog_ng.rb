@@ -9,10 +9,24 @@ Capistrano::Configuration.instance(:must_exist).load do
         end
       }
       set :syslog_ng_loghost_port, 514
+
+      desc "Setup server"
+      task :server_setup do
+        install_deps
+        deprec2.render_template(
+          :syslog_ng, 
+          :template => 'syslog-ng.conf-server',
+          :path => '/etc/syslog-ng/syslog-ng.conf',
+          :mode => 0644,
+          :owner => 'root:root',
+          :remote => true
+        )
+        restart
+      end
             
       desc "Install syslog-ng"
       task :install do
-        syslog_ng_loghost_name
+        syslog_ng_loghost_name # get user input at beginning
         install_deps
         config
       end
