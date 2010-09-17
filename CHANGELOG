@@ -1,6 +1,10 @@
 # deprec changelog
 
-= 2.1.10 (Sep  4, 2010)
+= 2.1.13 (Sep  17, 2010)
+
+Added syslog_ng recipes
+
+= 2.1.10 (Sep   4, 2010)
 
 * Removed integrity recipes - causing a problem with ruby 1.9.2
 

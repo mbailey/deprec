@@ -40,6 +40,11 @@ Capistrano::Configuration.instance(:must_exist).load do
         {:template => 'syslog-ng.conf-client',
         :path => '/etc/syslog-ng/syslog-ng.conf',
         :mode => 0644,
+        :owner => 'root:root'},
+
+        {:template => 'apache_syslog',
+        :path => '/usr/local/bin/apache_syslog',
+        :mode => 0755,
         :owner => 'root:root'}
         
       ]
