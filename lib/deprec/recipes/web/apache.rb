@@ -26,6 +26,11 @@ Capistrano::Configuration.instance(:must_exist).load do
       
       SYSTEM_CONFIG_FILES[:apache] = [
         
+        { :template => 'apache2.conf.erb',
+          :path => '/etc/apache2/apache2.conf',
+          :mode => 0644,
+          :owner => 'root:root'},
+
         { :template => 'namevirtualhosts.conf',
           :path => '/etc/apache2/conf.d/namevirtualhosts.conf',
           :mode => 0644,
