@@ -4,7 +4,7 @@ Capistrano::Configuration.instance(:must_exist).load do
     namespace :ssh do
 
       set :ssh_permit_root_login, 'no'
-      set :ssh_use_pam, 'yes' # EC2 instance needs this
+      set :ssh_use_pam, 'no'
       set :ssh_use_dns, 'no'
       
       SYSTEM_CONFIG_FILES[:ssh] = [
