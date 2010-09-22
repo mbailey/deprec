@@ -1,0 +1,40 @@
+#!/usr/bin/perl
+#
+# /usr/local/bin/apache_syslog
+#
+# Send apache logs to syslog
+# http://oreilly.com/pub/a/sysadmin/2006/10/12/httpd-syslog.html
+#
+# Configuring Apache ##########################################
+#
+#   # Log to syslog
+#   CustomLog |/usr/local/bin/apache_syslog combined
+#   # Also log locally (if required)
+#   CustomLog /usr/local/apache/logs/access_log combined
+#
+# Configure syslog-ng (/etc/syslog-ng/syslog-ng) ##############
+#
+#   filter f_apache { program("apache-***"); };
+#
+#   destination df_apache {
+#     file("/var/log/apache2/$PROGRAM/$YEAR$MONTH/$PROGRAM-$YEAR$MONTH$DAY"
+#       create_dirs(yes)
+#    );
+#   };
+#
+#   log {
+#     source(s_all);
+#     filter (f_apache);
+#     destination(df_apache);
+#     flags(final);
+#   };
+
+use Sys::Syslog qw( :DEFAULT setlogsock );
+
+setlogsock('unix');
+openlog('apache', 'cons', 'pid', 'local2');
+
+while ($log = <STDIN>) {
+  syslog('notice', $log);
+}
+closelog
