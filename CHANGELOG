@@ -1,5 +1,10 @@
 # deprec changelog
 
+= 2.1.14 (Sep  27, 2010)
+
+* daemonize-1.6
+* ree i386 hardy deb package
+
 = 2.1.13 (Sep  17, 2010)
 
 Added syslog_ng recipes
