@@ -84,7 +84,7 @@ private
   # Provides a string containing all the package names in the base
   #list plus those in +version+.
   def package_list(packages, version)
-    packages[:base].to_a.join(' ') + ' ' + packages[version].to_a.join(' ')
+    Array(packages[:base]).join(' ') + ' ' + Array(packages[version]).join(' ')
   end
 
 end
