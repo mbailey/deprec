@@ -6,7 +6,8 @@ require "#{File.dirname(__FILE__)}/recipes/canonical"
 require "#{File.dirname(__FILE__)}/recipes/deprec"
 require "#{File.dirname(__FILE__)}/recipes/deprecated"
 
-require "#{File.dirname(__FILE__)}/recipes/chef"
+# require "#{File.dirname(__FILE__)}/recipes/chef"
+require "#{File.dirname(__FILE__)}/recipes/ec2"
 
 require "#{File.dirname(__FILE__)}/recipes/app/mongrel"
 require "#{File.dirname(__FILE__)}/recipes/app/passenger"
