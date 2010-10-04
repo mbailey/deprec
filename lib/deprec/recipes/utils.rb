@@ -50,6 +50,11 @@ Capistrano::Configuration.instance(:must_exist).load do
           other
         end
 
+        task :remove_consolekit do
+          run "#{sudo} killall console-kit-daemon"
+          run "#{sudo} apt-get -y remove consolekit # chews resources"
+        end
+
     end
   end
 end
