@@ -1,6 +1,14 @@
 # deprec changelog
 
-= 2.1.14 (Sep  27, 2010)
+= 2.1.16 (Jan 13, 2010)
+
+* bugfix: ddt does not require call to 'configure'
+
+= 2.1.15 (Oct 04, 2010)
+
+* deprec:ec2 namespace as a basis for ec2 recipes
+
+= 2.1.14 (Sep 27, 2010)
 
 * daemonize-1.6
 * ree i386 hardy deb package
