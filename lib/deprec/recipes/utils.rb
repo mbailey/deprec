@@ -27,7 +27,7 @@ Capistrano::Configuration.instance(:must_exist).load do
 
         desc "Install some useful mail utils"
         task :mail do
-          apps = %w(mailx mutt)
+          apps = %w(mailutils mutt)
           apt.install( {:base => apps}, :stable )
         end
 
@@ -42,6 +42,7 @@ Capistrano::Configuration.instance(:must_exist).load do
           net
           mail
           other
+          top.deprec.ddt.install
         end
 
         task :remove_consolekit do
