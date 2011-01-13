@@ -16,7 +16,8 @@ Capistrano::Configuration.instance(:must_exist).load do
   
   SRC_PACKAGES[:ddt] = {
     :url => "http://support.coraid.com/support/sr/ddt-8.tgz",
-    :md5sum => "256a58aba5e05f9995fb9de6aadadf92  ddt-8.tgz"
+    :md5sum => "256a58aba5e05f9995fb9de6aadadf92  ddt-8.tgz",
+    :configure => ''
   }
   
   SRC_PACKAGES[:aoemask] = {
