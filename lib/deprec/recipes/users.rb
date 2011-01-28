@@ -25,7 +25,7 @@ Capistrano::Configuration.instance(:must_exist).load do
 
         # Grab a list of all users with keys
         if users_target_user == 'all'
-          users_target_user = Dir.entries('config/ssh/authorized_keys').reject{|f| ['.','..'].include? f}
+          set :users_target_user, Dir.entries('config/ssh/authorized_keys').reject{|f| ['.','..'].include? f}
         end
 
         Array(users_target_user).each do |user| 
