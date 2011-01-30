@@ -9,6 +9,7 @@
 	  CustomLog <%= apache_log_dir %>/<%= application %>-access.log combined
 	  ErrorLog <%= apache_log_dir %>/<%= application %>-error.log
 	  
+	  RackEnv <%= rails_env %>
 	  RailsEnv <%= rails_env %>
 	  # RailsAllowModRewrite <%= passenger_rails_allow_mod_rewrite %>
 	  #
