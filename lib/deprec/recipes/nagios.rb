@@ -241,7 +241,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         :md5sum => "b2d75e2962f1e3151ef58794d60c9e97  nrpe-2.12.tar.gz", 
         :configure => "./configure --with-nagios-user=#{nagios_user} --with-nagios-group=#{nagios_group} #{ '--enable-command-args' if nrpe_enable_command_args};",
         :make => 'make all;',
-        :install => 'make install-plugin; make install-daemon; make install-daemon-config;'
+        :install => 'make install-plugin install-daemon install-daemon-config;'
       }
     
       desc 'Install NRPE'
