@@ -1,5 +1,9 @@
 deprec/TODO.txt
 
+? How do we deal with different Passenger debs for hardy and lucid? 32 x 64?
+? How do we get config for Passenger when we're installing latest gem?
+  - probably specify gem version of passenger
+
 # Mysql - delete initially created accounts
 #         they stop 'mike'@'%' from working
 # http://bugs.mysql.com/bug.php?id=36576

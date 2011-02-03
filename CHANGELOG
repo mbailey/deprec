@@ -1,6 +1,11 @@
 # deprec changelog
 
-= 2.1.16 (Jan 13, 2010)
+= 2.1.17 (Feb 1, 2011)
+
+* Passenger vhost sets RackEnv and RailsEnv
+* nagios-3.2.3
+
+= 2.1.16 (Jan 13, 2011)
 
 * bugfix: ddt does not require call to 'configure'
 
