@@ -11,8 +11,8 @@ Capistrano::Configuration.instance(:must_exist).load do
       set :nginx_worker_processes, 4
 
       SRC_PACKAGES[:nginx] = {
-        :url => "http://sysoev.ru/nginx/nginx-0.7.59.tar.gz",
-        :md5sum => "d981b03b4c3ba43de580553355608b63  nginx-0.7.59.tar.gz",
+        :url => "http://nginx.org/download/nginx-0.8.54.tar.gz",
+        :md5sum => "44df4eb6a22d725021288c570789046f  nginx-0.8.54.tar.gz",
         :configure => './configure --sbin-path=/usr/local/sbin --with-http_ssl_module;'
       }
 
