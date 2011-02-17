@@ -1,2 +1,2 @@
 127.0.0.1       localhost
-127.0.1.1       <%= network_hostname %>
+127.0.1.1       <%= network_hostname %> <%= network_hostname.split('.').first if network_hostname.match('\.') %>
