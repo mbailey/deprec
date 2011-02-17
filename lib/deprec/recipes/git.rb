@@ -1,6 +1,6 @@
 # Copyright 2006-2008 by Mike Bailey. All rights reserved.
-Capistrano::Configuration.instance(:must_exist).load do 
-  namespace :deprec do 
+Capistrano::Configuration.instance(:must_exist).load do
+  namespace :deprec do
     namespace :git do
 
       set :git_user, 'git'
@@ -10,8 +10,8 @@ Capistrano::Configuration.instance(:must_exist).load do
       set :git_root, '/var/git'
 
       SRC_PACKAGES[:git] = {
-        :url => "http://kernel.org/pub/software/scm/git/git-1.6.4.3.tar.gz",
-        :md5sum => "95381cd27ad762c645c8e07f922879ce  git-1.6.4.3.tar.gz"
+        :url => "http://kernel.org/pub/software/scm/git/git-1.7.4.1.tar.gz",
+        :md5sum => "1276aa1366bd3c670e9c51f1bff12f36  git-1.7.4.1.tar.gz"
       }
 
       desc "Install git"
@@ -27,14 +27,14 @@ Capistrano::Configuration.instance(:must_exist).load do
       task :install_deps do
         apt.install( {:base => %w(zlib1g-dev gettext libcurl4-gnutls-dev)}, :stable )
       end
-      
+
       # "Start git server in local directory"
       task :serve do
         cmd = "git-daemon --verbose --port=#{git_port} --base-path=#{Dir.pwd} --base-path-relaxed"
         puts cmd
         `#{cmd}`
       end
-      
+
       desc "Create git repos for current dir"
       task :init do
         `git init`
@@ -42,39 +42,39 @@ Capistrano::Configuration.instance(:must_exist).load do
         create_files_in_empty_dirs
         `git add . && git commit -m 'initial import'`
       end
-      
+
       task :create_gitignore do
-        system("echo '.DS_Store' >> .gitignore") # files sometimes created by OSX 
+        system("echo '.DS_Store' >> .gitignore") # files sometimes created by OSX
         system("echo 'log/*' >> .gitignore") if File.directory?('log')
         system("echo 'tmp/**/*' >> .gitignore") if File.directory?('tmp')
       end
-      
+
       task :create_files_in_empty_dirs do
-        %w(log tmp).each { |dir| 
+        %w(log tmp).each { |dir|
           system("touch #{dir}/.gitignore") if File.directory?(dir)
         }
       end
-      
+
       desc "Create remote origin for current dir"
       task :create_remote_origin do
         File.directory?('.git') || init
-         
+
         # Push to remote git repo
         hostname = capture "echo $CAPISTRANO:HOST$"
         system "git remote add origin git@#{hostname.chomp}:#{application}"
         system "git push origin master:refs/heads/master"
-        
-        puts 
+
+        puts
         puts "New remote Git repo: #{git_user}@#{hostname.chomp}:#{application}"
-        puts    
-        
+        puts
+
         # File.open('.git/config', 'w') do |c|
         #   c.write 'Add the following to .git/config'
         #   c.write '[branch "master"]'
         #   c.write ' remote = origin'
         #   c.write ' merge = refs/heads/master'
         # end
-          
+
       end
 
       # Create root dir for git repositories
@@ -82,16 +82,16 @@ Capistrano::Configuration.instance(:must_exist).load do
         deprec2.mkdir(git_root, :mode => 02775, :owner => git_user, :group => git_group, :via => :sudo)
         sudo "chmod -R g+w #{git_root}"
       end
-      
+
       # regenerate git authorized keys file from users file in same dir
       task :regenerate_authorized_keys do
         sudo "echo '' > #{git_keys_file}"
         sudo "for file in `ls #{git_keys_file}-*`; do cat $file >> #{git_keys_file}; echo \"\n\" >> #{git_keys_file} ; done"
         sudo "chown #{git_user}.#{git_group} #{git_keys_file}"
-        sudo "chmod 0600 #{git_keys_file}" 
+        sudo "chmod 0600 #{git_keys_file}"
       end
 
 
-    end 
+    end
   end
 end
