@@ -13,9 +13,9 @@ Capistrano::Configuration.instance(:must_exist).load do
       
       # Install dependencies for Postfix
       task :install_deps, :roles => :mail do
-        # mutt and mailx are useful tools for testing mail
+        # mutt and mailutils are useful tools for testing mail
         # e.g. echo test | mail test@gmail.com
-        apt.install( {:base => %w(postfix mutt mailx)}, :stable )
+        apt.install( {:base => %w(postfix mutt mailutils)}, :stable )
       end
       
       # This is my default Postfix setup on servers that 
