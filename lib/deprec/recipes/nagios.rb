@@ -25,7 +25,6 @@ Capistrano::Configuration.instance(:must_exist).load do
         install
         top.deprec.nagios_plugins.install
         top.deprec.nrpe.install
-        config_gen
         config
       end
       
