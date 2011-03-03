@@ -1,6 +1,14 @@
 # deprec changelog
 
-= 2.1.17 (Feb 1, 2011)
+= 2.1.19 (Feb 4, 2011)
+
+* replaced mailx with mailutils
+
+= 2.1.18 (Feb 4, 2011)
+
+* bugfix: nagios report plugin execution was not installing
+
+= 2.1.17 (Feb 3, 2011)
 
 * Passenger vhost sets RackEnv and RailsEnv
 * nagios-3.2.3
