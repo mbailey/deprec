@@ -15,8 +15,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       desc "Install apache"
       task :install do
         install_deps
-        enable_modules
-        reload
+        config
       end
       
       # install dependencies for apache
@@ -82,6 +81,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       desc "Push apache config files to server"
       task :config, :roles => :web do
         config_system
+        enable_modules
         reload
       end
       
@@ -108,7 +108,6 @@ Capistrano::Configuration.instance(:must_exist).load do
       
       task :enable_modules, :roles => :web do
         apache_modules_enabled.each { |mod| sudo "a2enmod #{mod}" }
-        reload
       end
       
       desc "Start Apache"
