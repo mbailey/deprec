@@ -27,13 +27,13 @@
 	# alert, emerg.
 	LogLevel warn
 
+  CustomLog /var/log/apache2/access.log combined
+
   # Uncomment this to exclude entries from logs
   # # Mark requests for the check.txt file
   # SetEnvIf Request_URI "^/check\.txt$" dontlog
   # # Log what remains
   # CustomLog /var/log/apache2/access.log combined env=!dontlog
-    
-  CustomLog /var/log/apache2/access.log combined
 
     Alias /doc/ "/usr/share/doc/"
     <Directory "/usr/share/doc/">
