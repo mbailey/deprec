@@ -44,6 +44,11 @@ Capistrano::Configuration.instance(:must_exist).load do
         { :template => 'status.conf.erb',
           :path => '/etc/apache2/mods-available/status.conf',
           :mode => 0644,
+          :owner => 'root:root'},
+
+        { :template => 'default.erb',
+          :path => '/etc/apache2/sites-available/default',
+          :mode => 0644,
           :owner => 'root:root'}
           
       ]
