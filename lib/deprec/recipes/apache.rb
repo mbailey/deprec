@@ -95,6 +95,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       desc "Push apache config files to server"
       task :config_system, :roles => :web do
         deprec2.push_configs(:apache, SYSTEM_CONFIG_FILES[:apache])
+        run "#{sudo} touch /var/www/check.txt" # Used to test webserver up
       end
       
       # Stub so generic tasks don't fail (e.g. deprec:web:config_project)
