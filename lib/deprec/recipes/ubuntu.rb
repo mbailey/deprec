@@ -15,7 +15,12 @@ Capistrano::Configuration.instance(:must_exist).load do
       end
       
       desc "reboot the server"
-      task :restart do
+      task :restart do # we like standard names
+        reboot
+      end
+
+      # Because I end up typing it...
+      task :reboot do
         sudo "reboot"
       end
       
