@@ -13,30 +13,6 @@ Capistrano::Configuration.instance(:must_exist).load do
       set :apache_modules_enabled, 
         %w(rewrite ssl proxy_balancer proxy_http deflate expires headers)
 
-      # Start apache vhost extras
-      # These are only used for generating vhost files with: 
-      #
-      #   cap deprec:apache:vhost
-      #
-      set(:apache_vhost_domain) { Capistrano::CLI.ui.ask 'Primary domain' }
-      set(:apache_vhost_server_alii) { 
-        Capistrano::CLI.ui.ask('ServerAlii (space separated)' ).split(' ')
-      }
-      set :apache_vhost_access_log_type, 'combined'
-      set :apache_vhost_canonicalize_hostname, true
-      set(:apache_vhost_access_log) { 
-        File.join(apache_log_dir, "#{apache_vhost_domain}-access.log")
-      }
-      set(:apache_vhost_error_log) { 
-        File.join(apache_log_dir, "#{apache_vhost_domain}-error.log")
-      }
-      set(:apache_vhost_document_root) { 
-        File.join('/var/apps', "#{apache_vhost_domain}", 'public')
-      }
-      set :apache_vhost_rack_env, false
-      # End apache vhost extras
-
-       
       desc "Install apache"
       task :install do
         install_deps
@@ -133,16 +109,6 @@ Capistrano::Configuration.instance(:must_exist).load do
         top.deprec.ssl.config if apache_ssl_enabled
       end
 
-      task :vhost do
-        file = { 
-          :template => 'vhost.erb',
-          :path => "/etc/apache2/sites-available/#{apache_vhost_domain}",
-          :mode => 0644,
-          :owner => 'root:root'
-        }
-        deprec2.render_template(:apache, file)
-      end
-      
       task :enable_modules, :roles => :web do
         apache_modules_enabled.each { |mod| sudo "a2enmod #{mod}" }
       end
@@ -184,6 +150,45 @@ Capistrano::Configuration.instance(:must_exist).load do
       task :restore, :roles => :web do
         # not yet implemented
       end
+
+      # Start apache vhost extras
+      # These are only used for generating vhost files with: 
+      #
+      #   cap deprec:apache:vhost
+      #
+      set(:apache_vhost_domain) { Capistrano::CLI.ui.ask 'Primary domain' }
+      set(:apache_vhost_server_alii) { 
+        Capistrano::CLI.ui.ask('ServerAlii (space separated)' ).split(' ')
+      }
+      set :apache_vhost_access_log_type, 'combined'
+      set :apache_vhost_canonicalize_hostname, true
+      set(:apache_vhost_access_log) { 
+        File.join(apache_log_dir, "#{apache_vhost_domain}-access.log")
+      }
+      set(:apache_vhost_error_log) { 
+        File.join(apache_log_dir, "#{apache_vhost_domain}-error.log")
+      }
+      set(:apache_vhost_document_root) { 
+        File.join('/var/apps', "#{apache_vhost_domain}", 'public')
+      }
+      set :apache_vhost_rack_env, false
+      # 
+      task :vhost do
+        file = { 
+          :template => 'vhost.erb',
+          :path => "/etc/apache2/sites-available/#{apache_vhost_domain}",
+          :mode => 0644,
+          :owner => 'root:root'
+        }
+        if ! File.exists? 'config'
+          file[:path] = "../../#{apache_vhost_domain}"
+        end    
+        deprec2.render_template(:apache, file)
+      end
+      
+      # End apache vhost extras
+
+       
 
     end
   end
