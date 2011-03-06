@@ -187,9 +187,6 @@ Capistrano::Configuration.instance(:must_exist).load do
       end
       
       # End apache vhost extras
-
-       
-
     end
   end
 end
