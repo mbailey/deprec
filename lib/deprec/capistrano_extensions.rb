@@ -76,7 +76,7 @@ module Deprec2
       sudo "chown #{owner} #{path}" if defined?(owner)
     elsif path 
       # render to local file
-      full_path = File.expand_path(File.join('config', stage, app.to_s, path))
+      full_path = File.join('config', stage, app.to_s, path)
       path_dir = File.dirname(full_path)
       if File.exists?(full_path)
         if IO.read(full_path) == rendered_template
