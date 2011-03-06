@@ -1,0 +1,48 @@
+<VirtualHost *:80>
+  ServerName <%= apache_vhost_domain %>
+<% apache_vhost_server_alii.each do |server_alias| -%>
+  ServerAlias <%= server_alias %>
+<% end -%>
+
+<% if apache_vhost_canonicalize_hostname -%>
+  # Redirect to canonical hostname
+  RewriteEngine On
+  RewriteCond %{HTTP_HOST}   !^<%= apache_vhost_domain.sub('.','\.') %> [NC]
+  RewriteCond %{HTTP_HOST}   !^$
+  RewriteRule ^/?(.*)         http://<%= apache_vhost_domain %>/$1 [L,R=301,NE]
+<% end -%>
+
+  DocumentRoot <%= "#{apache_vhost_document_root}" %>
+
+  ErrorLog <%= apache_vhost_error_log %>
+  CustomLog <%= apache_vhost_access_log %> <%= apache_vhost_access_log_type %>
+
+<% if apache_vhost_rack_env -%>
+  RackEnv <%= apache_vhost_rack_env %>
+<% end -%>
+
+  <Directory <%= "#{apache_vhost_document_root}" %>>
+    DirectoryIndex index.html index.htm index.php
+    Options FollowSymLinks
+    AllowOverride None
+    Order allow,deny
+    Allow from all
+  </Directory>
+
+  RewriteEngine On
+
+  # Prevent access to .svn directories
+  RewriteRule ^(.*/)?\.svn/ - [F,L]
+  ErrorDocument 403 "Access Forbidden"
+
+  # Prevent access to .git directories
+  RewriteRule ^(.*/)?\.git/ - [F,L]
+  ErrorDocument 403 "Access Forbidden"
+  
+  # Deflate
+  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css application/x-javascript
+  BrowserMatch ^Mozilla/4 gzip-only-text/html
+  BrowserMatch ^Mozilla/4\.0[678] no-gzip
+  BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+
+</VirtualHost>
