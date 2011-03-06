@@ -1,6 +1,10 @@
 # deprec changelog
 
-= 2.1.19 (Feb 4, 2011)
+= 2.1.20 (Mar 4, 2011)
+
+* generate apache vhost to current dir if config/ not present
+
+= 2.1.19 (Mar 4, 2011)
 
 * replaced mailx with mailutils
 * cap deprec:apache:vhost # handy vhost generator
