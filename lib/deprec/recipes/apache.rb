@@ -4,24 +4,26 @@ Capistrano::Configuration.instance(:must_exist).load do
     namespace :apache do
       
       set :apache_user, 'www-data'
+      set :apache_log_dir, '/var/log/apache2'
       set :apache_vhost_dir, '/etc/apache2/sites-available'
       set :apache_ssl_enabled, false
       set :apache_ssl_ip, nil
       set :apache_ssl_forward_all, apache_ssl_enabled
       set :apache_ssl_chainfile, false
-      set :apache_modules_enabled, %w(rewrite ssl proxy_balancer proxy_http deflate expires headers)
-      set :apache_log_dir, '/var/log/apache2'
-       
+      set :apache_modules_enabled, 
+        %w(rewrite ssl proxy_balancer proxy_http deflate expires headers)
+
       desc "Install apache"
       task :install do
         install_deps
-        enable_modules
-        reload
+        config
       end
       
       # install dependencies for apache
       task :install_deps do
-        apt.install( {:base => %w(apache2-mpm-prefork apache2-prefork-dev rsync ssl-cert)}, :stable )
+        apt.install( 
+          {:base => %w(apache2-mpm-prefork apache2-prefork-dev rsync ssl-cert)},
+          :stable )
       end
       
       SYSTEM_CONFIG_FILES[:apache] = [
@@ -43,6 +45,11 @@ Capistrano::Configuration.instance(:must_exist).load do
 
         { :template => 'status.conf.erb',
           :path => '/etc/apache2/mods-available/status.conf',
+          :mode => 0644,
+          :owner => 'root:root'},
+
+        { :template => 'default.erb',
+          :path => '/etc/apache2/sites-available/default',
           :mode => 0644,
           :owner => 'root:root'}
           
@@ -77,6 +84,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       desc "Push apache config files to server"
       task :config, :roles => :web do
         config_system
+        enable_modules
         reload
       end
       
@@ -90,6 +98,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       desc "Push apache config files to server"
       task :config_system, :roles => :web do
         deprec2.push_configs(:apache, SYSTEM_CONFIG_FILES[:apache])
+        run "#{sudo} touch /var/www/check.txt" # Used to test webserver up
       end
       
       # Stub so generic tasks don't fail (e.g. deprec:web:config_project)
@@ -99,10 +108,9 @@ Capistrano::Configuration.instance(:must_exist).load do
         #
         top.deprec.ssl.config if apache_ssl_enabled
       end
-      
+
       task :enable_modules, :roles => :web do
         apache_modules_enabled.each { |mod| sudo "a2enmod #{mod}" }
-        reload
       end
       
       desc "Start Apache"
@@ -143,6 +151,42 @@ Capistrano::Configuration.instance(:must_exist).load do
         # not yet implemented
       end
 
+      # Start apache vhost extras
+      # These are only used for generating vhost files with: 
+      #
+      #   cap deprec:apache:vhost
+      #
+      set(:apache_vhost_domain) { Capistrano::CLI.ui.ask 'Primary domain' }
+      set(:apache_vhost_server_alii) { 
+        Capistrano::CLI.ui.ask('ServerAlii (space separated)' ).split(' ')
+      }
+      set :apache_vhost_access_log_type, 'combined'
+      set :apache_vhost_canonicalize_hostname, true
+      set(:apache_vhost_access_log) { 
+        File.join(apache_log_dir, "#{apache_vhost_domain}-access.log")
+      }
+      set(:apache_vhost_error_log) { 
+        File.join(apache_log_dir, "#{apache_vhost_domain}-error.log")
+      }
+      set(:apache_vhost_document_root) { 
+        File.join('/var/apps', "#{apache_vhost_domain}", 'public')
+      }
+      set :apache_vhost_rack_env, false
+      # 
+      task :vhost do
+        file = { 
+          :template => 'vhost.erb',
+          :path => "/etc/apache2/sites-available/#{apache_vhost_domain}",
+          :mode => 0644,
+          :owner => 'root:root'
+        }
+        if ! File.exists? 'config'
+          file[:path] = "../../#{apache_vhost_domain}"
+        end    
+        deprec2.render_template(:apache, file)
+      end
+      
+      # End apache vhost extras
     end
   end
 end

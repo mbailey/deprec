@@ -30,7 +30,10 @@ Capistrano::Configuration.instance(:must_exist).load do
          
       # Install dependencies for heartbeat
       task :install_deps do
-        apt.install( {:base => %w(heartbeat-2)}, :stable )
+        apt.install( {:base => %w(heartbeat)}, :stable )
+        config
+        activate
+        start
       end
       
       SYSTEM_CONFIG_FILES[:heartbeat] = [

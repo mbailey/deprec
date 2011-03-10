@@ -77,7 +77,7 @@ module Deprec2
     elsif path 
       # render to local file
       full_path = File.join('config', stage, app.to_s, path)
-      path_dir = File.dirname(full_path)
+      path_dir = File.dirname(File.expand_path(full_path))
       if File.exists?(full_path)
         if IO.read(full_path) == rendered_template
           puts "[skip] File exists and is identical (#{full_path})."
@@ -92,7 +92,7 @@ module Deprec2
       FileUtils.mkdir_p "#{path_dir}" if ! File.directory?(path_dir)
       # added line above to make windows compatible
       # system "mkdir -p #{path_dir}" if ! File.directory?(path_dir) 
-      File.open(full_path, 'w'){|f| f.write rendered_template }
+      File.open(File.expand_path(full_path), 'w'){|f| f.write rendered_template }
       puts "[done] #{full_path} written"
     else
       # render to string

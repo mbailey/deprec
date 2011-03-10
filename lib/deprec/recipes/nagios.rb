@@ -25,7 +25,6 @@ Capistrano::Configuration.instance(:must_exist).load do
         install
         top.deprec.nagios_plugins.install
         top.deprec.nrpe.install
-        config_gen
         config
       end
       
@@ -46,7 +45,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       
       # Install dependencies for nagios
       task :install_deps, :roles => :nagios do
-        apt.install( {:base => %w(apache2 mailx postfix libapache2-mod-php5 libgd2-xpm-dev)}, :stable )
+        apt.install( {:base => %w(apache2 mailutils postfix libapache2-mod-php5 libgd2-xpm-dev)}, :stable )
       end
       
       task :create_nagios_user, :roles => :nagios do
