@@ -241,7 +241,7 @@ module Deprec2
   end
   
   # download source pkg if we don't already have it
-  def download_src(src_pkg, src_dir)
+  def download_src(src_pkg, src_dir=src_dir)
     set_pkg_defaults(src_pkg)
     create_src_dir
     # check if file exists and if we have an MD5 hash or bytecount to compare 
@@ -278,7 +278,7 @@ module Deprec2
   end
 
   # unpack src and make it writable by the group
-  def unpack_src(src_pkg, src_dir)
+  def unpack_src(src_pkg, src_dir=src_dir)
     set_pkg_defaults(src_pkg)
     pkg_dir = File.join([src_dir, src_pkg[:dir]].compact)
     case src_pkg[:download_method]
@@ -319,7 +319,8 @@ module Deprec2
   end
 
   # install pkg from source
-  def install_from_src(src_pkg, src_dir)
+  def install_from_src(src_pkg, src_dir=src_dir)
+    install_deps(src_pkg[:deps])
     set_pkg_defaults(src_pkg)
     pkg_dir = File.join([src_dir, src_pkg[:dir]].compact)
     unpack_src(src_pkg, src_dir)
@@ -328,6 +329,10 @@ module Deprec2
     run "cd #{pkg_dir} && #{sudo} #{src_pkg[:make]}" if src_pkg[:make] != ''
     run "cd #{pkg_dir} && #{sudo} #{src_pkg[:install]}" if src_pkg[:install] != ''
     run "cd #{pkg_dir} && #{sudo} #{src_pkg[:post_install]}" if src_pkg[:post_install] != ''
+  end
+
+  def install_deps(packages=[])
+    apt.install({:base => Array(packages)}, :stable)
   end
   
   def read_database_yml
