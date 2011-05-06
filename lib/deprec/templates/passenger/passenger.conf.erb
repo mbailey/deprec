@@ -3,19 +3,20 @@
 # http://www.modrails.com/documentation/Users%20guide.html#_configuring_phusion_passenger
 <IfModule passenger_module>
 
-	PassengerRoot <%= passenger_install_dir %>
-	PassengerLogLevel <%= passenger_log_level %>
-	PassengerRuby /usr/local/bin/ruby
-	PassengerUserSwitching <%= passenger_user_switching %>
-	PassengerDefaultUser <%= passenger_default_user %>
-	PassengerMaxPoolSize <%= passenger_max_pool_size %>
-	PassengerMaxInstancesPerApp <%= passenger_max_instances_per_app %>
-	PassengerPoolIdleTime <%= passenger_pool_idle_time %>
+	PassengerRoot <%= passenger_root %>
+	PassengerRuby <%= passenger_ruby %>
+  
+  # PassengerLogLevel <%= passenger_log_level %>
+	# PassengerUserSwitching <%= passenger_user_switching %>
+	# PassengerDefaultUser <%= passenger_default_user %>
+	# PassengerMaxPoolSize <%= passenger_max_pool_size %>
+	# PassengerMaxInstancesPerApp <%= passenger_max_instances_per_app %>
+	# PassengerPoolIdleTime <%= passenger_pool_idle_time %>
 
 	# Ruby on Rails Options
 
-	RailsAutoDetect <%= passenger_rails_autodetect %>
-	RailsSpawnMethod <%= passenger_rails_spawn_method %>
+	# RailsAutoDetect <%= passenger_rails_autodetect %>
+	# RailsSpawnMethod <%= passenger_rails_spawn_method %>
 
-	NameVirtualHost *:80
+	# NameVirtualHost *:80
 </IfModule>

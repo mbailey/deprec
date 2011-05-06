@@ -3,9 +3,10 @@ Capistrano::Configuration.instance(:must_exist).load do
   namespace :deprec do 
     namespace :passenger do
 
-      set :passenger_version, '2.2.14'    
-      set :passenger_install_dir, "/usr/local/lib/ruby/gems/1.8/gems/passenger-#{passenger_version}"
-   
+      set :passenger_version, '3.0.7'    
+      set(:passenger_root) { capture("passenger-config --root").chomp }
+      set(:passenger_ruby) { capture("which ruby").chomp }
+
       # Default settings for Passenger config files
       set(:passenger_document_root) { "#{current_path}/public" }
       set :passenger_rails_allow_mod_rewrite, 'off'
@@ -19,18 +20,18 @@ Capistrano::Configuration.instance(:must_exist).load do
       set :passenger_rails_autodetect, 'on'
       set :passenger_rails_spawn_method, 'smart' # smart | conservative
 
-      desc "Install passenger"
+      desc "Install Passenger"
       task :install, :roles => :app do
         install_deps
         gem2.install 'passenger', passenger_version
-        sudo "passenger-install-apache2-module _#{passenger_version}_ -a"
+        run "#{sudo} passenger-install-apache2-module _#{passenger_version}_ --auto"
         config_system
         activate_system 
       end
       
       # Install dependencies for Passenger
       task :install_deps, :roles => :app do
-        apt.install( {:base => %w(apache2-mpm-prefork apache2-prefork-dev rsync)}, :stable )
+        apt.install( {:base => %w(libcurl4-openssl-dev apache2-mpm-prefork apache2-prefork-dev libapr1-dev libaprutil1-dev rsync)}, :stable )
       end
       
       SYSTEM_CONFIG_FILES[:passenger] = [
@@ -63,15 +64,18 @@ Capistrano::Configuration.instance(:must_exist).load do
        
       desc "Generate Passenger apache configs (system & project level)."
       task :config_gen do
-        config_gen_system 
+        # config_gen_system 
         config_gen_project
       end
 
-      desc "Generate Passenger apache configs (system level) from template."
+      # desc "Generate Passenger apache configs (system level) from template."
+      # We can't generate passenger configs because we need to contact remote system 
+      # to find out gem location & ruby version.
       task :config_gen_system do
-        SYSTEM_CONFIG_FILES[:passenger].each do |file|
-          deprec2.render_template(:passenger, file)
-        end
+        puts "We don't generate local Passenger system files"
+        # SYSTEM_CONFIG_FILES[:passenger].each do |file|
+        #   deprec2.render_template(:passenger, file)
+        # end
       end
 
       desc "Generate Passenger apache configs (project level) from template."
