@@ -6,7 +6,12 @@ require "#{File.dirname(__FILE__)}/recipes/canonical"
 require "#{File.dirname(__FILE__)}/recipes/deprec"
 require "#{File.dirname(__FILE__)}/recipes/deprecated"
 
-# require "#{File.dirname(__FILE__)}/recipes/chef"
+# Updated for deprec3
+require "#{File.dirname(__FILE__)}/recipes/mri"
+require "#{File.dirname(__FILE__)}/recipes/ree"
+require "#{File.dirname(__FILE__)}/recipes/rubygems"
+
+# Not yet updaterd for deprec3
 require "#{File.dirname(__FILE__)}/recipes/ec2"
 require "#{File.dirname(__FILE__)}/recipes/vmware_tools"
 
@@ -16,14 +21,11 @@ require "#{File.dirname(__FILE__)}/recipes/mysql"
 require "#{File.dirname(__FILE__)}/recipes/postgresql"
 require "#{File.dirname(__FILE__)}/recipes/sqlite"
 require "#{File.dirname(__FILE__)}/recipes/couchdb"
-require "#{File.dirname(__FILE__)}/recipes/mri"
-require "#{File.dirname(__FILE__)}/recipes/ree"
 require "#{File.dirname(__FILE__)}/recipes/apache"
 require "#{File.dirname(__FILE__)}/recipes/nginx"
 
 require "#{File.dirname(__FILE__)}/recipes/bash"
 require "#{File.dirname(__FILE__)}/recipes/git"
-# require "#{File.dirname(__FILE__)}/recipes/gitosis"
 require "#{File.dirname(__FILE__)}/recipes/svn"
 # require "#{File.dirname(__FILE__)}/recipes/integrity"
 

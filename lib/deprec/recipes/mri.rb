@@ -4,53 +4,30 @@ Capistrano::Configuration.instance(:must_exist).load do
   namespace :deprec do
     namespace :mri do
             
-      SRC_PACKAGES[:mri] = {
-        :md5sum => "755aba44607c580fddc25e7c89260460  ftp://ftp.ruby-lang.org//pub/ruby/1.9/ruby-1.9.2-p0.tar.gz", 
-        :url => "ftp://ftp.ruby-lang.org//pub/ruby/1.9/ruby-1.9.2-p0.tar.gz",
+      SRC_PACKAGES[:mri_1_8_7] = {
+        :md5sum => "50a49edb787211598d08e756e733e42e  ruby-1.8.7-p330.tar.gz",
+        :url => "ftp://ftp.ruby-lang.org/pub/ruby/1.8/ruby-1.8.7-p330.tar.gz",
+        :deps => %w(zlib1g-dev libssl-dev libncurses5-dev libreadline5-dev),
         :configure => "./configure --with-readline-dir=/usr/local;"
       }
-  
+
+      SRC_PACKAGES[:mri_1_9_2] = {
+        :md5sum => "6e17b200b907244478582b7d06cd512e  ruby-1.9.2-p136.tar.gz", 
+        :url => "http://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.2-p136.tar.gz",
+        :deps => %w(zlib1g-dev libssl-dev libncurses5-dev libreadline5-dev),
+        :configure => "./configure --with-readline-dir=/usr/local;"
+      }
+
+      src_package_options = SRC_PACKAGES.keys.select{|k| k.to_s.match /^mri_/ }
+      set(:mri_src_package) { Capistrano::CLI.ui.choose *src_package_options }
+
       desc "Install Ruby"
       task :install do
-        install_deps
-        deprec2.download_src(SRC_PACKAGES[:mri], src_dir)
-        deprec2.install_from_src(SRC_PACKAGES[:mri], src_dir)
-        # Ruby versions from 1.9.1 install rubygems
-        # top.deprec.rubygems.install
-      end
-      
-      task :install_deps do
-        apt.install( {:base => %w(zlib1g-dev libssl-dev libncurses5-dev libreadline5-dev)}, :stable )
-      end
-
-    end
-  end
-  
-  
-  namespace :deprec do
-    namespace :rubygems do
-  
-      SRC_PACKAGES[:rubygems] = {
-        :md5sum => "e85cfadd025ff6ab689375adbf344bbe  rubygems-1.3.7.tgz", 
-        :url => "http://production.cf.rubygems.org/rubygems/rubygems-1.3.7.tgz",
-	    :configure => "",
-	    :make =>  "",
-        :install => 'ruby setup.rb;'
-      }
-      
-      desc "Install Rubygems"
-      task :install do
-        install_deps
-        deprec2.download_src(SRC_PACKAGES[:rubygems], src_dir)
-        deprec2.install_from_src(SRC_PACKAGES[:rubygems], src_dir)
-        # gem2.upgrade #  you may not want to upgrade your gems right now
-      end
-      
-      # install dependencies for rubygems
-      task :install_deps do
+        deprec2.download_src(SRC_PACKAGES[mri_src_package])
+        deprec2.install_from_src(SRC_PACKAGES[mri_src_package])
       end
       
     end
-    
   end
+  
 end
