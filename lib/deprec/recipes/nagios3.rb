@@ -24,60 +24,32 @@ Capistrano::Configuration.instance(:must_exist).load do
         system "htpasswd config/nagios/usr/local/nagios/etc/htpasswd.users #{target_user}"
         config
       end
-      
-      SYSTEM_CONFIG_FILES[:nagios] = [
-        
-        {:template => 'cgi.cfg.erb',
-        :path => '/usr/local/nagios/etc/cgi.cfg',
-        :mode => 0664,
-        :owner => 'nagios:nagios'},
-        
-        {:template => 'htpasswd.users',
-        :path => '/usr/local/nagios/etc/htpasswd.users',
-        :mode => 0660,
-        :owner => 'nagios:www-data'},
-        
-        {:template => 'nagios.cfg.erb',
-        :path => '/usr/local/nagios/etc/nagios.cfg',
-        :mode => 0664,
-        :owner => 'nagios:nagios'},
-        
-        {:template => 'resource.cfg.erb',
-        :path => '/usr/local/nagios/etc/resource.cfg',
-        :mode => 0660,
-        :owner => 'nagios:nagios'},
-        
-        {:template => 'objects/commands.cfg.erb',
-        :path => '/usr/local/nagios/etc/objects/commands.cfg',
-        :mode => 0664,
-        :owner => 'nagios:nagios'},
-        
-        {:template => 'objects/contacts.cfg.erb',
-        :path => '/usr/local/nagios/etc/objects/contacts.cfg',
-        :mode => 0664,
-        :owner => 'nagios:nagios'},
-        
-        {:template => 'objects/hosts.cfg.erb',
-        :path => '/usr/local/nagios/etc/objects/hosts.cfg',
-        :mode => 0664,
-        :owner => 'nagios:nagios'},
-        
-        {:template => 'objects/localhost.cfg.erb',
-         :path => '/usr/local/nagios/etc/objects/localhost.cfg',
-         :mode => 0664,
-         :owner => 'nagios:nagios'},
-         
-        {:template => 'objects/services.cfg.erb',
-         :path => '/usr/local/nagios/etc/objects/services.cfg',
-         :mode => 0664,
-         :owner => 'nagios:nagios'},
-        
-        {:template => 'objects/timeperiods.cfg.erb',
-         :path => '/usr/local/nagios/etc/objects/timeperiods.cfg',
-         :mode => 0664,
-         :owner => 'nagios:nagios'}
-      
-      ]
+
+      SYSTEM_CONFIG_FILES[:nagios] ||= []
+      %w( 
+        apache2.conf
+        cgi.cfg
+        commands.cfg
+        htpasswd.users
+        nagios.cfg
+        nrpe.cfg
+        resource.cfg
+        conf.d/contacts_nagios2.cfg
+        conf.d/extinfo_nagios2.cfg
+        conf.d/generic-host_nagios2.cfg
+        conf.d/generic-service_nagios2.cfg
+        conf.d/hostgroups_nagios2.cfg
+        conf.d/localhost_nagios2.cfg
+        conf.d/services_nagios2.cfg
+        conf.d/timeperiods_nagios2.cfg 
+      ).each do |filename|
+        SYSTEM_CONFIG_FILES[:nagios] << {
+          :template => "#{filename}",
+          :path => "/etc/nagios3/#{filename}",
+          :mode => 0644,
+          :owner => 'root:root'
+        }
+      end
 
       desc "Generate configuration file(s) for nagios from template(s)"
       task :config_gen do
@@ -96,7 +68,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       
       desc "Run Nagios config check"
       task :config_check, :roles => :nagios do
-        send(run_method, "/usr/local/nagios/bin/nagios -v /usr/local/nagios/etc/nagios.cfg")
+        send(run_method, "/usr/sbin/nagios3 -v /etc/nagios3/nagios.cfg")
       end
       
       # desc "Set Nagios to start on boot"
@@ -117,22 +89,22 @@ Capistrano::Configuration.instance(:must_exist).load do
 
       desc "Start Nagios"
       task :start, :roles => :nagios do
-        send(run_method, "/etc/init.d/nagios start")
+        send(run_method, "/etc/init.d/nagios3 start")
       end
 
       desc "Stop Nagios"
       task :stop, :roles => :nagios do
-        send(run_method, "/etc/init.d/nagios stop")
+        send(run_method, "/etc/init.d/nagios3 stop")
       end
 
       desc "Restart Nagios"
       task :restart, :roles => :nagios do
-        send(run_method, "/etc/init.d/nagios restart")
+        send(run_method, "/etc/init.d/nagios3 restart")
       end
 
       desc "Reload Nagios"
       task :reload, :roles => :nagios do
-        send(run_method, "/etc/init.d/nagios reload")
+        send(run_method, "/etc/init.d/nagios3 reload")
       end
       
       task :backup, :roles => :web do
