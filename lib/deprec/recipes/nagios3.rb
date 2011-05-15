@@ -5,8 +5,18 @@ Capistrano::Configuration.instance(:must_exist).load do
       
       desc "Install Nagios"
       task :install, :roles => :nagios do
-        apt.install( {:base => %w(nagios3 nagios-plugins nagios-nrpe-plugin)}, :stable )
+        apt.install( 
+          {:base => %w(nagios3 nagios-plugins nagios-nrpe-plugin)}, :stable 
+        )
+        cull_configs
         config
+      end
+
+      task :cull_configs, :roles => :nagios do
+        %w(/etc/nagios3/conf.d/localhost_nagios2.cfg
+           /etc/nagios3/conf.d/host-gateway_nagios3.cfg).each do |file|
+          run "#{sudo} rm #{file}"
+        end
       end
       
       desc "Grant a user access to the web interface"
@@ -14,7 +24,8 @@ Capistrano::Configuration.instance(:must_exist).load do
         target_user = Capistrano::CLI.ui.ask "Userid" do |q|
           q.default = 'nagiosadmin'
         end
-        system "htpasswd config/nagios/usr/local/nagios/etc/htpasswd.users #{target_user}"
+        htpasswd_file = 'config/nagios/usr/local/nagios/etc/htpasswd.users'
+        system "htpasswd #{htpasswd_file} #{target_user}"
         config
       end
 
@@ -60,11 +71,20 @@ Capistrano::Configuration.instance(:must_exist).load do
       
       desc "Push nagios config files to server"
       task :config, :roles => :nagios do
-        default :application, 'nagios'
+        # Include conf.d/hosts/*
+        host_conf_dir =  'config/nagios/etc/nagios3/conf.d/hosts'
+        Dir.foreach(host_conf_dir).reject{|f| f =~ /\.\.?$/}.each do |filename|
+          SYSTEM_CONFIG_FILES[:nagios] << {
+            :path => "/etc/nagios3/conf.d/hosts/#{filename}",
+            :mode => 0644,
+            :owner => 'root:root'
+          }
+        end
         deprec2.push_configs(:nagios, SYSTEM_CONFIG_FILES[:nagios])
         config_check
         restart
       end
+
       
       desc "Run Nagios config check"
       task :config_check, :roles => :nagios do
@@ -74,8 +94,16 @@ Capistrano::Configuration.instance(:must_exist).load do
       desc "Generate a nagios host config file"
       task :gen_host do
         set(:nagios_target_host_name) { Capistrano::CLI.ui.ask "hostname"}
-        set(:nagios_target_hostgroups) { Capistrano::CLI.ui.ask "hostgroups" }
-        set(:nagios_target_address) { Capistrano::CLI.ui.ask "ip address" }
+        set(:nagios_target_hostgroups) { 
+          Capistrano::CLI.ui.ask "hostgroups" do |q|
+            q.default = 'linux-servers'
+          end
+        }
+        set(:nagios_target_address) { 
+          Capistrano::CLI.ui.ask "ip address" do |q|
+            q.default = IPSocket.getaddress(nagios_target_host_name)
+          end
+        }
         file = {
           :template => "host_template.erb",
           :path => "/etc/nagios3/conf.d/hosts/#{nagios_target_host_name}.cfg",
@@ -129,28 +157,6 @@ Capistrano::Configuration.instance(:must_exist).load do
       end
       
       SYSTEM_CONFIG_FILES[:nrpe] = [
-        
-        {:template => 'nrpe.xinetd.erb',
-         :path => "/etc/xinetd.d/nrpe",
-         :mode => 0644,
-         :owner => 'root:root'},
-         
-        {:template => 'nrpe.cfg.erb',
-         :path => "/usr/local/nagios/etc/nrpe.cfg",
-         :mode => 0644,
-         :owner => 'nagios:nagios'}, # XXX hard coded file owner is bad...
-                                    # It's done here because we aren't using 
-                                    # lazy eval in hash constant.
-        {:template => "check_mongrel_cluster.rb",
-         :path => '/usr/local/nagios/libexec/check_mongrel_cluster.rb',
-         :mode => 0755,
-         :owner => 'root:root'},
-         
-         {:template => "check_linux_free_memory.pl",
-          :path => '/usr/local/nagios/libexec/check_linux_free_memory.pl',
-          :mode => 0755,
-          :owner => 'root:root'}
-      
       ]
       
       desc "Generate configuration file(s) for nrpe from template(s)"

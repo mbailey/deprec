@@ -1,0 +1,6 @@
+define host{
+  use        generic-host
+  host_name  <%= nagios_target_host_name %>
+  hostgroups <%= nagios_target_hostgroups %>
+  address    <%= nagios_target_address %>
+}
