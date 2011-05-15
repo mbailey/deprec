@@ -1,0 +1,25 @@
+<VirtualHost *:80>
+  ServerAdmin     root@localhost
+  ServerName      monitor.c3internal.com
+	ServerAlias     nagios nagios.production.c3internal.com
+  DocumentRoot    /usr/share/nagios3/htdocs
+  CustomLog       /var/log/nagios3/apache_access.log combined
+  ErrorLog        /var/log/nagios3/apache_error.log
+
+  ScriptAlias /cgi-bin/nagios3 /usr/lib/cgi-bin/nagios3
+  ScriptAlias /nagios3/cgi-bin /usr/lib/cgi-bin/nagios3
+
+  Alias /nagios3/stylesheets /etc/nagios3/stylesheets
+  Alias /nagios3 /usr/share/nagios3/htdocs
+
+  <Location />
+    AuthName "Nagios Server"
+    AuthType Basic
+    AuthUserFile "/etc/nagios3/htpasswd.users"
+    require valid-user
+  </Location>
+
+  RewriteEngine On
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /.*index\.html\ HTTP/
+  RewriteRule ^(.*)index\.html$ $1 [R=301,L]
+</VirtualHost>
