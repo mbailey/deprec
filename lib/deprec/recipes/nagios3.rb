@@ -3,13 +3,6 @@ Capistrano::Configuration.instance(:must_exist).load do
   namespace :deprec do
     namespace :nagios do
       
-      # set(:nagios_host) { Capistrano::CLI.ui.ask "Enter hostname of nagios server" }
-      # set(:nagios_ip) { Capistrano::CLI.ui.ask "Enter ip address of nagios server" }
-      # set(:nagios_admin_pass) { Capistrano::CLI.ui.ask "Enter password for nagiosadmin user" }
-      # set :nagios_cmd_group, 'nagcmd' # Submit external commands through the web interface
-      # set :nagios_htpasswd_file, '/usr/local/nagios/etc/htpasswd.users'
-      # default :application, 'nagios' 
-      
       desc "Install Nagios"
       task :install, :roles => :nagios do
         apt.install( {:base => %w(nagios3 nagios-plugins nagios-nrpe-plugin)}, :stable )
@@ -25,6 +18,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         config
       end
 
+      # All of the config files have same owner/mode...
       SYSTEM_CONFIG_FILES[:nagios] ||= []
       %w( 
         apache2.conf
@@ -33,15 +27,14 @@ Capistrano::Configuration.instance(:must_exist).load do
         htpasswd.users
         nagios.cfg
         nrpe.cfg
-        resource.cfg
         conf.d/contacts_nagios2.cfg
         conf.d/extinfo_nagios2.cfg
         conf.d/generic-host_nagios2.cfg
         conf.d/generic-service_nagios2.cfg
         conf.d/hostgroups_nagios2.cfg
-        conf.d/localhost_nagios2.cfg
         conf.d/services_nagios2.cfg
         conf.d/timeperiods_nagios2.cfg 
+        conf.d/hosts/localhost_nagios2.cfg
       ).each do |filename|
         SYSTEM_CONFIG_FILES[:nagios] << {
           :template => "#{filename}",
@@ -50,6 +43,13 @@ Capistrano::Configuration.instance(:must_exist).load do
           :owner => 'root:root'
         }
       end
+      # ..except this one.
+      SYSTEM_CONFIG_FILES[:nagios] << {
+        :template => "resource.cfg",
+        :path => "/etc/nagios3/resource.cfg",
+        :mode => 0640,
+        :owner => 'root:nagios'
+      }
 
       desc "Generate configuration file(s) for nagios from template(s)"
       task :config_gen do
