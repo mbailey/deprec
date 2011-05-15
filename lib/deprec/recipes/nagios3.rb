@@ -70,20 +70,20 @@ Capistrano::Configuration.instance(:must_exist).load do
       task :config_check, :roles => :nagios do
         send(run_method, "/usr/sbin/nagios3 -v /etc/nagios3/nagios.cfg")
       end
-      
-      # desc "Set Nagios to start on boot"
-      # task :activate, :roles => :nagios do
-      #   send(run_method, "update-rc.d nagios defaults")
-      #   sudo "a2ensite nagios"
-      #   top.deprec.apache.reload
-      # end
-      # 
-      # desc "Set Nagios to not start on boot"
-      # task :deactivate, :roles => :nagios do
-      #   send(run_method, "update-rc.d -f nagios remove")
-      #   sudo "a2dissite nagios"
-      #   top.deprec.apache.reload
-      # end
+
+      desc "Generate a nagios host config file"
+      task :gen_host do
+        set(:nagios_target_host_name) { Capistrano::CLI.ui.ask "hostname"}
+        set(:nagios_target_hostgroups) { Capistrano::CLI.ui.ask "hostgroups" }
+        set(:nagios_target_address) { Capistrano::CLI.ui.ask "ip address" }
+        file = {
+          :template => "host_template.erb",
+          :path => "/etc/nagios3/conf.d/hosts/#{nagios_target_host_name}.cfg",
+          :mode => 0644,
+          :owner => 'root:root'
+        }
+        deprec2.render_template(:nagios, file)
+      end
       
       # Control
 
@@ -114,7 +114,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       task :restore, :roles => :web do
         # not yet implemented
       end
-    
+
     end
     
     namespace :nrpe do
