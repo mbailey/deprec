@@ -1,0 +1,11 @@
+Benefits of deprec
+==================
+
+# Generate configs to a staging area
+
+Allows you to:
+
+* review changes before applying them to servers
+* add custom changes to config files without having to upgrade temaplates
+* keep config files under version control
+
