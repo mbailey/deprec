@@ -114,6 +114,11 @@ Capistrano::Configuration.instance(:must_exist).load do
           :owner => 'root:root'
         }
         deprec2.render_template(:nagios, file)
+        puts
+        puts "You can push it to the server with:"
+        puts 
+        puts "  cap deprec:nagios:config"
+        puts
       end
       
       # Control
@@ -154,7 +159,7 @@ Capistrano::Configuration.instance(:must_exist).load do
 	                                       # note that you'll need to set it before these recipes are loaded (e.g. in .caprc)
       
       desc 'Install NRPE'
-      task :install do
+      task :install, :roles => :nrpe do
         apt.install( {:base => %w(nagios-nrpe-server nagios-plugins nagios-nrpe-plugin)}, :stable )
         config
       end
@@ -170,7 +175,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       end
       
       desc "Push nrpe config files to server"
-      task :config do
+      task :config, :roles => :nrpe do
         deprec2.push_configs(:nagios, SYSTEM_CONFIG_FILES[:nrpe])
         # XXX should really only do this on targets
         # sudo "/etc/init.d/xinetd stop"  
