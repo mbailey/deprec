@@ -1,0 +1,26 @@
+Nagios with deprec
+==================
+
+For each command, append HOSTS=target.host.name
+
+# Nagios server
+cap deprec:nagios:install
+cap deprec:nagios:gen_host # One way to add hosts to monitor
+cap deprec:nagios:config
+
+# servers to be monitored
+cap deprec:nrpe:install
+
+
+# TODO
+By maintaining a simple hosts file you can generate the nagios
+hosts files. The following hosts file is valid:
+
+# This hosts file is used to generate Nagios hosts configs
+# The first two tokens are used only if they consist of a
+# valid IP address and hostname.
+#
+# hostgroups can follow but must be preceded by a '#'
+# 
+10.1.1.10 xen01 # linux-servers dom0
+10.1.1.11 web01 # linux-servers domU
