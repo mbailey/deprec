@@ -80,7 +80,7 @@ module Deprec2
       path_dir = File.dirname(File.expand_path(full_path))
       if File.exists?(full_path)
         if IO.read(full_path) == rendered_template
-          puts "[skip] File exists and is identical (#{full_path})."
+          puts "[skip] Identical file exists (#{full_path})."
           return false
         elsif overwrite?(full_path, rendered_template)
           File.delete(full_path)
