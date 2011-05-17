@@ -1,4 +1,5 @@
 # Copyright 2006-2008 by Mike Bailey. All rights reserved.
+require 'socket'
 Capistrano::Configuration.instance(:must_exist).load do 
   namespace :deprec do
     namespace :nagios do
@@ -10,12 +11,14 @@ Capistrano::Configuration.instance(:must_exist).load do
         )
         cull_configs
         config
+        puts
+        puts "Nagios should be accessible at #{find_servers_for_task(current_task).collect{|u| "http://#{u}/nagios3"}.join(' ')}"
       end
 
       task :cull_configs, :roles => :nagios do
         %w(/etc/nagios3/conf.d/localhost_nagios2.cfg
            /etc/nagios3/conf.d/host-gateway_nagios3.cfg).each do |file|
-          run "#{sudo} rm #{file}"
+          run "if [ -f #{file} ]; then #{sudo} rm #{file}; fi"
         end
       end
       
