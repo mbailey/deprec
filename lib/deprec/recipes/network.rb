@@ -1,4 +1,5 @@
 # Copyright 2006-2008 by Mike Bailey. All rights reserved.
+require 'socket'
 Capistrano::Configuration.instance(:must_exist).load do 
   namespace :deprec do
     namespace :network do
@@ -16,7 +17,11 @@ Capistrano::Configuration.instance(:must_exist).load do
           default_network = "192.168.#{iface+1}"
           result[iface] = {}
           result[iface][:address] = Capistrano::CLI.ui.ask "address" do |q|
-            q.default = "#{default_network}.10"
+            if network_hostname
+              q.default = IPSocket.getaddress(network_hostname)
+            else
+              q.default = "#{default_network}.10"
+            end
           end
           default_network = result[iface][:address].split('.').slice(0,3).join('.')
           result[iface][:netmask] = Capistrano::CLI.ui.ask "netmask" do |q|
@@ -51,19 +56,21 @@ Capistrano::Configuration.instance(:must_exist).load do
       
       # Non standard deprec!
       #
+      # SYSTEM_CONFIG_FILES[:network] would normally be an array
+      #
       # I might move to making this standard in future. It makes it easier to 
       # override individual config files in local recipes. - Mike
       #
       SYSTEM_CONFIG_FILES[:network] = {
 
-        :interfaces => {
-           :template => "interfaces.erb",
-           :path => '/etc/network/interfaces',
-           :mode => 0644,
-           :owner => 'root:root',
-           :remote => true
+        :hostname => {
+            :template => "hostname.erb",
+            :path => '/etc/hostname',
+            :mode => 0644,
+            :owner => 'root:root',
+            :remote => true
         },
-        
+
         :hosts => {
            :template => "hosts.erb",
            :path => '/etc/hosts',
@@ -72,12 +79,12 @@ Capistrano::Configuration.instance(:must_exist).load do
            :remote => true
         },
 
-        :hostname => {
-            :template => "hostname.erb",
-            :path => '/etc/hostname',
-            :mode => 0644,
-            :owner => 'root:root',
-            :remote => true
+        :interfaces => {
+           :template => "interfaces.erb",
+           :path => '/etc/network/interfaces',
+           :mode => 0644,
+           :owner => 'root:root',
+           :remote => true
         },
          
         :resolv => {
@@ -89,27 +96,52 @@ Capistrano::Configuration.instance(:must_exist).load do
         }
       }
     
+      desc "Update system networking configuration"
+      task :config do
+        if find_servers_for_task(current_task).size != 1
+          puts "****************************************************"
+          puts "*** You must specify exactly 1 host to configure ***"
+          puts "****************************************************"
+        else
+          hostname
+          hosts
+          interfaces
+          resolv
+          restart
+        end
+      end
       
+      desc "Restart network interface"
+      task :restart do
+        # This is the only task that is designed to 'fail'
+        # Solutions to this problem welcome!
+        servers = find_servers_for_task(current_task).join(',')
+        puts
+        puts "About to restart networking on #{servers}"
+        # In an effort to appeal to younger devs we're using 'street talk'
+        input = Capistrano::CLI.ui.ask "Are you 'down with that'?" do |q|
+          q.default = 'y'
+        end
+        if input =~ /y/i
+          run "#{sudo} /etc/init.d/networking restart"
+        else
+          puts "You can always do it later with"
+          puts
+          puts "  cap deprec:network:restart HOSTS=#{servers}"
+          puts
+        end
+      end
+
+      # Create individual tasks to generate remote config files
+      #
+      # e.g. cap deprec:network:hostname
+      #
       SYSTEM_CONFIG_FILES[:network].each do |file, details|
         desc "Generate and push #{details[:path]}"
         task file.to_sym do
           deprec2.render_template(:network, details)
           run "#{sudo} hostname #{network_hostname}" if file == :hostname
         end
-      end
-
-      # XXX need to set the order for these as it breaks sudo currently
-      desc "Update system networking configuration"
-      task :config do
-        network_hostname # get user input upfront
-        SYSTEM_CONFIG_FILES[:network].values.each do |file|
-          deprec2.render_template(:network, file.merge(:remote=>true))
-        end
-      end
-      
-      desc "Restart network interface"
-      task :restart do
-        sudo '/etc/init.d/networking restart'
       end
             
     end
