@@ -3,6 +3,14 @@ require 'socket'
 Capistrano::Configuration.instance(:must_exist).load do 
   namespace :deprec do
     namespace :nagios do
+
+      # Deprec generally ships with the upstream vendor defaults
+      # 
+      # In this case we override the default settings Nagios ships with 
+      # to enable external command checking. This is needed if you want
+      # to be able to control things via the web interface.
+      set :nagios_check_external_commands, 1
+      set :nagios_command_check_interval, '15s'
       
       desc "Install Nagios"
       task :install, :roles => :nagios do
@@ -51,16 +59,16 @@ Capistrano::Configuration.instance(:must_exist).load do
         conf.d/hosts/localhost_nagios2.cfg
       ).each do |filename|
         SYSTEM_CONFIG_FILES[:nagios] << {
-          :template => "#{filename}",
           :path => "/etc/nagios3/#{filename}",
+          :template => "#{filename}",
           :mode => 0644,
           :owner => 'root:root'
         }
       end
       # ..except this one.
       SYSTEM_CONFIG_FILES[:nagios] << {
-        :template => "resource.cfg",
         :path => "/etc/nagios3/resource.cfg",
+        :template => "resource.cfg",
         :mode => 0640,
         :owner => 'root:nagios'
       }
@@ -74,20 +82,25 @@ Capistrano::Configuration.instance(:must_exist).load do
       
       desc "Push nagios config files to server"
       task :config, :roles => :nagios do
-        # Include conf.d/hosts/*
-        host_conf_dir =  'config/nagios/etc/nagios3/conf.d/hosts'
-        Dir.foreach(host_conf_dir).reject{|f| f =~ /\.\.?$/}.each do |filename|
-          SYSTEM_CONFIG_FILES[:nagios] << {
-            :path => "/etc/nagios3/conf.d/hosts/#{filename}",
-            :mode => 0644,
-            :owner => 'root:root'
-          }
-        end
+        add_host_configs
         deprec2.push_configs(:nagios, SYSTEM_CONFIG_FILES[:nagios])
         config_check
-        restart
+        reload
       end
 
+      # Dynamically add host config files to SYSTEM_CONFIG_FILES[:nagios]
+      task :add_host_configs, :roles => :nagios do
+        host_conf_dir =  'config/nagios/etc/nagios3/conf.d/hosts'
+        if File.directory? host_conf_dir
+          Dir.foreach(host_conf_dir).reject{|f| f =~ /\.\.?$/}.each do |filename|
+            SYSTEM_CONFIG_FILES[:nagios] << {
+              :path => "/etc/nagios3/conf.d/hosts/#{filename}",
+              :mode => 0644,
+              :owner => 'root:root'
+            }
+          end
+        end
+      end
       
       desc "Run Nagios config check"
       task :config_check, :roles => :nagios do
@@ -108,8 +121,8 @@ Capistrano::Configuration.instance(:must_exist).load do
           end
         }
         file = {
-          :template => "host_template.erb",
           :path => "/etc/nagios3/conf.d/hosts/#{nagios_target_host_name}.cfg",
+          :template => "host_template.erb",
           :mode => 0644,
           :owner => 'root:root'
         }
@@ -153,47 +166,5 @@ Capistrano::Configuration.instance(:must_exist).load do
 
     end
     
-    namespace :nrpe do
-      
-      default :nrpe_enable_command_args, false # set to true to compile nrpe to accept arguments
-	                                       # note that you'll need to set it before these recipes are loaded (e.g. in .caprc)
-      
-      desc 'Install NRPE'
-      task :install, :roles => :nrpe do
-        apt.install( {:base => %w(nagios-nrpe-server nagios-plugins nagios-nrpe-plugin)}, :stable )
-        config
-      end
-      
-      SYSTEM_CONFIG_FILES[:nrpe] = [
-      ]
-      
-      desc "Generate configuration file(s) for nrpe from template(s)"
-      task :config_gen do
-        SYSTEM_CONFIG_FILES[:nrpe].each do |file|
-          deprec2.render_template(:nagios, file)
-        end
-      end
-      
-      desc "Push nrpe config files to server"
-      task :config, :roles => :nrpe do
-        deprec2.push_configs(:nagios, SYSTEM_CONFIG_FILES[:nrpe])
-        # XXX should really only do this on targets
-        # sudo "/etc/init.d/xinetd stop"  
-        # sudo "/etc/init.d/xinetd start"  
-      end
-      
-      desc "Test whether NRPE is listening on client"
-      task :test_local do
-        run "/usr/local/nagios/libexec/check_nrpe -H localhost"
-      end
-      
-      desc "Test whether nagios server can query client via NRPE"
-      task :test_remote, :roles => :nagios do
-        target_host = Capistrano::CLI.ui.ask "target hostname"
-        run "/usr/local/nagios/libexec/check_nrpe -H #{target_host}"
-      end
-  
-    end
-      
   end
 end
