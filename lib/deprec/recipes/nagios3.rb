@@ -19,6 +19,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         )
         cull_configs
         config
+        fix_command_file
         puts
         puts "Nagios should be accessible at #{find_servers_for_task(current_task).collect{|u| "http://#{u}/nagios3"}.join(' ')}"
       end
@@ -28,6 +29,16 @@ Capistrano::Configuration.instance(:must_exist).load do
            /etc/nagios3/conf.d/host-gateway_nagios3.cfg).each do |file|
           run "if [ -f #{file} ]; then #{sudo} rm #{file}; fi"
         end
+      end
+
+      task :fix_command_file, :roles => :nagios do
+        stop
+        sleep 5 # Give the stop command time to work. Race condition. GROSS!!
+        run "(dpkg-statoverride --list | grep 'nagios www-data 2710 /var/lib/nagios3/rw') || #{sudo} dpkg-statoverride --update --add nagios www-data 2710 /var/lib/nagios3/rw"
+        run "(dpkg-statoverride --list | grep 'nagios nagios 751 /var/lib/nagios3') || 
+              #{sudo} dpkg-statoverride --update --add nagios nagios 751 /var/lib/nagios3"
+        # sleep 5
+        start
       end
       
       desc "Grant a user access to the web interface"
@@ -104,7 +115,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       
       desc "Run Nagios config check"
       task :config_check, :roles => :nagios do
-        send(run_method, "/usr/sbin/nagios3 -v /etc/nagios3/nagios.cfg")
+        run "#{sudo} /usr/sbin/nagios3 -v /etc/nagios3/nagios.cfg"
       end
 
       desc "Generate a nagios host config file"
@@ -138,22 +149,22 @@ Capistrano::Configuration.instance(:must_exist).load do
 
       desc "Start Nagios"
       task :start, :roles => :nagios do
-        send(run_method, "/etc/init.d/nagios3 start")
+        run "#{sudo} /etc/init.d/nagios3 start"
       end
 
       desc "Stop Nagios"
       task :stop, :roles => :nagios do
-        send(run_method, "/etc/init.d/nagios3 stop")
+        run "#{sudo} /etc/init.d/nagios3 stop"
       end
 
       desc "Restart Nagios"
       task :restart, :roles => :nagios do
-        send(run_method, "/etc/init.d/nagios3 restart")
+        run "#{sudo} /etc/init.d/nagios3 restart"
       end
 
       desc "Reload Nagios"
       task :reload, :roles => :nagios do
-        send(run_method, "/etc/init.d/nagios3 reload")
+        run "#{sudo} /etc/init.d/nagios3 reload"
       end
       
       task :backup, :roles => :web do
