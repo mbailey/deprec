@@ -6,19 +6,19 @@ Capistrano::Configuration.instance(:must_exist).load do
 
       set(:nrpe_allowed_hosts) { 
         # Get list of servers defined for role if possible
-        servers = roles[:nagios].servers.collect{|s| IPSocket.getaddress(s.to_s) }.join(',')
-        if servers.empty?
-          # Unadvertized feature - accept hostnames
-          server_string = Capistrano::CLI.ui.ask("IP Address of Nagios server(s)") 
-          server_string.split(',').collect{|s| IPSocket.getaddress(s.to_s) }.join(',')
-        else
-          servers
+        servers = roles[:nagios].servers
+        if servers.join.empty?
+          # Unadvertized feature - will actually accept hostnames as well!
+          server_string = Capistrano::CLI.ui.ask("IP of Nagios server(s)") 
+          servers = server_string.split(',')
         end
+        servers.collect{ |s| IPSocket.getaddress(s.to_s) }.join(',')
       }
 
       desc 'Install NRPE'
       task :install, :roles => :nrpe do
-        apt.install( {:base => %w(nagios-nrpe-server nagios-plugins nagios-nrpe-plugin)}, :stable )
+        apt.install( {:base => %w(nagios-nrpe-server nagios-plugins 
+                                  nagios-nrpe-plugin)}, :stable )
         config
       end
       
