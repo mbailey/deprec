@@ -59,7 +59,6 @@ Capistrano::Configuration.instance(:must_exist).load do
         commands.cfg
         htpasswd.users
         nagios.cfg
-        nrpe.cfg
         conf.d/contacts_nagios2.cfg
         conf.d/extinfo_nagios2.cfg
         conf.d/generic-host_nagios2.cfg
