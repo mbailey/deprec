@@ -3,7 +3,7 @@ Capistrano::Configuration.instance(:must_exist).load do
   namespace :deprec do
     namespace :users do
 
-      set(:users_target_user) { Capistrano::CLI.ui.ask "Enter userid for new user" do |q| q.default = current_user; end }
+      set(:users_target_user) { Capistrano::CLI.ui.ask "Enter userid" do |q| q.default = current_user; end }
       set(:users_target_group) { Capistrano::CLI.ui.ask "Enter group name for new user" do |q| q.default = 'deploy'; end }
       set(:users_make_admin) { Capistrano::CLI.ui.ask "Should this be an admin account?" do |q| q.default = 'no'; end }
       
