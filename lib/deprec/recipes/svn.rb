@@ -7,6 +7,6 @@ Capistrano::Configuration.instance(:must_exist).load do
       task :install do
         install_deps
       end
-  
+    end  
   end
 end
