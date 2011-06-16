@@ -32,8 +32,8 @@ Installation
 Deprec can using rubygems[5].
 
 	sudo gem install deprec  # installs deprec and dependancies 
-	depify -c			           # creates ~/.caprc which you may edit
-	cap -T					         # should list lots of deprec tasks
+	depify -c                # creates ~/.caprc which you may edit
+	cap -T                   # should list lots of deprec tasks
 
 The .caprc file is loaded every time you use Capistrano. It in turn loads 
 the deprec tasks so you always have them available. Editing the .caprc file 
