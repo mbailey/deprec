@@ -15,17 +15,17 @@ require 'capistrano'
 # Installs within Capistrano as the plugin _apt_.
 #
 # =Usage
-#    
+#
 #    require 'vmbuilder_plugins/apt'
 #
 # Prefix all calls to the library with <tt>apt.</tt>
 #
-module Apt 
+module Apt
 
   # Default apt-get command - reduces any interactivity to the minimum.
-  APT_GET="DEBCONF_TERSE='yes' DEBIAN_PRIORITY='critical' DEBIAN_FRONTEND=noninteractive apt-get" 
+  APT_GET="DEBCONF_TERSE='yes' DEBIAN_PRIORITY='critical' DEBIAN_FRONTEND=noninteractive apt-get"
 
-  # Run the apt install program across the package list in 'packages'. 
+  # Run the apt install program across the package list in 'packages'.
   # Select those packages referenced by <tt>:base</tt> and the +version+
   # of the distribution you want to use.
   def install(packages, version, options={})
@@ -77,6 +77,19 @@ module Apt
     clean
     cmd="rm -f /var/cache/apt/*.bin /var/lib/apt/lists/*_* /var/lib/apt/lists/partial/*"
     send(run_method, cmd, options)
+  end
+
+  # Adds line to /etc/apt/sources.list file
+  def add_source(line , key_url=nil)
+    sources = capture "cat /etc/apt/sources.list"
+    if !(sources =~ /#{line}/)
+      sudo "sed -i '1i #{line}' /etc/apt/sources.list"
+      if key_url
+        deprec2.download_src({:url => key_url}, src_dir)
+        sudo "apt-key add #{src_dir}/#{File.basename(key_url)}"
+      end
+      sudo "apt-get update"
+    end
   end
 
 private
