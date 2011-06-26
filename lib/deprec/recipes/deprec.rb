@@ -32,12 +32,12 @@ Capistrano::Configuration.instance(:must_exist).load do
   #  
   # Service options
   CHOICES_RUBY_VM   = [:mri, :ree]
-  CHOICES_WEBSERVER = [:nginx, :apache, :none]
-  CHOICES_APPSERVER = [:mongrel, :webrick, :passenger, :none]
+  CHOICES_WEBSERVER = [:apache, :none] # :nginx not recipes out of date
+  CHOICES_APPSERVER = [:passenger, :none] # any colour you like guys
   CHOICES_DATABASE  = [:mysql, :postgresql, :sqlite, :none]
   # 
   # Service defaults
-  set :ruby_vm_type,    :ree
+  set :ruby_vm_type,    :mri
   set :web_server_type, :apache
   set :app_server_type, :passenger
   set :db_server_type,  :mysql
