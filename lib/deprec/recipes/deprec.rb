@@ -1,6 +1,6 @@
 # Copyright 2006-2008 by Mike Bailey. All rights reserved.
 Capistrano::Configuration.instance(:must_exist).load do 
-  
+
   # Set the value if not already set
   # This method is accessible to all recipe files
   def self.default(name, *args, &block)
@@ -24,56 +24,38 @@ Capistrano::Configuration.instance(:must_exist).load do
   # For each service, the details of the file to download and options
   # to configure, build and install the service
   SRC_PACKAGES = {} unless defined?(SRC_PACKAGES)
-  
-  # Server options
+
+  # deprec defines some generic recipes for common services
+  # including ruby interpreter, web, app and database servers
+  #
+  # They default to my current favourites which you can over ride
+  #  
+  # Service options
   CHOICES_RUBY_VM   = [:mri, :ree]
   CHOICES_WEBSERVER = [:nginx, :apache, :none]
   CHOICES_APPSERVER = [:mongrel, :webrick, :passenger, :none]
   CHOICES_DATABASE  = [:mysql, :postgresql, :sqlite, :none]
-  
+  # 
   # Service defaults
-  #
-  # The defaults below are legacy values to support older deployments.
-  # Newly generated deploy.rb files have use apache, passenger and ree 
-  default :ruby_vm_type,    :ree
-  default :web_server_type, :apache
-  default :app_server_type, :passenger
-  default :db_server_type,  :mysql
-  #
-  # default(:web_server_type) do
-  #   Capistrano::CLI.ui.choose do |menu| 
-  #     CHOICES_WEBSERVER.each {|c| menu.choice(c)}
-  #     menu.header = "select webserver type"
-  #   end
-  # end
-  # 
-  # default(:app_server_type) do
-  #   Capistrano::CLI.ui.choose do |menu| 
-  #     CHOICES_APPSERVER.each {|c| menu.choice(c)}
-  #     menu.header = "select application server type"
-  #   end
-  # end
-  # 
-  # default(:db_server_type) do
-  #   Capistrano::CLI.ui.choose do |menu| 
-  #     CHOICES_DATABASE.each {|c| menu.choice(c)}
-  #     menu.header = "select database server type"
-  #   end
-  # end
+  set :ruby_vm_type,    :ree
+  set :web_server_type, :apache
+  set :app_server_type, :passenger
+  set :db_server_type,  :mysql
 
-  default(:application) do
+  # Prompt user for missing values if not supplied
+  set(:application) do
     Capistrano::CLI.ui.ask "Enter name of project(no spaces)" do |q|
       q.validate = /^[0-9a-z_]*$/
     end
   end 
 
-  default(:domain) do
+  set(:domain) do
     Capistrano::CLI.ui.ask "Enter domain name for project" do |q|
       q.validate = /^[0-9a-z_\.]*$/
     end
   end
 
-  default(:repository) do
+  set(:repository) do
     Capistrano::CLI.ui.ask "Enter repository URL for project" do |q|
       # q.validate = //
     end
@@ -84,23 +66,23 @@ Capistrano::Configuration.instance(:must_exist).load do
   #   :invoke_command "command", :via => run_method
   # override this value if sudo is not an option
   # in that case, your use will need the correct privileges
-  default :run_method, :sudo 
+  set :run_method, :sudo 
 
-  default(:backup_dir) { '/var/backups'}  
+  set(:backup_dir) { '/var/backups'}  
 
   # XXX rails deploy stuff
   set :apps_root,     File.join( %w(/ opt apps) )          # parent dir for apps
-  default(:deploy_to)    { File.join(apps_root, application) } # dir for current app
-  default(:current_path) { File.join(deploy_to, "current") }
-  default(:shared_path)  { File.join(deploy_to, "shared") }
+  set(:deploy_to)    { File.join(apps_root, application) } # dir for current app
+  set(:current_path) { File.join(deploy_to, "current") }
+  set(:shared_path)  { File.join(deploy_to, "shared") }
 
   # XXX more rails deploy stuff?
 
-  default :user, ENV['USER']         # user who is deploying
-  default :group, 'deploy'           # deployment group
-  default(:group_src) { group }      # group ownership for src dir
-  default :src_dir, '/usr/local/src' # 3rd party src on servers lives here
-  default(:web_server_aliases) { domain.match(/^www/) ? [] : ["www.#{domain}"] }    
+  set :user, ENV['USER']         # user who is deploying
+  set :group, 'deploy'           # deployment group
+  set(:group_src) { group }      # group ownership for src dir
+  set :src_dir, '/usr/local/src' # 3rd party src on servers lives here
+  set(:web_server_aliases) { domain.match(/^www/) ? [] : ["www.#{domain}"] }    
 
   # XXX for some reason this is causing "before deprec:rails:install" to be executed twice
   on :load, 'deprec:connect_canonical_tasks' 
