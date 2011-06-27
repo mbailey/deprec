@@ -20,7 +20,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       task :install do
         create_user
         apt.add_source "deb http://www.rabbitmq.com/debian/ testing main", "http://www.rabbitmq.com/rabbitmq-signing-key-public.asc"
-        sudo "apt-get install rabbitmq-server=2.5.0-1"
+        apt.install( {:base => %w(rabbitmq-server=2.5.0-1)}, :stable )
         set_erlang_cookie
         install_plugins
         config
