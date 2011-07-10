@@ -47,15 +47,21 @@ Capistrano::Configuration.instance(:must_exist).load do
     namespace :rails do
 
       task :install, :roles => :app do
-        install_deps
-        gem2.install 'rails'
+        apt.install( { :base => %w(libmysqlclient15-dev sqlite3 libsqlite3-ruby libsqlite3-dev libpq-dev) }, :stable)
         gem2.install 'bundler'
       end
 
-      task :install_deps do
-        apt.install( {:base => %w(libmysqlclient15-dev sqlite3 libsqlite3-ruby libsqlite3-dev libpq-dev)}, :stable )
+      desc "Install Ruby on Rails stack on Ubuntu server (8.04, 10.04)"
+      task :install_stack do   
+        puts "deprecated: renamed to deprec:rack:install_stack"
+        top.deprec.rack.install_stack
       end
       
+      task :install_rails_stack do
+        puts "deprecated: renamed to deprec:rack:install_stack"
+        top.deprec.rack.install_stack
+      end
+
       #
       # If database.yml is not kept in scm and it is present in local
       # config dir then push it out to server.
@@ -71,34 +77,6 @@ Capistrano::Configuration.instance(:must_exist).load do
           top.deprec.db.create_database
           top.deprec.db.grant_user_access_to_database
         end
-      end
-      
-      desc <<-DESC
-      Install full rails stack on a stock standard ubuntu server (7.10, 8.04)
-      DESC
-      task :install_stack do   
-
-        top.deprec.ruby.install
-        top.deprec.rails.install
-        top.deprec.svn.install
-        top.deprec.git.install
-        top.deprec.web.install        # Uses value of web_server_type 
-        top.deprec.app.install        # Uses value of app_server_type
-        top.deprec.monit.install
-        top.deprec.logrotate.install  
-        
-        # We not longer install database server as part of this task.
-        # There is too much danger that someone will wreck an existing
-        # shared database.
-        #
-        # Install database server with:
-        #
-        #   cap deprec:db:install
-      end
-      
-      task :install_rails_stack do
-        puts "deprecated: this task is now called install_stack"
-        install_stack
       end
       
       desc "Generate config files for rails app."
