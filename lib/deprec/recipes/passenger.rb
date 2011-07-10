@@ -26,7 +26,6 @@ Capistrano::Configuration.instance(:must_exist).load do
         gem2.install 'passenger', passenger_version
         run "#{sudo} passenger-install-apache2-module _#{passenger_version}_ --auto"
         config_system
-        activate_system 
       end
       
       # Install dependencies for Passenger
