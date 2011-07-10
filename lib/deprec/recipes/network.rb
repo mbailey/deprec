@@ -18,7 +18,7 @@ Capistrano::Configuration.instance(:must_exist).load do
           result[iface] = {}
           result[iface][:address] = Capistrano::CLI.ui.ask "address" do |q|
             if network_hostname
-              q.default = IPSocket.getaddress(network_hostname)
+              q.default = IPSocket.getaddress(network_hostname) rescue "#{default_network}.10"
             else
               q.default = "#{default_network}.10"
             end
@@ -96,7 +96,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         }
       }
     
-      desc "Update system networking configuration"
+      desc "Generate and push all network config files"
       task :config do
         if find_servers_for_task(current_task).size != 1
           puts "****************************************************"
@@ -111,7 +111,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         end
       end
       
-      desc "Restart network interface"
+      desc "Restart networking "
       task :restart do
         # This is the only task that is designed to 'fail'
         # Solutions to this problem welcome!
