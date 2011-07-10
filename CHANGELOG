@@ -1,5 +1,11 @@
 # deprec changelog
 
+= 2.2.1  (Jul 10, 2011)
+
+* First release since rewrite of http://deprec.org
+* Tidy up of various recipes
+* Introduction of deprec:rack namespace
+
 = 2.1.20 (Mar 4, 2011)
 
 * generate apache vhost to current dir if config/ not present
