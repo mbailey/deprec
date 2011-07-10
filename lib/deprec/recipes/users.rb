@@ -9,19 +9,8 @@ Capistrano::Configuration.instance(:must_exist).load do
       
       desc "Create account"
       task :add do
-        [users_target_user, users_target_group, users_make_admin] # get input
-       
-        while true do
-          new_password = Capistrano::CLI.ui.ask("Enter new password for #{users_target_user}") { |q| q.echo = false }
-          password_conf = Capistrano::CLI.ui.ask("Re-enter new password for #{users_target_user}") { |q| q.echo = false }
-          if new_password != password_conf
-            puts "Fail. Passwords do not match.\n\n"
-          elsif new_password.chomp == ""
-            puts "Fail. Passwords cannot be empty.\n\n"
-          else
-            break
-          end
-        end 
+        [users_target_user, users_make_admin] # get input
+        new_password = get_new_password
 
         # Grab a list of all users with keys
         if users_target_user == 'all'
@@ -47,8 +36,7 @@ Capistrano::Configuration.instance(:must_exist).load do
   
       desc "Change user password"
       task :passwd do
-        new_password = Capistrano::CLI.ui.ask("Enter new password for #{users_target_user}") { |q| q.echo = false }
-  
+        new_password = get_new_password
         deprec2.invoke_with_input("passwd #{users_target_user}", /UNIX password/, new_password) 
       end
       
@@ -61,6 +49,21 @@ Capistrano::Configuration.instance(:must_exist).load do
       task :add_admin do
         puts 'deprecated! use deprec:users:add'
         add
+      end
+
+      def get_new_password
+        while true do
+          new_password = Capistrano::CLI.ui.ask("Enter new password for #{users_target_user}") { |q| q.echo = false }
+          password_conf = Capistrano::CLI.ui.ask("Re-enter new password for #{users_target_user}") { |q| q.echo = false }
+          if new_password != password_conf
+            puts "Fail. Passwords do not match.\n\n"
+          elsif new_password.chomp == ""
+            puts "Fail. Passwords cannot be empty.\n\n"
+          else
+            break
+          end
+        end 
+        new_password
       end
 
     end
