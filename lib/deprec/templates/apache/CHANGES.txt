@@ -1,0 +1,11 @@
+apache2.conf
+- natty uses relative paths for things like "Include ports.conf"
+
+envvars
+- natty adds stuff
+
+mods-available/info.conf # and some others
+- natty uses variable for path prefix 
+
+mods-available/mime.conf
+- natty changes language list
