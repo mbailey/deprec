@@ -4,20 +4,19 @@ Capistrano::Configuration.instance(:must_exist).load do
     namespace :haproxy do
       
       SRC_PACKAGES[:haproxy] = {
-        :md5sum => "4f0638652d7800860838dc195da335d8  haproxy-1.4.11.tar.gz",
-        :url => "http://haproxy.1wt.eu/download/1.4/src/haproxy-1.4.11.tar.gz",
+        :md5sum => "c1b4fc6028c6d8e23dde8c91ff47eabe  haproxy-1.4.15.tar.gz",
+        :url => "http://haproxy.1wt.eu/download/1.4/src/haproxy-1.4.15.tar.gz",
         :configure => '',
         :make => "make TARGET=linux26"
       }
       
       desc "Install haproxy"
       task :install, :roles => :haproxy do
-        install_deps
         deprec2.download_src(SRC_PACKAGES[:haproxy], src_dir)
         deprec2.install_from_src(SRC_PACKAGES[:haproxy], src_dir)
         config
         activate
-        create_check_file
+        # create_check_file
       end
 
       # default config expects this file in web root
@@ -25,9 +24,6 @@ Capistrano::Configuration.instance(:must_exist).load do
         sudo "test -d /var/www && #{sudo} touch /var/www/check.txt"
       end
       
-      task :install_deps, :roles => :haproxy do
-        apt.install( {:base => %w(build-essential)}, :stable )
-      end
       
       SYSTEM_CONFIG_FILES[:haproxy] = [
         
@@ -45,10 +41,6 @@ Capistrano::Configuration.instance(:must_exist).load do
 
       PROJECT_CONFIG_FILES[:haproxy] = [
         
-        # {:template => "example.conf.erb",
-        #  :path => 'conf/example.conf',
-        #  :mode => 0755,
-        #  :owner => 'root:root'}
       ]
       
       desc "Generate configuration files for haproxy from template(s)"
