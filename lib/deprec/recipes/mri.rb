@@ -15,11 +15,17 @@ Capistrano::Configuration.instance(:must_exist).load do
         :md5sum => "0d6953820c9918820dd916e79f4bfde8  ruby-1.9.2-p180.tar.gz", 
         :url => "http://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.2-p180.tar.gz",
         :deps => %w(zlib1g-dev libssl-dev libncurses5-dev libreadline5-dev),
-        :configure => "./configure"
+        :configure => "./configure",
+        :post_install => 'sudo gem update --system'
       }
 
       src_package_options = SRC_PACKAGES.keys.select{|k| k.match /^ruby-\d\.\d\.\d/ }
-      set(:mri_src_package) { Capistrano::CLI.ui.choose *src_package_options }
+      set(:mri_src_package) { 
+        puts "Select mri_src_package from list:"
+        Capistrano::CLI.ui.choose do |menu|
+          menu.choices(*src_package_options)
+        end
+      }
 
       desc "Install Ruby"
       task :install do

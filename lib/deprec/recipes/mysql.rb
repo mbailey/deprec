@@ -10,15 +10,8 @@ Capistrano::Configuration.instance(:must_exist).load do
       
       desc "Install mysql"
       task :install, :roles => :db do
-        install_deps
-        config
-        start
-        # symlink_mysql_sockfile # XXX still needed?
-      end
-      
-      # Install dependencies for Mysql
-      task :install_deps, :roles => :db do
         apt.install( {:base => %w(mysql-server mysql-client libmysqlclient15-dev)}, :stable )
+        config
       end
       
       # Configuration
@@ -73,20 +66,10 @@ Capistrano::Configuration.instance(:must_exist).load do
       task :reload, :roles => :db do
         send(run_method, "/etc/init.d/mysql reload")
       end
-      
-      
-      task :backup, :roles => :db do
-      end
-      
-      task :restore, :roles => :db do
-      end
-      
-      desc "Create a mysql user"
-      task :create_user, :roles => :db do
-        # TBA
-      end
-      
-      desc "Create a database" 
+     
+
+      # Extras (not sure if they still work) 
+      # Create a database
       task :create_database, :roles => :db do
         cmd = "CREATE DATABASE IF NOT EXISTS #{db_name}"
         run "mysql -u #{mysql_admin_user} -p -e '#{cmd}'" do |channel, stream, data|
@@ -96,7 +79,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         end       
       end
       
-      desc "Grant user access to database" 
+      # "Grant user access to database" 
       task :grant_user_access_to_database, :roles => :db do        
         cmd = "GRANT ALL PRIVILEGES ON #{db_name}.* TO '#{db_user}'@localhost IDENTIFIED BY '#{db_password}';"
         run "mysql -u #{mysql_admin_user} -p #{db_name} -e \"#{cmd}\"" do |channel, stream, data|

@@ -36,7 +36,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       # We need these stubs for deprec:rails:setup_database
     end
     
-    desc "Grant user access to Database" 
+    # "Grant user access to Database" 
     task :grant_user_access_to_database do
       # Not needed for sqlite
       # We need these stubs for deprec:rails:setup_database

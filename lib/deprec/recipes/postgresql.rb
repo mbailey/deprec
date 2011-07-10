@@ -94,7 +94,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         sudo "su - postgres -c \'createdb -O #{db_user} #{db_name}\'"          
       end
       
-      desc "Grant user access to Database" 
+      # "Grant user access to Database" 
       task :grant_user_access_to_database, :roles => :db do
         # sudo "what's the command for this using #{db_user} #{db_name}\'"          
       end

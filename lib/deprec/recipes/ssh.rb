@@ -20,6 +20,7 @@ Capistrano::Configuration.instance(:must_exist).load do
          :owner => 'root:root'}
       ]
       
+      desc "Generate SSH config files locally"
       task :config_gen do        
         SYSTEM_CONFIG_FILES[:ssh].each do |file|
           deprec2.render_template(:ssh, file)
