@@ -10,7 +10,6 @@ Capistrano::Configuration.instance(:must_exist).load do
       set(:nagios_admin_pass) { Capistrano::CLI.ui.ask "Enter password for nagiosadmin user" }
       set :nagios_cmd_group, 'nagcmd' # Submit external commands through the web interface
       set :nagios_htpasswd_file, '/usr/local/nagios/etc/htpasswd.users'
-      # default :application, 'nagios' 
       
       SRC_PACKAGES[:nagios] = {
         :url => "http://prdownloads.sourceforge.net/sourceforge/nagios/nagios-3.2.3.tar.gz",
@@ -139,7 +138,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       
       desc "Push nagios config files to server"
       task :config, :roles => :nagios do
-        default :application, 'nagios'
+        # default :application, 'nagios'
         deprec2.push_configs(:nagios, SYSTEM_CONFIG_FILES[:nagios])
         config_check
         restart
@@ -149,20 +148,6 @@ Capistrano::Configuration.instance(:must_exist).load do
       task :config_check, :roles => :nagios do
         send(run_method, "/usr/local/nagios/bin/nagios -v /usr/local/nagios/etc/nagios.cfg")
       end
-      
-      # desc "Set Nagios to start on boot"
-      # task :activate, :roles => :nagios do
-      #   send(run_method, "update-rc.d nagios defaults")
-      #   sudo "a2ensite nagios"
-      #   top.deprec.apache.reload
-      # end
-      # 
-      # desc "Set Nagios to not start on boot"
-      # task :deactivate, :roles => :nagios do
-      #   send(run_method, "update-rc.d -f nagios remove")
-      #   sudo "a2dissite nagios"
-      #   top.deprec.apache.reload
-      # end
       
       # Control
 
@@ -232,7 +217,7 @@ Capistrano::Configuration.instance(:must_exist).load do
 
     namespace :nrpe do
       
-      default :nrpe_enable_command_args, false # set to true to compile nrpe to accept arguments
+      set :nrpe_enable_command_args, false # set to true to compile nrpe to accept arguments
 	                                       # note that you'll need to set it before these recipes are loaded (e.g. in .caprc)
       
       SRC_PACKAGES[:nrpe] = {

@@ -10,6 +10,8 @@ cap deprec:nagios:config
 
 # servers to be monitored
 cap deprec:nrpe:install
+cap deprec:nrpe:test_local  # does nrpe query from local host
+cap deprec:nrpe:test_remote # does nrpe query from nagios server
 
 
 # TODO
