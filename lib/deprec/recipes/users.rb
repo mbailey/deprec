@@ -3,13 +3,25 @@ Capistrano::Configuration.instance(:must_exist).load do
   namespace :deprec do
     namespace :users do
 
-      set(:users_target_user) { Capistrano::CLI.ui.ask "Enter userid" do |q| q.default = current_user; end }
-      set(:users_target_group) { Capistrano::CLI.ui.ask "Enter group name for new user" do |q| q.default = 'deploy'; end }
-      set(:users_make_admin) { Capistrano::CLI.ui.ask "Should this be an admin account?" do |q| q.default = 'no'; end }
+      set(:users_target_user) { 
+        Capistrano::CLI.ui.ask "Enter userid" do |q| 
+          q.default = current_user; 
+        end 
+      }
+      set(:users_target_group) { 
+        Capistrano::CLI.ui.ask "Enter group name for new user" do |q| 
+          q.default = users_target_user; 
+        end 
+      }
+      set(:users_make_admin) { 
+        Capistrano::CLI.ui.ask "Should this be an admin account?" do |q| 
+          q.default = 'no'; 
+        end 
+      }
       
       desc "Create account"
       task :add do
-        [users_target_user, users_make_admin] # get input
+        [users_target_user, users_target_group, users_make_admin] # get input
         new_password = get_new_password
 
         # Grab a list of all users with keys
@@ -19,7 +31,8 @@ Capistrano::Configuration.instance(:must_exist).load do
 
         Array(users_target_user).each do |user| 
         
-          deprec2.useradd(user, :shell => '/bin/bash')
+          deprec2.groupadd(users_target_group)
+          deprec2.useradd(user, :group => group, :shell => '/bin/bash')
           deprec2.invoke_with_input("passwd #{user}", /UNIX password/, new_password)
         
           if users_make_admin.match(/y/i)
