@@ -3,11 +3,18 @@ Capistrano::Configuration.instance(:must_exist).load do
 
   # Set the value if not already set
   # This method is accessible to all recipe files
-  def self.default(name, *args, &block)
+  # Defined and used by capistrano/deploy tasks
+  def _cset(name, *args, &block)
     unless exists?(name)
       set(name, *args, &block)
     end
   end
+
+  # deprecated
+  alias :default :_cset
+
+  # _cset :rake, 'rake'
+  _cset :rake, 'rakes'
   
   # Deprec checks here for local versions of config templates before it's own
   set :local_template_dir, File.join('config','templates')

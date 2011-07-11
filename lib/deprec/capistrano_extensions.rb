@@ -390,16 +390,6 @@ module Deprec2
     end
   end
 
-  # deprecated...I don't see any need for this
-  # Set the value if not already set
-  # This method is accessible to all recipe files
-  def self.default(name, *args, &block)
-    puts "********** deprecation warning **********"
-    puts "Could you use set() instead of default()?"
-    puts "*****************************************"
-    set(name, *args, &block) unless exists?(name)
-  end
-
   private
 
   ##
