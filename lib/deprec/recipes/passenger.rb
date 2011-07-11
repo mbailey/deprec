@@ -19,6 +19,14 @@ Capistrano::Configuration.instance(:must_exist).load do
       set :passenger_pool_idle_time, 300
       set :passenger_rails_autodetect, 'on'
       set :passenger_rails_spawn_method, 'smart' # smart | conservative
+      set :passenger_redirect_to_canonical_hostname, true
+      set(:passenger_server_alii) {
+        if domain =~ /^www\./
+          domain.sub 'www.', ''
+        else
+          "www.#{domain}"
+        end
+      }
 
       desc "Install Passenger"
       task :install, :roles => :app do

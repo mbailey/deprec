@@ -2,6 +2,18 @@
     <VirtualHost *:80>
 
         ServerName <%= domain %>
+        <%- Array(passenger_server_alii).each do |server_alias| -%>
+        ServerAlias <%= server_alias %>
+        <%- end -%>
+
+        <%- if passenger_redirect_to_canonical_hostname -%>
+        # Redirect to canonical hostname
+        RewriteEngine On
+        RewriteCond %{HTTP_HOST}    !^<%= domain.gsub('.','\.') %> [NC]
+        RewriteCond %{HTTP_HOST}    !^$
+        RewriteRule ^/?(.*)         http://<%= domain %>/$1 [L,R=301,NE]
+        <%- end -%>
+
         DocumentRoot "<%= passenger_document_root %>"
         <Directory "<%= passenger_document_root %>">
             Allow from all
@@ -13,12 +25,13 @@
 	  
         RackEnv <%= rack_env %>
         RailsEnv <%= rack_env %>
-	  
+
         # Check for maintenance file and redirect all requests
         RewriteEngine On
         RewriteCond %{REQUEST_URI} !\.(css|jpg|png|gif)$
         RewriteCond %{DOCUMENT_ROOT}/system/maintenance.html -f
         RewriteCond %{SCRIPT_FILENAME} !maintenance.html
         RewriteRule ^.*$ /system/maintenance.html [L]
+
     </VirtualHost>
 </IfModule>
