@@ -1,28 +1,24 @@
-# Don't cause the server to break if Passenger module not loaded
-<IfModule passenger_module>
-	<VirtualHost *:80>
-	  ServerName <%= domain %>
-      <%- 4.times do |counter| -%>
-        ServerAlias <%= domain.sub(/.*?\./, "assets#{counter}.") %>
-      <%- end %>
-	  DocumentRoot "<%= passenger_document_root %>"
-	  CustomLog <%= apache_log_dir %>/<%= application %>-access.log combined
-	  ErrorLog <%= apache_log_dir %>/<%= application %>-error.log
-	  
-	  RackEnv <%= rack_env %>
-	  RailsEnv <%= rack_env %>
-	  # RailsAllowModRewrite <%= passenger_rails_allow_mod_rewrite %>
-	  #
-	  # Check for maintenance file and redirect all requests
-	  RewriteEngine On
-	  RewriteCond %{REQUEST_URI} !\.(css|jpg|png|gif)$
-	  RewriteCond %{DOCUMENT_ROOT}/system/maintenance.html -f
-	  RewriteCond %{SCRIPT_FILENAME} !maintenance.html
-      RewriteRule ^.*$ /system/maintenance.html [L]
-	  <Directory "<%= passenger_document_root %>">
-	    Order allow,deny
-	    Allow from all
-	  </Directory>
-	</VirtualHost>
-</IfModule>
+<IfModule passenger_module> 
+    <VirtualHost *:80>
 
+        ServerName <%= domain %>
+        DocumentRoot "<%= passenger_document_root %>"
+        <Directory "<%= passenger_document_root %>">
+            Allow from all
+            Options -MultiViews
+        </Directory>
+
+        CustomLog <%= apache_log_dir %>/<%= application %>-access.log combined
+        ErrorLog <%= apache_log_dir %>/<%= application %>-error.log
+	  
+        RackEnv <%= rack_env %>
+        RailsEnv <%= rack_env %>
+	  
+        # Check for maintenance file and redirect all requests
+        RewriteEngine On
+        RewriteCond %{REQUEST_URI} !\.(css|jpg|png|gif)$
+        RewriteCond %{DOCUMENT_ROOT}/system/maintenance.html -f
+        RewriteCond %{SCRIPT_FILENAME} !maintenance.html
+        RewriteRule ^.*$ /system/maintenance.html [L]
+    </VirtualHost>
+</IfModule>
