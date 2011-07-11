@@ -10,13 +10,16 @@ global
       pidfile /var/run/haproxy.pid
       daemon
 
+
 defaults
-      option forwardfor
+      # Stats page at /haproxy?stats
       stats enable
-      stats auth myuser:mypass
-      balance roundrobin
-      option httpclose
+      stats auth admin:secret
+
       mode http
+      option forwardfor  # Adds X-Forwarded-For header to http reqs
+      option httpclose   # Needed for forwardfor
+      balance roundrobin
       retries 3
       option redispatch
       maxconn 2000
@@ -24,8 +27,23 @@ defaults
       clitimeout 50000
       srvtimeout 50000
 
-listen example_lb *:81
+
+frontend web *:80
+
+      acl www      hdr_beg(host) -i www
+
+      acl ip_local src 192.168.0.0/24
+
+      use_backend example_lb if www ip_local
+
+      default_backend localhost
+
+
+backend example_lb
       option httpchk HEAD /check.txt HTTP/1.0
       server web1 127.0.0.1:80 weight 6  maxconn 12 check # cookie A 
       server web2 127.0.0.1:80 weight 10 maxconn 12 check # cookie B
 
+
+backend localhost
+      server LOCALHOST 127.0.0.1:80
