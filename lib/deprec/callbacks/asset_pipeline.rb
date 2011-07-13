@@ -1,4 +1,6 @@
-Capistrano::Configuration.instance(:must_exist).load do
+# Copyright 2011 Chris Griego
+#
+# Capistrano::Configuration.instance(:must_exist).load do
 # require 'capistrano/recipes/deploy'
 
 def _cset(name, *args, &block)
