@@ -2,7 +2,7 @@ require 'rubygems'
 
 SPEC = Gem::Specification.new do |s|
   s.name = 'deprec'
-  s.version = '2.2.2'
+  s.version = '2.2.3'
   
   s.authors = ['Mike Bailey']
   s.description = <<-EOF
@@ -18,7 +18,7 @@ SPEC = Gem::Specification.new do |s|
   s.require_paths = ['lib']
   s.add_dependency('capistrano', '> 2.5.0')
   s.add_dependency('capistrano-ext', '>= 1.2.1')
-  candidates = Dir.glob("{bin,docs,lib}/**/*") 
+  candidates = Dir.glob("{bin,docs,lib,rake}/**/*") 
   candidates.concat(%w(CHANGELOG COPYING LICENSE README.md THANKS))
   s.files = candidates.delete_if do |item| 
     item.include?("CVS") || item.include?("rdoc") 
