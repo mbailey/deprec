@@ -14,8 +14,8 @@
         RewriteRule ^/?(.*)         http://<%= domain %>/$1 [L,R=301,NE]
         <%- end -%>
 
-        DocumentRoot "<%= passenger_document_root %>"
-        <Directory "<%= passenger_document_root %>">
+        DocumentRoot <%= passenger_document_root %>
+        <Directory <%= passenger_document_root %>>
             Allow from all
             Options -MultiViews
         </Directory>
@@ -25,6 +25,21 @@
 	  
         RackEnv <%= rack_env %>
         RailsEnv <%= rack_env %>
+
+        # Enable caching of assets containing a fingerprint
+        # Browsers need never check for newer versions of an
+        # asset because the fingerprint would be different.
+        <FilesMatch "/assets/[^.]+-[a-z0-9]{32}\.">
+            # Add far-future expiration dates
+            <IfModule mod_expires.c>
+                ExpiresActive On
+                ExpiresDefault "access plus 10 years"
+            </IfModule>
+            # Disable ETags
+            <IfModule mod_expires.c>
+                Header unset "ETag"
+            </IfModule>
+        </FilesMatch>
 
         # Check for maintenance file and redirect all requests
         RewriteEngine On
