@@ -5,6 +5,6 @@ $VERBOSE = nil
   db
   environments
 ).each do |task|
-  load "deprec/rake/#{task}.rake"
+  load File.join(File.dirname(__FILE__), 'rake', "#{task}.rake")
 end
 
