@@ -1,6 +1,14 @@
 # deprec changelog
 
-= 2.2.1  (Jul 10, 2011)
+= 2.2.1  (Jul 15, 2011)
+
+* deprec now provides rake tasks
+
+  Just add this to your Rakefile
+
+  require 'deprec/rake'
+
+= 2.2.0  (Jul 10, 2011)
 
 * First release since rewrite of http://deprec.org
 * Tidy up of various recipes

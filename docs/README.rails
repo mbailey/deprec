@@ -1,17 +1,23 @@
-deprec: Install Ruby on Rails app on fresh Ubuntu 7.10 (gutsy), 8.04 (hardy)
-============================================================================
+Install Ruby on Rails app with deprec
+=====================================
 
-* Quickstart
+The rack recipes should work with any rack app.
 
-cd your_rails_app
-depify . 
-# Edit config/deploy.rb
-cap deprec:rails:install_stack
+*Quickstart*
 
-# WARNING! Don't run the following command if you are using a shared 
-# database server that has already been installed.
-cap deprec:db:install 
+    $ cap deprec:rack:install_stack
 
-cap deploy:setup 
-cap deploy 
-cap deploy:migrate
+    $ cd your_rails_app
+    $ depify . 
+    # Edit config/deploy.rb and config/deploy/uat.rb
+
+    # WARNING! Don't run the following command if you are using a shared 
+    # database server that has already been installed.
+    $ cap deprec:db:install 
+
+    $ cap deploy:setup HOSTS=mbailey@uat
+
+    $ cap deprec:rack:config HOSTS=mbailey@uat
+
+    # ssh to git@github.com from uat and accept hostkey
+    $ cap deploy 
