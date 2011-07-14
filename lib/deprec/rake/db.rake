@@ -29,8 +29,9 @@ namespace :deprec do
       puts "Deleted #{unwanted_backups.length} backups, #{all_backups.length - unwanted_backups.length} backups available" 
     end
 
-    desc "Restore database"
+    desc "Restore database [Pending]"
     task :restore => :environment do
+      puts "This task is looking for a volunteer!"
     end
 
   end
