@@ -13,8 +13,7 @@ Capistrano::Configuration.instance(:must_exist).load do
   # deprecated
   alias :default :_cset
 
-  # _cset :rake, 'rake'
-  _cset :rake, 'rakes'
+  _cset :rake, 'rake'
   
   # Deprec checks here for local versions of config templates before it's own
   set :local_template_dir, File.join('config','templates')
