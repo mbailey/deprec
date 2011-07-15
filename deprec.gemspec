@@ -1,23 +1,24 @@
-require 'rubygems' 
+$:.push File.expand_path("../lib", __FILE__)
+require "deprec/version"
 
 SPEC = Gem::Specification.new do |s|
   s.name = 'deprec'
-  s.version = '3.1.0.rc1'
+  s.version = Deprec::VERSION
   
   s.authors = ['Mike Bailey']
   s.description = <<-EOF
-      This project provides libraries of Capistrano tasks and extensions to 
-      remove the repetative manual work associated with installing services 
-      on linux servers.
+      This project provides Capistrano and Rake tasks to 
+      assist with deployment and configuration management
+      on ubuntu linux servers.
   EOF
   s.email = 'mike@bailey.net.au'
-  s.homepage = 'http://www.deprec.org/'
+  s.homepage = 'http://deprec.org/'
   s.rubyforge_project = 'deprec'
   s.summary = 'deployment recipes for capistrano'
 
   s.require_paths = ['lib']
   s.add_dependency('deprec-core', '>= 3.1.0')
-  s.add_dependency('capistrano', '> 2.5.0')
+  s.add_dependency('capistrano', '>= 2.6.0')
   s.add_dependency('capistrano-ext', '>= 1.2.1')
   candidates = Dir.glob("{bin,docs,lib,rake}/**/*") 
   candidates.concat(%w(CHANGELOG COPYING LICENSE README.md THANKS))
