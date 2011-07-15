@@ -1,3 +1,5 @@
+# DEPRECATION WARNING!
+#
 # deprec3 does not load deprec/recipes/rails.rb
 #
 # rails.rb originally provided callbacks for Capistrano's 
