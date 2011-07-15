@@ -17,7 +17,6 @@ require "#{File.dirname(__FILE__)}/recipes/rubygems"
 require "#{File.dirname(__FILE__)}/recipes/nagios3"
 require "#{File.dirname(__FILE__)}/recipes/nrpe"
 require "#{File.dirname(__FILE__)}/recipes/git"
-require "#{File.dirname(__FILE__)}/recipes/svn"
 
 # To be updated for deprec3
 
@@ -52,7 +51,6 @@ require "#{File.dirname(__FILE__)}/recipes/syslog"
 require "#{File.dirname(__FILE__)}/recipes/syslog_ng"
 require "#{File.dirname(__FILE__)}/recipes/stunnel"
 require "#{File.dirname(__FILE__)}/recipes/lvm"
-require "#{File.dirname(__FILE__)}/recipes/vnstat"
 require "#{File.dirname(__FILE__)}/recipes/utils"
 
 # Retired recipes
