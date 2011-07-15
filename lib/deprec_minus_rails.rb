@@ -1,12 +1,10 @@
-unless Capistrano::Configuration.respond_to?(:instance)
-  abort "deprec2 requires Capistrano 2"
-end
-
-require "#{File.dirname(__FILE__)}/deprec/capistrano_extensions"
-require "#{File.dirname(__FILE__)}/vmbuilder_plugins/all"
-
-# Don't load the rails recipes in ~/.caprc
+# deprec3 does not load deprec/recipes/rails.rb
 #
-# This excludes the 'before' and 'after' tasks deprec adds to 
-# facilitate rails setup.
-require "#{File.dirname(__FILE__)}/deprec/recipes_minus_rails"
+# rails.rb originally provided callbacks for Capistrano's 
+# deploy tasks. This was a cause of surprise for some 
+# people so 'deprec_minus_rails' became a default for a 
+# while.
+#
+# deprec_minus_rails is now..erm...deprecated
+#
+require "#{File.dirname(__FILE__)}/deprec"
