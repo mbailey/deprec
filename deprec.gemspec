@@ -2,7 +2,7 @@ require 'rubygems'
 
 SPEC = Gem::Specification.new do |s|
   s.name = 'deprec'
-  s.version = '2.2.3'
+  s.version = '3.1.0.rc1'
   
   s.authors = ['Mike Bailey']
   s.description = <<-EOF
@@ -16,6 +16,7 @@ SPEC = Gem::Specification.new do |s|
   s.summary = 'deployment recipes for capistrano'
 
   s.require_paths = ['lib']
+  s.add_dependency('deprec-core', '>= 3.1.0')
   s.add_dependency('capistrano', '> 2.5.0')
   s.add_dependency('capistrano-ext', '>= 1.2.1')
   candidates = Dir.glob("{bin,docs,lib,rake}/**/*") 
