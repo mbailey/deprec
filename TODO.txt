@@ -4,3 +4,9 @@ deprec/TODO.txt
 * new wordpress
 * get rid of run_method - s/send(run_method, "/run "#{sudo} /
 * clean out stale tasks (from cap -T)
+
+# Add option to symlink apache vhosts
+#
+# This will make updating with deploys easier
+#
+ln -sf /srv/brandish/current/config/uat/passenger/apache_vhost brandish
