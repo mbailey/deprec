@@ -1,12 +1,11 @@
 $VERBOSE = nil
 
-# Load deprec rakefile extensions
+# Load deprec rake tasks
 if defined?(Rake)
   %w(
     db
-    environments
   ).each do |task|
-    load File.join(File.dirname(__FILE__), 'rake', "#{task}.rake")
+    load File.join(File.dirname(__FILE__), 'recipes', "#{task}.rake")
   end
 end
 

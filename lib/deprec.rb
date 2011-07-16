@@ -1,6 +1,8 @@
 require 'deprec-core'
 if defined?(Capistrano)
-  require "#{File.dirname(__FILE__)}/deprec/cap"
+  Dir.glob('deprec/recipes/*.rb').each { |t| puts t; require t }
+  # require "#{File.dirname(__FILE__)}/deprec/cap"
 elsif defined?(Rake)
-  require "#{File.dirname(__FILE__)}/deprec/rake"
+  Dir.glob('deprec/recipes/*.rake').each { |t| puts t; import t }
+  # require "#{File.dirname(__FILE__)}/deprec/rake"
 end
