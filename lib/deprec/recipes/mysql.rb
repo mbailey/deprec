@@ -66,7 +66,11 @@ Capistrano::Configuration.instance(:must_exist).load do
       task :reload, :roles => :db do
         send(run_method, "/etc/init.d/mysql reload")
       end
-     
+
+      desc "Backup mysql database"
+      task :backup, :roles => :app do
+        deprec2.rake_remote 'deprec:db:backup'
+      end
 
       # Extras (not sure if they still work) 
       # Create a database
