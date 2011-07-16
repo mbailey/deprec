@@ -1,6 +1,10 @@
 deprec changelog
 ================
 
+= 3.1.0.rc9  (Jul 17, 2011)
+
+  * Added deprec:mysql:backup
+
 = 3.1.0.rc8  (Jul 17, 2011)
 
   deprec3 introduces some major changes that make it 
