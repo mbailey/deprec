@@ -1,6 +1,36 @@
 deprec changelog
 ================
 
+= 3.1.0.rc4  (Jul 17, 2011)
+
+  deprec3 introduces some major changes that make it 
+  more powerful yet simpler in structure and usage.
+
+  # Now providing Rake tasks
+ 
+  Through the magic of bundler, deprec3 now provides
+  Rake tasks in addition to Capistrano tasks. The two
+  even work hand in hand with cap tasks calling rake 
+  tasks by the same name on remote servers. Accessing
+  these rake tasks requires just a single Gemfile entry.
+
+    gem "deprec"
+
+  Run 'bundle' and you will now have deprec Rake tasks 
+
+    [mbailey@island ~]$ rake -T
+    rake deprec:db:backup   # Backup the database to a file.
+    rake deprec:db:restore  # Restore database [Pending]
+
+  # Build your own recipe gem using deprec-core 
+  
+  deprec's inner magic has been extracted out into the
+  deprec-core rubygem. This means deprec is a lightweight
+  set of recipes. It also means creating your own recipe
+  gem is that much simpler because you can easily reuse
+  the magic in deprec-core
+
+
 = 2.2.3  (Jul 15, 2011)
 
 * deprec now provides rake tasks
