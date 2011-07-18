@@ -1,14 +1,7 @@
 # Copyright 2011 Chris Griego
 #
-# Capistrano::Configuration.instance(:must_exist).load do
-# require 'capistrano/recipes/deploy'
+require 'deprec-core'
 Capistrano::Configuration.instance(:must_exist).load do
-
-  def _cset(name, *args, &block)
-    unless exists?(name)
-      set(name, *args, &block)
-    end
-  end
 
   _cset :asset_env, "RAILS_GROUPS=assets"
   _cset :rails_env, "production"
