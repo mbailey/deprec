@@ -1,4 +1,4 @@
-# Copyright 2006-2008 by Mike Bailey. All rights reserved.
+# Copyright 2006-2011 by Mike Bailey. All rights reserved.
 # canonical.rb
 #
 # Running deprec:web:stop will be the same as running deprec:apache:stop or 
