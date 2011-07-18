@@ -34,6 +34,17 @@ Capistrano::Configuration.instance(:must_exist).load do
         sudo "rm /var/lib/apt/lists/lock"
         # XXX There's one more - add it!
       end
+
+      desc "Remove consolekit"
+      task :remove_consolekit, :roles => :ubuntu do
+        run "#{sudo} apt-get remove consolekit"
+        run "#{sudo} apt-get remove dbus"
+      end
+
+      desc "Remove crap that doesn't belong on a server"
+      task :trim, :roles => :ubuntu do
+        remove_consolekit
+      end
       
     end
   end
