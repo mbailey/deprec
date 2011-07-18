@@ -1,4 +1,4 @@
-# Copyright 2006-2011 by Mike Bailey. All rights reserved.
+require 'deprec-core'
 # canonical.rb
 #
 # Running deprec:web:stop will be the same as running deprec:apache:stop or 

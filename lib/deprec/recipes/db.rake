@@ -1,3 +1,4 @@
+require 'deprec-core'
 require 'find'
 namespace :deprec do
 

@@ -1,4 +1,4 @@
-# Copyright 2006-2011 by Mike Bailey. All rights reserved.
+require 'deprec-core'
 Capistrano::Configuration.instance(:must_exist).load do
   namespace :deprec do
     namespace :utils do

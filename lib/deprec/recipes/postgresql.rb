@@ -1,4 +1,4 @@
-# Copyright 2006-2011 by Saulius Grigaitis. All rights reserved.
+require 'deprec-core'
 # Backported from centostrano to deprec by Eric Harris-Braun.
 Capistrano::Configuration.instance(:must_exist).load do 
   namespace :deprec do
