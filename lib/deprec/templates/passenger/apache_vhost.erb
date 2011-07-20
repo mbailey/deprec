@@ -29,17 +29,19 @@
         # Enable caching of assets containing a fingerprint
         # Browsers need never check for newer versions of an
         # asset because the fingerprint would be different.
-        <FilesMatch "/assets/[^.]+-[a-z0-9]{32}\.">
-            # Add far-future expiration dates
-            <IfModule mod_expires.c>
-                ExpiresActive On
-                ExpiresDefault "access plus 10 years"
-            </IfModule>
-            # Disable ETags
-            <IfModule mod_expires.c>
-                Header unset "ETag"
-            </IfModule>
-        </FilesMatch>
+        <Directory <%= passenger_document_root %>/public/assets>
+          <FilesMatch "[^.]+-[a-z0-9]{32}\.">
+              # Add far-future expiration dates
+              <IfModule mod_expires.c>
+                  ExpiresActive On
+                  ExpiresDefault "access plus 10 years"
+              </IfModule>
+              # Disable ETags
+              <IfModule mod_headers.c>
+                  Header unset "ETag"
+              </IfModule>
+            </FilesMatch>
+        </Directory>
 
         # Check for maintenance file and redirect all requests
         RewriteEngine On
