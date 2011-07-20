@@ -34,3 +34,5 @@ alias tc='time curl -s -o /dev/null'
 
 # Load rubygems
 alias irb="irb -I '.' -rubygems"
+
+alias ssm="ssh -l $USER"
