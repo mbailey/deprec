@@ -32,7 +32,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         Array(users_target_user).each do |user| 
         
           deprec2.groupadd(users_target_group)
-          deprec2.useradd(user, :group => group, :shell => '/bin/bash')
+          deprec2.useradd(user, :group => users_target_group, :shell => '/bin/bash')
           deprec2.invoke_with_input("passwd #{user}", /UNIX password/, new_password)
         
           if users_make_admin.match(/y/i)

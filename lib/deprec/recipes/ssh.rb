@@ -40,22 +40,22 @@ Capistrano::Configuration.instance(:must_exist).load do
 
       desc "Start ssh"
       task :start do
-        send(run_method, "/etc/init.d/ssh reload")
+        run "#{sudo} /etc/init.d/ssh reload"
       end
     
       desc "Stop ssh"
       task :stop do
-        send(run_method, "/etc/init.d/ssh reload")
+        run "#{sudo} /etc/init.d/ssh reload"
       end
     
       desc "Restart ssh"
       task :restart do
-        send(run_method, "/etc/init.d/ssh restart")
+        run "#{sudo} /etc/init.d/ssh restart"
       end
     
       desc "Reload ssh"
       task :reload do
-        send(run_method, "/etc/init.d/ssh reload")
+        run "#{sudo} /etc/init.d/ssh reload"
       end
       
       desc "Sets up authorized_keys file on remote server"
@@ -104,7 +104,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         # copy keys to remote server
         deprec2.mkdir "/home/#{target_user}/.ssh", :mode => 0700, :owner => "#{target_user}.users", :via => :sudo
         std.su_put keys, "/home/#{target_user}/.ssh/authorized_keys", '/tmp/', :mode => 0600
-        sudo "chown #{target_user}.users /home/#{target_user}/.ssh/authorized_keys"
+        run "#{sudo} chown #{target_user}.users /home/#{target_user}/.ssh/authorized_keys"
       end
 
     end

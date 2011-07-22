@@ -83,19 +83,19 @@ Capistrano::Configuration.instance(:must_exist).load do
       
       
       task :start, :roles => :web do
-        send(run_method, "/etc/init.d/example reload")
+        run "#{sudo} /etc/init.d/example reload"
       end
       
       task :stop, :roles => :web do
-        send(run_method, "/etc/init.d/example reload")
+        run "#{sudo} /etc/init.d/example reload"
       end
       
       task :restart, :roles => :web do
-        send(run_method, "/etc/init.d/example restart")
+        run "#{sudo} /etc/init.d/example restart"
       end
       
       task :reload, :roles => :web do
-        send(run_method, "/etc/init.d/example reload")
+        run "#{sudo} /etc/init.d/example reload"
       end
       
       task :activate, :roles => :web do
