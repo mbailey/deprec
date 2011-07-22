@@ -1,6 +1,10 @@
 deprec changelog
 ================
 
+= 3.1.0.rc12  (Jul 22, 2011)
+
+  * Added TEMPLATE_LOAD_PATH so deprec-core can locate templates
+
 = 3.1.0.rc11  (Jul 18, 2011)
 
   * require 'deprec-core' from each recipe so they can be loaded individually.
