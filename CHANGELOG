@@ -1,6 +1,10 @@
 deprec changelog
 ================
 
+= 3.1.0.rc13  (Jul 22, 2011)
+
+  * temp fix - canonical service names not working
+
 = 3.1.0.rc12  (Jul 22, 2011)
 
   * Added TEMPLATE_LOAD_PATH so deprec-core can locate templates
