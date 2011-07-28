@@ -14,7 +14,7 @@ Capistrano::Configuration.instance(:must_exist).load do
         %w(rewrite ssl proxy_balancer proxy_http deflate expires headers)
 
       desc "Install Apache"
-      task :install do
+      task :install, :roles => :web do
         apt.install( 
           {:base => %w(apache2-mpm-prefork apache2-prefork-dev rsync ssl-cert)},
           :stable )
@@ -84,7 +84,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       end
       
       # Stub so generic tasks don't fail (e.g. deprec:web:config_project)
-      task :config_project do
+      task :config_project, :roles => :web do
         # XXX Need to flesh out generation of custom certs
         # In the meantime we'll just use the snakeoil cert
         #
@@ -152,7 +152,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       }
       set :apache_vhost_rack_env, false
       # 
-      task :vhost do
+      task :vhost, :roles => :web do
         file = { 
           :template => 'vhost.erb',
           :path => "/etc/apache2/sites-available/#{apache_vhost_domain}",

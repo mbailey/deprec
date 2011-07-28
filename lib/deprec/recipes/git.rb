@@ -5,7 +5,7 @@ Capistrano::Configuration.instance(:must_exist).load do
 
       # Ubuntu lucid has a new enough version of git
       desc "Install git"
-      task :install do
+      task :install, :roles => :app do
         apt.install( {:base => %w(git-core)}, :stable )
       end
 
