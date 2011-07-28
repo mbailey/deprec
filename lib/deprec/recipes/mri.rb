@@ -4,16 +4,16 @@ Capistrano::Configuration.instance(:must_exist).load do
   namespace :deprec do
     namespace :mri do
             
-      SRC_PACKAGES['ruby-1.8.7-p330'] = {
-        :md5sum => "50a49edb787211598d08e756e733e42e  ruby-1.8.7-p330.tar.gz",
-        :url => "ftp://ftp.ruby-lang.org/pub/ruby/1.8/ruby-1.8.7-p330.tar.gz",
+      SRC_PACKAGES['ruby-1.8.7-p352'] = {
+        :md5sum => "0c33f663a10a540ea65677bb755e57a7  ruby-1.8.7-p352.tar.gz",
+        :url => "http://ftp.ruby-lang.org/pub/ruby/1.8/ruby-1.8.7-p352.tar.gz",
         :deps => %w(zlib1g-dev libssl-dev libncurses5-dev libreadline5-dev),
         :configure => "./configure --with-readline-dir=/usr/local;"
       }
 
-      SRC_PACKAGES['ruby-1.9.2-p180'] = {
-        :md5sum => "0d6953820c9918820dd916e79f4bfde8  ruby-1.9.2-p180.tar.gz", 
-        :url => "http://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.2-p180.tar.gz",
+      SRC_PACKAGES['ruby-1.9.2-p290'] = {
+        :md5sum => "604da71839a6ae02b5b5b5e1b792d5eb  ruby-1.9.2-p290.tar.gz", 
+        :url => "http://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.2-p290.tar.gz",
         :deps => %w(zlib1g-dev libssl-dev libncurses5-dev libreadline5-dev),
         :configure => "./configure",
         :post_install => 'sudo gem update --system'
