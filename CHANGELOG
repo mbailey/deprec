@@ -1,6 +1,11 @@
 deprec changelog
 ================
 
+= 3.1.0.rc14  (Jul 28, 2011)
+
+  * Set default roles for apache and git recipes
+  * Move rubygem dependencies out into deprec-core
+
 = 3.1.0.rc13  (Jul 22, 2011)
 
   * temp fix - canonical service names not working

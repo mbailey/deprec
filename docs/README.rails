@@ -5,7 +5,7 @@ The rack recipes should work with any rack app.
 
 *Quickstart*
 
-    $ cap deprec:rack:install_stack
+    $ cap deprec:rack:install_stack HOSTS=mbailey@lucid
 
     $ cd your_rails_app
     $ depify . 
@@ -15,9 +15,9 @@ The rack recipes should work with any rack app.
     # database server that has already been installed.
     $ cap deprec:db:install 
 
-    $ cap deploy:setup HOSTS=mbailey@uat
+    $ cap deploy:setup HOSTS=mbailey@lucid
 
-    $ cap deprec:rack:config HOSTS=mbailey@uat
+    $ cap deprec:rack:config HOSTS=mbailey@lucid
 
     # ssh to git@github.com from uat and accept hostkey
     $ cap deploy 
