@@ -1,7 +1,7 @@
 deprec changelog
 ================
 
-= 3.1.0.rc14  (Jul 28, 2011)
+= 3.1.0.rc16  (Jul 28, 2011)
 
   * Set default roles for apache and git recipes
   * Move rubygem dependencies out into deprec-core
