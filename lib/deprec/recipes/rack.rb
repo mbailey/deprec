@@ -8,7 +8,8 @@ Capistrano::Configuration.instance(:must_exist).load do
       desc "Install Rack stack on Ubuntu server (8.04, 10.04)"
       task :install_stack do   
         top.deprec.git.install
-        top.deprec.ruby.install       # Uses ruby_vm_type
+        # top.deprec.ruby.install       # Uses ruby_vm_type
+        top.deprec.mri.install       # Uses ruby_vm_type
         gem2.install 'bundler'
         install_rails_deps
         # XXX temporary fix
