@@ -18,8 +18,6 @@ SPEC = Gem::Specification.new do |s|
 
   s.require_paths = ['lib']
   s.add_dependency('deprec-core', '>= 3.1.7')
-  s.add_dependency('capistrano', '>= 2.6.0')
-  s.add_dependency('capistrano-ext', '>= 1.2.1')
   candidates = Dir.glob("{bin,docs,lib,rake}/**/*") 
   candidates.concat(%w(CHANGELOG COPYING LICENSE README.md THANKS))
   s.files = candidates.delete_if do |item| 
