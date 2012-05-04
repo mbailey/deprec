@@ -204,7 +204,10 @@ module Deprec2
     options[:shell] ||= '/bin/bash' # new accounts on ubuntu 6.06.1 have been getting /bin/sh
     switches = ''
     switches += " --shell=#{options[:shell]} " if options[:shell]
-    switches += ' --create-home ' unless options[:homedir] == false
+    unless options[:homedir] == false
+      switches += ' --create-home '
+      switches += " --home #{options[:homedir]} " if options[:homedir]
+    end
     switches += " --gid #{options[:group]} " unless options[:group].nil?
     invoke_command "grep '^#{user}:' /etc/passwd || #{sudo} /usr/sbin/useradd #{switches} #{user}", 
     :via => run_method
