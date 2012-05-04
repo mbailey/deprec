@@ -209,6 +209,7 @@ module Deprec2
       switches += " --home #{options[:homedir]} " if options[:homedir]
     end
     switches += " --gid #{options[:group]} " unless options[:group].nil?
+    invoke_command "#{sudo} mkdir -p #{File.dirname(options[:homedir])}" if options[:homedir]
     invoke_command "grep '^#{user}:' /etc/passwd || #{sudo} /usr/sbin/useradd #{switches} #{user}", 
     :via => run_method
   end
