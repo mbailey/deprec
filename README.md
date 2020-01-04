@@ -1,7 +1,7 @@
 deprec - Deployment Recipes for Capistrano
 ==========================================
 
-**I've not used/update this in 5 years - Mike**
+**I've not used/update this in 5+ years - Mike**
 
 The [deprec][1] gem is a set of tasks for [Capistrano][2]. These tasks provide
 for the installation, configuration and control of system services on servers
