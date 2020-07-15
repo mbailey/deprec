@@ -55,6 +55,9 @@ require "#{File.dirname(__FILE__)}/recipes/lvm"
 require "#{File.dirname(__FILE__)}/recipes/vnstat"
 require "#{File.dirname(__FILE__)}/recipes/utils"
 
+
+require "#{File.dirname(__FILE__)}/recipes/erlang"
+
 # Retired recipes
 #
 # require "#{File.dirname(__FILE__)}/recipes/integrity"
