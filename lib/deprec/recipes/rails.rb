@@ -191,7 +191,7 @@ Capistrano::Configuration.instance(:must_exist).load do
       task :activate_services do
         top.deprec.web.activate       
         top.deprec.app.activate
-        top.deprec.monit.activate
+        #top.deprec.monit.activate # Monit installation has been commented in the rack recipe and this line causes deploy:setup to break
       end
 
       # database.yml stuff
